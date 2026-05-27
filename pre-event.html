@@ -210,9 +210,7 @@
     .breakdown-item .bi-amount { font-size: 26px; font-weight: 800; color: var(--slate); }
     .breakdown-item .bi-detail { font-size: 11px; color: var(--gray); margin-top: 4px; line-height: 1.4; }
 
-    .venues-section {
-      margin-top: 20px;
-    }
+    .venues-section { margin-top: 20px; }
     .venues-card {
       border-radius: 10px;
       padding: 18px 20px;
@@ -239,6 +237,14 @@
       color: var(--slate);
       font-weight: 500;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .venue-tag a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .venue-tag a:hover {
+      color: var(--purple);
+      text-decoration: underline;
     }
     .no-venues { font-size: 13px; color: var(--gray); font-style: italic; }
 
@@ -274,8 +280,6 @@
       font-weight: 600;
     }
     table.tier-table td.total-col { font-weight: 700; color: var(--purple); }
-
-    .divider { border: none; border-top: 1px dashed var(--border); margin: 20px 0; }
   </style>
 </head>
 <body>
@@ -284,7 +288,7 @@
   <div class="logo">🏛️</div>
   <div>
     <h1>Hackdays Pre-Event Venue Planner</h1>
-    <p>Estimate venue & F&amp;B costs for receptions and happy hours by city</p>
+    <p>Estimate venue &amp; F&amp;B costs for receptions and happy hours by city</p>
   </div>
   <div class="badge">PRE-EVENT</div>
 </header>
@@ -304,7 +308,7 @@
     <div class="field">
       <label>Number of Attendees</label>
       <input type="number" id="attendees" value="25" min="1" max="500" oninput="autoSize()" />
-      <div class="field-hint">Used to determine venue size tier and total F&B minimum</div>
+      <div class="field-hint">Used to determine venue size and total F&B minimum</div>
     </div>
 
     <div class="field">
@@ -312,15 +316,15 @@
       <div class="size-pills">
         <div class="size-pill" id="pill-s" onclick="selectSize('s')">
           Small
-          <div class="pill-label">&lt; 30 pax</div>
+          <div class="pill-label">&lt; 30 people</div>
         </div>
         <div class="size-pill active" id="pill-m" onclick="selectSize('m')">
           Medium
-          <div class="pill-label">30 – 100 pax</div>
+          <div class="pill-label">30 – 100 people</div>
         </div>
         <div class="size-pill" id="pill-l" onclick="selectSize('l')">
           Large
-          <div class="pill-label">100 + pax</div>
+          <div class="pill-label">100+ people</div>
         </div>
       </div>
       <div class="field-hint" id="sizeHint" style="margin-top:8px">Auto-selected from attendee count — click to override</div>
@@ -340,65 +344,335 @@
 </div>
 
 <script>
+// venue name can be a plain string or an HTML string with an <a> tag
+function v(name, url) {
+  return url ? `<a href="${url}" target="_blank" rel="noopener">${name}</a>` : name;
+}
 
 const CITY_DATA = [
-  { name:"Vancouver, BC",      rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["Steamworks Brewery","The Roundhouse Community Arts"], hhVenues:["Guilt & Co.","The Diamond","Mahony & Sons"] },
-  { name:"St. Louis, MO",      rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["The Coronado Ballroom","City Museum"], hhVenues:["Narwhal's Crafted","The Midwestern"] },
-  { name:"New Orleans, LA",    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Mardi Gras World","Warehouse 535"], hhVenues:["Fulton Alley","Willa Jean"] },
-  { name:"Tampa, FL",          rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Armature Works","Tampa Museum of Art"], hhVenues:["Armature Works Heights Market","Trophy Fish"] },
-  { name:"Grand Rapids, MI",   rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Seattle, WA",        rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["Rainier Tower","The Hall at Columbia Center"], hhVenues:["Bathtub Gin & Co.","Canon Bar"] },
-  { name:"Las Vegas, NV",      rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["Wynn Event Spaces","MGM Grand Ballroom"], hhVenues:["LAVO","The Chandelier at Cosmopolitan"] },
-  { name:"Charlotte, NC",      rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Foundation for the Carolinas","Discovery Place"], hhVenues:["Heist Brewery","Dot Dot Dot"] },
-  { name:"Chicago, IL",        rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["The Ivy Room","Salvage One"], hhVenues:["Cindy's Rooftop","Broken Shaker"] },
-  { name:"Indianapolis, IN",   rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Newfields","The Biltwell Event Center"], hhVenues:["The Loom","Tinker Street"] },
-  { name:"Louisville, KY",     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Louisville Slugger Museum","21c Museum Hotel"], hhVenues:["Proof on Main","The Silver Dollar"] },
-  { name:"Lafayette, IN",      rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Berlin, Germany",    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Crackers Berlin","Tempodrom"], hhVenues:["Monkey Bar","Klunkerkranich"] },
-  { name:"Denver, CO",         rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Wings Over the Rockies","Mile High Station"], hhVenues:["ViewHouse","Ophelia's Electric Soapbox"] },
-  { name:"Oakville, ON",       rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Orlando, FL",        rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["The Mezz","Orlando Museum of Art"], hhVenues:["The Osprey Tavern","The Courtesy Bar"] },
-  { name:"Cleveland, OH",      rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Windows on the River","Playhouse Square"], hhVenues:["Porco Lounge","The Spotted Owl"] },
-  { name:"Midland, TX",        rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Mississauga, ON",    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Mississauga Convention Centre","Living Arts Centre"], hhVenues:[] },
-  { name:"Nashville, TN",      rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["The Cannery Ballroom","The Cordelle"], hhVenues:["Dierks Bentley's Whiskey Row","Ole Red Nashville"] },
-  { name:"Kitchener, ON",      rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Atlanta, GA",        rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Ponce City Market","Georgia Aquarium"], hhVenues:["Whiskey Bird","Krog Street Market"] },
-  { name:"Marietta, GA",       rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Washington, DC",     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["National Building Museum","The Hay-Adams Hotel"], hhVenues:["Wunder Garten","POV Rooftop"] },
-  { name:"Anaheim, CA",        rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Anaheim Convention Center","House of Blues Anaheim"], hhVenues:[] },
-  { name:"Toronto, ON",        rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Arcadian Court","Steam Whistle Brewery"], hhVenues:["BarChef","The Drake Hotel"] },
-  { name:"Des Moines, IA",     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Iowa Events Center","Mainframe Studios"], hhVenues:["Exile Brewing Co.","Proof Pub & Kitchen"] },
-  { name:"San Antonio, TX",    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Pearl Stable","McNay Art Museum"], hhVenues:["The Espee","Paramour Bar"] },
-  { name:"Birmingham, AL",     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:["Sloss Furnaces","Alabama Theatre"], hhVenues:[] },
-  { name:"Sudbury, ON",        rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Philadelphia, PA",   rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["The Horticultural Center","The Crystal Tea Room"], hhVenues:["Rosy's Taco Bar","Attico Rooftop"] },
-  { name:"Baltimore, MD",      rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["The Grand Historic Venue","Sagamore Pendry Baltimore"], hhVenues:["Barcocina","Ekiben"] },
-  { name:"Columbus, OH",       rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["The Ohio Statehouse","Short North Stage"], hhVenues:["Seventh Son Brewing","Juniper"] },
-  { name:"Corpus Christi, TX", rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Williamsburg, VA",   rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Portland, OR",       rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["The Nines Hotel","Leftbank Annex"], hhVenues:["Departure Lounge","Multnomah Whiskey Library"] },
-  { name:"Phoenix, AZ",        rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Musical Instrument Museum","Phoenix Art Museum"], hhVenues:["Undertow","Valley Bar"] },
-  { name:"San Diego, CA",      rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["The Prado at Balboa Park","Hotel del Coronado"], hhVenues:["Raised by Wolves","Craft & Commerce"] },
-  { name:"Calgary, AB",        rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Arts Commons","TELUS Spark Science Centre"], hhVenues:["National on 8th","Betty Lou's Library"] },
-  { name:"Petawawa, ON",       rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Edmonton, AB",       rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Shaw Conference Centre","Hotel Macdonald"], hhVenues:["Rig & Reel","Woodwork Bar"] },
-  { name:"Portland, ME",       rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Ocean Gateway","Portland Museum of Art"], hhVenues:["Eventide Oyster Co.","Vena's Fizz House"] },
-  { name:"Reno, NV",           rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["National Automobile Museum","Whitney Peak Hotel"], hhVenues:["Pignic Pub & Patio","Chapel Tavern"] },
-  { name:"Scottsdale, AZ",     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["Hyatt Regency Scottsdale","Scottsdale Museum of Contemporary Art"], hhVenues:["Swig","Old Town Scottsdale rooftop bars"] },
-  { name:"Dallas, TX",         rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["The Perot Museum","Gilley's Dallas"], hhVenues:["Midnight Rambler","The Rustic"] },
-  { name:"Lakeville, MN",      rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"New York, NY",       rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},  hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},  recVenues:["Gotham Hall","The Glasshouses"], hhVenues:["The Press Lounge","Employees Only"] },
-  { name:"Waukesha, WI",       rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Ottawa, ON",         rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},   hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},  recVenues:["National Arts Centre","Chateau Laurier"], hhVenues:["Zoe's Restaurant","The Barley Mow"] },
-  { name:"Virginia Beach, VA", rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:[], hhVenues:[] },
-  { name:"Loveland, CO",       rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Houston, TX",        rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["The Ion Houston","Buffalo Bayou Park"], hhVenues:["Mongoose versus Cobra","Axelrad Beer Garden"] },
-  { name:"Mt. Laurel, NJ",     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:[], hhVenues:[] },
-  { name:"Hooksett, NH",       rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Muncie, IN",         rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
-  { name:"Providence, RI",     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},   hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},  recVenues:["Providence Athenaeum","RISD Museum"], hhVenues:["Oberlin","Faust Bar & Bottle"] },
-  { name:"Hershey, PA",        rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},   recVenues:[], hhVenues:[] },
+  { name:"Vancouver, BC",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Steamworks Brewery","https://steamworks.com/"),v("The Roundhouse Community Arts","https://www.roundhouse.ca/")],
+    hhVenues:[v("Guilt & Co.","https://www.guiltandcompany.com/"),v("The Diamond","https://www.ablf.ca/"),v("Mahony & Sons","https://www.mahonystavern.com/")] },
+
+  { name:"St. Louis, MO",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Coronado Ballroom","https://thecoronado.com/"),v("City Museum","https://citymuseum.org/")],
+    hhVenues:[v("Narwhal's Crafted","https://narwhalscrafted.com/"),v("The Midwestern","https://midwesternstl.com/")] },
+
+  { name:"New Orleans, LA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Mardi Gras World","https://www.mardigrasworld.com/"),v("Warehouse 535","https://warehouse535.com/")],
+    hhVenues:[v("Fulton Alley","https://www.fultonalley.com/"),v("Willa Jean","https://www.willajean.com/")] },
+
+  { name:"Tampa, FL",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Armature Works","https://armatureworks.com/"),v("Tampa Museum of Art","https://tampamuseum.org/")],
+    hhVenues:[v("Armature Works Heights Market","https://armatureworks.com/"),v("Trophy Fish","https://trophyfish.com/")] },
+
+  { name:"Grand Rapids, MI",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Seattle, WA",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Rainier Tower","https://columbiacenterseattle.com/"),v("The Hall at Columbia Center","https://columbiacenterseattle.com/")],
+    hhVenues:[v("Bathtub Gin & Co.","https://bathtubginseattle.com/"),v("Canon Bar","https://www.canonseattle.com/")] },
+
+  { name:"Las Vegas, NV",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Wynn Event Spaces","https://www.wynnlasvegas.com/"),v("MGM Grand Ballroom","https://mgmgrand.mgmresorts.com/")],
+    hhVenues:[v("LAVO","https://taogroup.com/venues/lavo-italian-restaurant-las-vegas/"),v("The Chandelier at Cosmopolitan","https://www.cosmopolitanlasvegas.com/")] },
+
+  { name:"Charlotte, NC",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Foundation for the Carolinas","https://fftc.org/"),v("Discovery Place","https://www.discoveryplace.org/")],
+    hhVenues:[v("Heist Brewery","https://heistbrewery.com/"),v("Dot Dot Dot","https://dotdotdotcharlotte.com/")] },
+
+  { name:"Chicago, IL",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("The Ivy Room","https://ivyroomchicago.com/"),v("Salvage One","https://salvageone.com/")],
+    hhVenues:[v("Cindy's Rooftop","https://cindysrooftop.com/"),v("Broken Shaker","https://www.brokenshaker.com/")] },
+
+  { name:"Indianapolis, IN",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Newfields","https://discovernewfields.org/"),v("The Biltwell Event Center","https://www.biltwelleventcenter.com/")],
+    hhVenues:[v("The Loom","https://www.blackcirclebrewing.com/loom"),v("Tinker Street","https://tinkerstreetrestaurant.com/")] },
+
+  { name:"Louisville, KY",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Louisville Slugger Museum","https://www.sluggermuseum.com/"),v("21c Museum Hotel","https://21cmuseumhotels.com/louisville/")],
+    hhVenues:[v("Proof on Main","https://proofonmain.com/"),"The Silver Dollar"] },
+
+  { name:"Lafayette, IN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Berlin, Germany",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Crackers Berlin","https://crackers-berlin.de/"),v("Tempodrom","https://www.tempodrom.de/")],
+    hhVenues:[v("Monkey Bar","https://monkeybarberlin.de/"),v("Klunkerkranich","https://klunkerkranich.org/")] },
+
+  { name:"Denver, CO",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Wings Over the Rockies","https://wingsmuseum.org/"),v("Mile High Station","https://milehighstation.com/")],
+    hhVenues:[v("ViewHouse","https://www.viewhouse.com/"),v("Ophelia's Electric Soapbox","https://opheliasdenver.com/")] },
+
+  { name:"Oakville, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Orlando, FL",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Mezz","https://www.mezzorlando.com/"),v("Orlando Museum of Art","https://omart.org/")],
+    hhVenues:[v("The Osprey Tavern","https://www.theospreyorlando.com/"),v("The Courtesy Bar","https://www.thecourtesybar.com/")] },
+
+  { name:"Cleveland, OH",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Windows on the River","https://windowsontheriver.com/"),v("Playhouse Square","https://www.playhousesquare.org/")],
+    hhVenues:[v("Porco Lounge","https://porcolounge.com/"),v("The Spotted Owl","https://spottedowlbar.com/")] },
+
+  { name:"Midland, TX",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Mississauga, ON",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Mississauga Convention Centre","https://mississaugaconventioncentre.com/"),v("Living Arts Centre","https://www.livingartscentre.ca/")],
+    hhVenues:[] },
+
+  { name:"Nashville, TN",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("The Cannery Ballroom","https://www.canneryballroom.com/"),v("The Cordelle","https://www.thecordelle.com/")],
+    hhVenues:[v("Dierks Bentley's Whiskey Row","https://dierkswhiskeyrow.com/nashville-tn/"),v("Ole Red Nashville","https://olered.com/nashville/")] },
+
+  { name:"Kitchener, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Atlanta, GA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Ponce City Market","https://www.poncecitymarket.com/"),v("Georgia Aquarium","https://www.georgiaaquarium.org/")],
+    hhVenues:[v("Whiskey Bird","https://www.eatwhiskeybird.com/"),v("Krog Street Market","https://www.thekrogdistrict.com/")] },
+
+  { name:"Marietta, GA",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Washington, DC",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("National Building Museum","https://www.nbm.org/"),v("The Hay-Adams Hotel","https://www.hayadams.com/")],
+    hhVenues:[v("Wunder Garten","https://www.wundergartendc.com/"),v("POV Rooftop","https://povrooftop.com/")] },
+
+  { name:"Anaheim, CA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Anaheim Convention Center","https://www.anaheimconventioncenter.com/"),v("House of Blues Anaheim","https://www.houseofblues.com/anaheim/")],
+    hhVenues:[] },
+
+  { name:"Toronto, ON",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Arcadian Court","https://www.arcadianevents.ca/"),v("Steam Whistle Brewery","https://steamwhistle.ca/")],
+    hhVenues:[v("BarChef","https://www.barchef.com/"),v("The Drake Hotel","https://www.thedrakehotel.ca/")] },
+
+  { name:"Des Moines, IA",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Iowa Events Center","https://www.iowaeventscenter.com/"),v("Mainframe Studios","https://www.mainframestudios.org/")],
+    hhVenues:[v("Exile Brewing Co.","https://www.exilebrewing.com/"),"Proof Pub & Kitchen"] },
+
+  { name:"San Antonio, TX",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Pearl Stable","https://www.pearlsanantonio.com/"),v("McNay Art Museum","https://www.mcnayart.org/")],
+    hhVenues:[v("The Espee","https://www.theespee.com/"),v("Paramour Bar","https://paramourbar.com/")] },
+
+  { name:"Birmingham, AL",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[v("Sloss Furnaces","https://slossfurnaces.com/"),v("Alabama Theatre","https://alabamatheatre.com/")],
+    hhVenues:[] },
+
+  { name:"Sudbury, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Philadelphia, PA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("The Horticultural Center","https://horticulturalcenter.com/"),v("The Crystal Tea Room","https://finleycatering.com/")],
+    hhVenues:[v("Rosy's Taco Bar","https://www.rosystacobar.com/"),v("Attico Rooftop","https://www.atticorooftop.com/")] },
+
+  { name:"Baltimore, MD",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Grand Historic Venue","https://thegrandbaltimore.com/"),v("Sagamore Pendry Baltimore","https://www.sagamorependry.com/")],
+    hhVenues:[v("Barcocina","https://www.barcocina.com/"),"Ekiben"] },
+
+  { name:"Columbus, OH",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Ohio Statehouse","https://www.ohiostatehouse.org/"),v("Short North Stage","https://www.shortnorthstage.org/")],
+    hhVenues:[v("Seventh Son Brewing","https://seventhsonbrewing.com/"),"Juniper"] },
+
+  { name:"Corpus Christi, TX",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Williamsburg, VA",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Portland, OR",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("The Nines Hotel","https://www.thenines.com/"),v("Leftbank Annex","https://www.leftbankannex.com/")],
+    hhVenues:[v("Departure Lounge","https://www.departureportland.com/"),v("Multnomah Whiskey Library","https://mwlpdx.com/")] },
+
+  { name:"Phoenix, AZ",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Musical Instrument Museum","https://mim.org/"),v("Phoenix Art Museum","https://phxart.org/")],
+    hhVenues:[v("Undertow","https://www.drinkundertow.com/"),v("Valley Bar","https://www.valleybarphx.com/")] },
+
+  { name:"San Diego, CA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("The Prado at Balboa Park","https://www.pradobalboa.com/"),v("Hotel del Coronado","https://www.hoteldel.com/")],
+    hhVenues:[v("Raised by Wolves","https://raisedxwolves.com/"),v("Craft & Commerce","https://craft-commerce.com/")] },
+
+  { name:"Calgary, AB",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Arts Commons","https://artscommons.ca/"),v("TELUS Spark Science Centre","https://www.sparkscience.ca/")],
+    hhVenues:[v("National on 8th","https://www.ntnl.ca/"),v("Betty Lou's Library","https://www.bettylouslibrary.com/")] },
+
+  { name:"Petawawa, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Edmonton, AB",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Shaw Conference Centre","https://www.edmontonconventioncentre.com/"),v("Hotel Macdonald","https://www.hotelmacdonald.com/")],
+    hhVenues:["Rig & Reel",v("Woodwork Bar","https://woodworkyeg.com/")] },
+
+  { name:"Portland, ME",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Ocean Gateway","https://www.portlandmaine.gov/1167/Ocean-Gateway"),v("Portland Museum of Art","https://portlandmuseum.org/")],
+    hhVenues:[v("Eventide Oyster Co.","https://www.eventiderestaurant.com/"),v("Vena's Fizz House","https://venasfizzhouse.com/")] },
+
+  { name:"Reno, NV",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("National Automobile Museum","https://automuseum.org/"),v("Whitney Peak Hotel","https://www.whitneypeakhotel.com/")],
+    hhVenues:[v("Pignic Pub & Patio","https://pignicpubandpatio.com/"),v("Chapel Tavern","https://www.chapeltavern.com/")] },
+
+  { name:"Scottsdale, AZ",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Hyatt Regency Scottsdale","https://www.hyatt.com/en-US/hotel/arizona/hyatt-regency-scottsdale-resort-and-spa-at-gainey-ranch/phxrs"),v("Scottsdale Museum of Contemporary Art","https://smoca.org/")],
+    hhVenues:[v("Swig","https://swig.com/"),"Old Town Scottsdale rooftop bars"] },
+
+  { name:"Dallas, TX",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Perot Museum","https://www.perotmuseum.org/"),v("Gilley's Dallas","https://gilleysdallas.com/")],
+    hhVenues:[v("Midnight Rambler","https://midnightramblerbar.com/"),v("The Rustic","https://therustic.com/")] },
+
+  { name:"Lakeville, MN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"New York, NY",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Gotham Hall","https://gothamhallnyc.com/"),v("The Glasshouses","https://www.theglasshouses.com/")],
+    hhVenues:[v("The Press Lounge","https://www.ink48.com/"),v("Employees Only","https://www.employeesonlynyc.com/")] },
+
+  { name:"Waukesha, WI",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Ottawa, ON",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("National Arts Centre","https://nac-cna.ca/"),v("Chateau Laurier","https://www.fairmont.com/laurier-ottawa/")],
+    hhVenues:[v("Zoe's Restaurant","https://www.zoesottawa.com/"),v("The Barley Mow","https://barleymow.com/")] },
+
+  { name:"Virginia Beach, VA",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Loveland, CO",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Houston, TX",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Ion Houston","https://iondistrict.com/"),v("Buffalo Bayou Park","https://buffalobayou.org/")],
+    hhVenues:["Mongoose versus Cobra",v("Axelrad Beer Garden","https://www.axelradhouston.com/")] },
+
+  { name:"Mt. Laurel, NJ",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Hooksett, NH",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Muncie, IN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Providence, RI",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Providence Athenaeum","https://www.providenceathenaeum.org/"),v("RISD Museum","https://risdmuseum.org/")],
+    hhVenues:[v("Oberlin","https://oberlinrestaurant.com/"),"Faust Bar & Bottle"] },
+
+  { name:"Hershey, PA",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
 ];
 
 // Sort alphabetically and populate dropdown
@@ -428,16 +702,14 @@ function autoSize() {
   document.getElementById('sizeHint').textContent = 'Auto-selected from attendee count — click to override';
 }
 
-// ─── Formatting ───────────────────────────────────────────────────────────────
 function fmt(n) {
   return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 function sizeLabel(s) {
-  return s === 's' ? 'Small (<30 pax)' : s === 'm' ? 'Medium (30–100 pax)' : 'Large (100+ pax)';
+  return s === 's' ? 'Small (< 30 people)' : s === 'm' ? 'Medium (30–100 people)' : 'Large (100+ people)';
 }
 
-// ─── Calculate ────────────────────────────────────────────────────────────────
 function calculate() {
   const cityName = citySelect.value;
   if (!cityName) { alert('Please select a destination city.'); return; }
@@ -465,7 +737,7 @@ function calculate() {
 
   function venueTagsHtml(list) {
     if (!list.length) return '<span class="no-venues">No specific venues on file — check local event directories</span>';
-    return `<div class="venue-tags">${list.map(v => `<span class="venue-tag">${v}</span>`).join('')}</div>`;
+    return `<div class="venue-tags">${list.map(item => `<span class="venue-tag">${item}</span>`).join('')}</div>`;
   }
 
   document.getElementById('results').innerHTML = `
@@ -483,7 +755,6 @@ function calculate() {
 
     <div class="card" style="margin-bottom:20px">
       <div class="card-title"><span class="icon">🥂</span> Reception / Evening Event</div>
-
       <div class="breakdown-grid">
         <div class="breakdown-item">
           <div class="bi-label">Venue Fee</div>
@@ -491,7 +762,7 @@ function calculate() {
           <div class="bi-detail">Flat venue rental · ${sizeLabel(sz)}</div>
         </div>
         <div class="breakdown-item">
-          <div class="bi-label">F&B Minimum</div>
+          <div class="bi-label">F&amp;B Minimum</div>
           <div class="bi-amount">${fmt(recD.fb)}<span style="font-size:14px;font-weight:500">/person</span></div>
           <div class="bi-detail">${fmt(recFBTotal)} total · ${n} people</div>
         </div>
@@ -501,11 +772,10 @@ function calculate() {
           <div class="bi-detail">${fmt(Math.round(recTotal/n))} per person</div>
         </div>
       </div>
-
       <div class="tier-table-section">
         <h3>All Size Tiers</h3>
         <table class="tier-table">
-          <thead><tr><th>Size</th><th>Venue Fee</th><th>F&B Min</th><th>Total (${n} pax)</th></tr></thead>
+          <thead><tr><th>Size</th><th>Venue Fee</th><th>F&amp;B Min</th><th>Total (${n} people)</th></tr></thead>
           <tbody>
             ${tierRow('s', city.rec.s, true)}
             ${tierRow('m', city.rec.m, true)}
@@ -513,7 +783,6 @@ function calculate() {
           </tbody>
         </table>
       </div>
-
       <div class="venues-section">
         <div class="venues-card rec-card">
           <h4>📌 Notable Reception Venues in ${city.name}</h4>
@@ -524,7 +793,6 @@ function calculate() {
 
     <div class="card">
       <div class="card-title"><span class="icon">🍺</span> Happy Hour / Casual Gathering</div>
-
       <div class="breakdown-grid">
         <div class="breakdown-item">
           <div class="bi-label">Venue Fee</div>
@@ -542,11 +810,10 @@ function calculate() {
           <div class="bi-detail">${fmt(Math.round(hhTotal/n))} per person</div>
         </div>
       </div>
-
       <div class="tier-table-section">
         <h3>All Size Tiers</h3>
         <table class="tier-table">
-          <thead><tr><th>Size</th><th>Venue Fee</th><th>Min Spend</th><th>Total (${n} pax)</th></tr></thead>
+          <thead><tr><th>Size</th><th>Venue Fee</th><th>Min Spend</th><th>Total (${n} people)</th></tr></thead>
           <tbody>
             ${tierRow('s', city.hh.s, false)}
             ${tierRow('m', city.hh.m, false)}
@@ -554,7 +821,6 @@ function calculate() {
           </tbody>
         </table>
       </div>
-
       <div class="venues-section">
         <div class="venues-card hh-card">
           <h4>📌 Notable Happy Hour Spots in ${city.name}</h4>
@@ -565,7 +831,6 @@ function calculate() {
   `;
 }
 
-// Initialize size pills
 autoSize();
 </script>
 </body>
