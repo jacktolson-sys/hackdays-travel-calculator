@@ -330,13 +330,19 @@
 
     <div class="row-2">
       <div class="field">
-        <label>Signage Cost (USD)</label>
-        <input type="number" id="signage" value="0" min="0" placeholder="0" />
+        <label>Signage Tier</label>
+        <select id="signage">
+          <option value="0">None — $0</option>
+          <option value="523">Small — $523</option>
+          <option value="1167">Medium — $1,167</option>
+          <option value="2175">Large — $2,175</option>
+        </select>
         <div class="field-hint">One-time fixed cost</div>
       </div>
       <div class="field">
         <label>SWAG per Person (USD)</label>
-        <input type="number" id="swag" value="0" min="0" placeholder="0" />
+        <input type="number" id="swag" value="73.16" min="0" step="0.01" placeholder="73.16" />
+        <div class="field-hint">Default: $73.16/person</div>
       </div>
     </div>
 
@@ -354,71 +360,98 @@
 </div>
 
 <script>
+// Source: "Post Event Doc" spreadsheet — Source Data tab
 const CITY_DATA = [
-  { name: "Florida",             hotel: 130, food: 20, uber: 20 },
-  { name: "Vancouver, BC",       hotel: 167, food: 16, uber: 18 },
-  { name: "St. Louis, MO",       hotel: 130, food: 18, uber: 18 },
-  { name: "New Orleans, LA",     hotel: 160, food: 26, uber: 17 },
-  { name: "Tampa, FL",           hotel: 165, food: 20, uber: 18 },
-  { name: "Grand Rapids, MI",    hotel: 120, food: 18, uber: 15 },
-  { name: "Seattle, WA",         hotel: 170, food: 22, uber: 22 },
-  { name: "Las Vegas, NV",       hotel: 130, food: 25, uber: 16 },
-  { name: "Charlotte, NC",       hotel: 170, food: 18, uber: 17 },
-  { name: "Indiana",             hotel: 110, food: 17, uber: 15 },
-  { name: "Chicago, IL",         hotel: 185, food: 20, uber: 19 },
-  { name: "Indianapolis, IN",    hotel: 160, food: 20, uber: 16 },
-  { name: "Louisville, KY",      hotel: 140, food: 15, uber: 16 },
-  { name: "Lafayette, IN",       hotel: 100, food: 15, uber: 14 },
-  { name: "Berlin, Germany",     hotel: 120, food: 14, uber: 29 },
-  { name: "Denver, CO",          hotel: 180, food: 20, uber: 19 },
-  { name: "Oakville, ON",        hotel: 116, food: 12, uber: 17 },
-  { name: "Orlando, FL",         hotel: 150, food: 20, uber: 18 },
-  { name: "Cleveland, OH",       hotel: 195, food: 17, uber: 15 },
-  { name: "Midland, TX",         hotel: 115, food: 15, uber: 14 },
-  { name: "Mississauga, ON",     hotel: 109, food: 12, uber: 16 },
-  { name: "Nashville, TN",       hotel: 225, food: 19, uber: 19 },
-  { name: "Kitchener, ON",       hotel: 105, food: 14, uber: 14 },
-  { name: "Atlanta, GA",         hotel: 140, food: 25, uber: 19 },
-  { name: "Marietta, GA",        hotel: 110, food: 20, uber: 20 },
-  { name: "Washington, DC",      hotel: 185, food: 28, uber: 26 },
+  { name: "Albuquerque, NM",     hotel: 115, food: 16, uber: 15 },
   { name: "Anaheim, CA",         hotel: 130, food: 22, uber: 22 },
-  { name: "Toronto, Canada",     hotel: 163, food: 13, uber: 17 },
-  { name: "Des Moines, IA",      hotel: 130, food: 18, uber: 15 },
-  { name: "San Antonio",         hotel: 110, food: 18, uber: 17 },
+  { name: "Atlanta, GA",         hotel: 140, food: 25, uber: 19 },
+  { name: "Atlantic City, NJ",   hotel: 150, food: 20, uber: 20 },
+  { name: "Austin, TX",          hotel: 175, food: 23, uber: 19 },
+  { name: "Baltimore, MD",       hotel: 150, food: 19, uber: 21 },
+  { name: "Berlin, Germany",     hotel: 120, food: 14, uber: 30 },
   { name: "Birmingham, AL",      hotel: 115, food: 17, uber: 16 },
-  { name: "Sudbury, ON",         hotel: 101, food: 11, uber: 14 },
-  { name: "Philadelphia",        hotel: 190, food: 21, uber: 22 },
-  { name: "Baltimore",           hotel: 150, food: 19, uber: 21 },
+  { name: "Boston, MA",          hotel: 230, food: 27, uber: 28 },
+  { name: "Calgary, AB",         hotel: 138, food: 18, uber: 16 },
+  { name: "Charlotte, NC",       hotel: 170, food: 18, uber: 17 },
+  { name: "Chicago, IL",         hotel: 185, food: 20, uber: 19 },
+  { name: "Cincinnati, OH",      hotel: 135, food: 18, uber: 16 },
+  { name: "Cleveland, OH",       hotel: 195, food: 17, uber: 15 },
   { name: "Columbus, OH",        hotel: 145, food: 22, uber: 15 },
+  { name: "Concord, NC",         hotel: 120, food: 17, uber: 16 },
   { name: "Corpus Christi, TX",  hotel: 130, food: 17, uber: 15 },
-  { name: "Williamsburg, VA",    hotel: 130, food: 20, uber: 18 },
-  { name: "Portland, OR",        hotel: 115, food: 23, uber: 20 },
-  { name: "Phoenix, AZ",         hotel: 185, food: 20, uber: 15 },
-  { name: "San Diego, CA",       hotel: 175, food: 25, uber: 19 },
-  { name: "Calgary, AB",         hotel: 138, food: 13, uber: 16 },
-  { name: "Petawawa, ON",        hotel:  94, food: 10, uber: 14 },
-  { name: "Edmonton, AB",        hotel: 112, food: 15, uber: 16 },
-  { name: "Portland, ME",        hotel: 160, food: 22, uber: 17 },
-  { name: "Reno, NV",            hotel:  90, food: 25, uber: 17 },
-  { name: "Scottsdale, AZ",      hotel: 185, food: 25, uber: 18 },
   { name: "Dallas, TX",          hotel: 160, food: 20, uber: 17 },
-  { name: "Lakeville, MN",       hotel: 110, food: 18, uber: 18 },
-  { name: "New York",            hotel: 285, food: 25, uber: 25 },
-  { name: "Waukesha, WI",        hotel: 100, food: 18, uber: 17 },
-  { name: "Ottawa, ON",          hotel: 149, food: 13, uber: 15 },
-  { name: "Virginia Beach",      hotel: 110, food: 20, uber: 17 },
-  { name: "Loveland, CO",        hotel: 115, food: 20, uber: 18 },
-  { name: "Houston, TX",         hotel: 120, food: 20, uber: 17 },
-  { name: "Mt. Laurel, NJ",      hotel: 130, food: 20, uber: 22 },
-  { name: "Hooksett, NH",        hotel: 120, food: 18, uber: 18 },
-  { name: "Muncie, IN",          hotel:  90, food: 14, uber: 14 },
-  { name: "Providence, RI",      hotel: 155, food: 22, uber: 19 },
+  { name: "Denver, CO",          hotel: 180, food: 20, uber: 19 },
+  { name: "Des Moines, IA",      hotel: 130, food: 18, uber: 15 },
+  { name: "Detroit, MI",         hotel: 130, food: 18, uber: 18 },
+  { name: "Edmonton, AB",        hotel: 112, food: 21, uber: 16 },
+  { name: "Fort Lauderdale, FL", hotel: 185, food: 24, uber: 20 },
+  { name: "Fort Wayne, IN",      hotel: 110, food: 17, uber: 15 },
+  { name: "Fort Worth, TX",      hotel: 150, food: 19, uber: 17 },
+  { name: "Grand Rapids, MI",    hotel: 120, food: 18, uber: 15 },
+  { name: "Halifax, NS",         hotel: 140, food: 18, uber: 20 },
   { name: "Hershey, PA",         hotel: 117, food: 18, uber: 18 },
+  { name: "Hooksett, NH",        hotel: 120, food: 18, uber: 18 },
+  { name: "Houston, TX",         hotel: 120, food: 20, uber: 17 },
+  { name: "Indianapolis, IN",    hotel: 160, food: 20, uber: 16 },
+  { name: "Jacksonville, FL",    hotel: 130, food: 20, uber: 20 },
+  { name: "Kansas City, MO",     hotel: 130, food: 18, uber: 17 },
+  { name: "Kitchener, ON",       hotel: 105, food: 20, uber: 14 },
+  { name: "Lafayette, IN",       hotel: 100, food: 15, uber: 14 },
+  { name: "Lakeville, MN",       hotel: 110, food: 18, uber: 18 },
+  { name: "Las Vegas, NV",       hotel: 130, food: 25, uber: 16 },
+  { name: "Lexington, KY",       hotel: 125, food: 17, uber: 16 },
+  { name: "London, UK",          hotel: 250, food: 30, uber: 35 },
+  { name: "Louisville, KY",      hotel: 140, food: 15, uber: 16 },
+  { name: "Loveland, CO",        hotel: 115, food: 20, uber: 18 },
+  { name: "Madrid, Spain",       hotel: 150, food: 22, uber: 25 },
+  { name: "Marietta, GA",        hotel: 110, food: 20, uber: 20 },
+  { name: "Miami, FL",           hotel: 200, food: 28, uber: 22 },
+  { name: "Midland, TX",         hotel: 115, food: 15, uber: 14 },
+  { name: "Minneapolis, MN",     hotel: 150, food: 20, uber: 19 },
+  { name: "Mississauga, ON",     hotel: 109, food: 17, uber: 16 },
+  { name: "Moncton, NB",         hotel: 110, food: 16, uber: 18 },
+  { name: "Mt. Laurel, NJ",      hotel: 130, food: 20, uber: 22 },
+  { name: "Muncie, IN",          hotel:  90, food: 14, uber: 14 },
+  { name: "Nashville, TN",       hotel: 225, food: 19, uber: 19 },
+  { name: "New Orleans, LA",     hotel: 160, food: 26, uber: 17 },
+  { name: "New York, NY",        hotel: 285, food: 25, uber: 25 },
+  { name: "Oakville, ON",        hotel: 116, food: 17, uber: 17 },
+  { name: "Omaha, NE",           hotel: 120, food: 17, uber: 16 },
+  { name: "Orlando, FL",         hotel: 150, food: 20, uber: 18 },
+  { name: "Ottawa, ON",          hotel: 149, food: 18, uber: 15 },
+  { name: "Petawawa, ON",        hotel:  94, food: 14, uber: 14 },
+  { name: "Philadelphia, PA",    hotel: 190, food: 21, uber: 22 },
+  { name: "Phoenix, AZ",         hotel: 185, food: 20, uber: 15 },
+  { name: "Pittsburgh, PA",      hotel: 145, food: 20, uber: 18 },
+  { name: "Portland, ME",        hotel: 160, food: 22, uber: 17 },
+  { name: "Portland, OR",        hotel: 115, food: 23, uber: 20 },
+  { name: "Providence, RI",      hotel: 155, food: 22, uber: 19 },
+  { name: "Reno, NV",            hotel:  90, food: 25, uber: 17 },
+  { name: "Sacramento, CA",      hotel: 165, food: 22, uber: 22 },
+  { name: "Salt Lake City, UT",  hotel: 140, food: 19, uber: 18 },
+  { name: "San Antonio, TX",     hotel: 110, food: 18, uber: 17 },
+  { name: "San Diego, CA",       hotel: 175, food: 25, uber: 19 },
+  { name: "San Francisco, CA",   hotel: 250, food: 28, uber: 28 },
+  { name: "San Juan, PR",        hotel: 160, food: 22, uber: 20 },
+  { name: "Scottsdale, AZ",      hotel: 185, food: 25, uber: 18 },
+  { name: "Seattle, WA",         hotel: 170, food: 22, uber: 22 },
+  { name: "Spokane, WA",         hotel: 115, food: 18, uber: 17 },
+  { name: "St. Louis, MO",       hotel: 130, food: 18, uber: 18 },
+  { name: "Sudbury, ON",         hotel: 101, food: 15, uber: 14 },
+  { name: "Tampa, FL",           hotel: 165, food: 20, uber: 18 },
+  { name: "Toronto, ON",         hotel: 163, food: 18, uber: 17 },
+  { name: "Tucson, AZ",          hotel: 130, food: 18, uber: 15 },
+  { name: "Vancouver, BC",       hotel: 167, food: 22, uber: 18 },
+  { name: "Virginia Beach, VA",  hotel: 110, food: 20, uber: 17 },
+  { name: "Washington, DC",      hotel: 185, food: 28, uber: 26 },
+  { name: "Waukesha, WI",        hotel: 100, food: 18, uber: 17 },
+  { name: "Williamsburg, VA",    hotel: 130, food: 20, uber: 18 },
+  { name: "Winnipeg, MB",        hotel: 115, food: 17, uber: 18 },
 ];
 
-// Populate city dropdown
+// Populate city dropdown (data is pre-sorted alphabetically)
 const citySelect = document.getElementById('city');
-CITY_DATA.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => {
+CITY_DATA.forEach(c => {
   const opt = document.createElement('option');
   opt.value = c.name;
   opt.textContent = c.name;
