@@ -416,7 +416,7 @@
         Round Trip
       </label>
       <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
-        Search Live Prices on Google Flights →
+        Search Live Prices on Kayak →
       </button>
     </div>
   </div>
@@ -674,9 +674,9 @@ function searchGoogleFlights() {
 
   if (!from || !to) { alert('Airport code not found for one of the selected cities.'); return; }
 
-  let url = `https://www.google.com/travel/flights#search;f=${from};t=${to};d=${depart}`;
-  if (isRT && ret) url += `;r=${ret}`;
-  else url += `;tt=o`;
+  let url = isRT && ret
+    ? `https://www.kayak.com/flights/${from}-${to}/${depart}/${ret}`
+    : `https://www.kayak.com/flights/${from}-${to}/${depart}`;
 
   window.open(url, '_blank');
 }
