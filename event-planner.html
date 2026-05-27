@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hackdays Event Planner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal: #00a9a5;
+      --teal-dark: #007f7c;
+      --teal-light: #e6f7f7;
+      --slate: #1e2a38;
+      --slate-mid: #2f3e50;
+      --gray: #6b7a8d;
+      --gray-light: #f4f6f9;
+      --border: #dde3ea;
+      --white: #ffffff;
+      --shadow: 0 2px 16px rgba(0,0,0,0.09);
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--gray-light);
+      color: var(--slate);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--slate);
+      color: var(--white);
+      padding: 22px 36px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    header .logo {
+      width: 40px; height: 40px;
+      background: var(--teal);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    header h1 { font-size: 20px; font-weight: 700; }
+    header p  { font-size: 13px; opacity: 0.65; margin-top: 2px; }
+
+    nav {
+      background: var(--slate-mid);
+      display: flex;
+      gap: 4px;
+      padding: 0 36px;
+    }
+    nav a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-bottom: 3px solid transparent;
+      transition: color 0.15s;
+    }
+    nav a:hover { color: var(--white); }
+    nav a.active { color: var(--white); border-bottom-color: var(--teal); }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon { font-size: 18px; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--gray);
+      margin: 20px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--slate);
+      background: var(--white);
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: var(--white);
+      width: 100%;
+      justify-content: center;
+      padding: 13px;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    .btn-primary:hover { background: var(--teal-dark); }
+    .btn-secondary {
+      background: var(--gray-light);
+      color: var(--slate);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-search {
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border: 1.5px solid var(--teal);
+      width: 100%;
+      justify-content: center;
+      padding: 11px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .btn-search:hover { background: var(--teal); color: var(--white); }
+
+    .result-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--gray);
+      gap: 12px;
+      min-height: 300px;
+    }
+    .result-empty .big-icon { font-size: 52px; opacity: 0.35; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .summary-box {
+      background: var(--gray-light);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+    .summary-box .val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--teal-dark);
+    }
+    .summary-box .lbl {
+      font-size: 11px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 2px;
+    }
+
+    .budget-bar-wrap {
+      margin-bottom: 20px;
+    }
+    .budget-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .budget-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--teal);
+      margin-bottom: 10px;
+    }
+    .budget-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .budget-row:last-child { border-bottom: none; }
+    .budget-row .item { font-weight: 600; }
+    .budget-row .pct  { color: var(--gray); font-size: 11px; margin-left: 6px; }
+    .budget-row .amt  { font-weight: 700; color: var(--slate); }
+
+    .hotel-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border: 1px solid var(--teal);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-decoration: none;
+    }
+    .hotel-chip:hover { background: var(--teal); color: var(--white); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📅</div>
+  <div>
+    <h1>Hackdays Planning Tools</h1>
+    <p>Event planner</p>
+  </div>
+</header>
+
+<nav>
+  <a href="index.html">Travel Calculator</a>
+  <a href="event-planner.html" class="active">Event Planner</a>
+</nav>
+
+<div class="container">
+
+  <!-- LEFT: Event Details Form -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📅</span> Event Details</div>
+
+    <div class="section-label">Basic Info</div>
+
+    <div class="field">
+      <label>Event Name</label>
+      <input type="text" id="eventName" placeholder="e.g. Hackdays Chicago 2026" />
+    </div>
+
+    <div class="field">
+      <label>City</label>
+      <input type="text" id="eventCity" placeholder="e.g. Chicago, IL" />
+      <div class="field-hint">Used to find nearby venues, restaurants, and F&B options</div>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Event Date</label>
+        <input type="date" id="eventDate" />
+      </div>
+      <div class="field">
+        <label>Event Time</label>
+        <input type="time" id="eventTime" value="18:00" />
+      </div>
+    </div>
+
+    <div class="section-label">Budget & Guests</div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Total Budget (USD)</label>
+        <input type="number" id="eventBudget" placeholder="e.g. 15000" min="0" step="100" />
+      </div>
+      <div class="field">
+        <label>Guest Count</label>
+        <input type="number" id="guestCount" placeholder="e.g. 50" min="1" />
+      </div>
+    </div>
+
+    <div class="section-label">Accommodation</div>
+
+    <div class="field">
+      <label>Hotel Name</label>
+      <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" />
+      <div class="field-hint">Optional — used for reference and directions</div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:12px" onclick="resetPlanner()">↺ Reset</button>
+      <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="generatePlan()">Generate Event Plan</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div id="planResults">
+    <div class="card result-empty">
+      <div class="big-icon">📅</div>
+      <strong>Fill in your event details to get started</strong>
+      <p style="font-size:13px">Enter a city, budget, and guest count to see your budget breakdown and find nearby venues.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const fmt = n => '$' + Math.round(n).toLocaleString();
+
+  const BUDGET_SPLIT = [
+    { label: 'Venue Rental',    pct: 0.25, color: '#00a9a5' },
+    { label: 'Food & Beverage', pct: 0.40, color: '#2ecc71' },
+    { label: 'Audio / Visual',  pct: 0.10, color: '#9b59b6' },
+    { label: 'Decor & Signage', pct: 0.10, color: '#e67e22' },
+    { label: 'Miscellaneous',   pct: 0.15, color: '#3498db' },
+  ];
+
+  function mapsUrl(query, city) {
+    return `https://www.google.com/maps/search/${encodeURIComponent(query + ' near ' + city)}`;
+  }
+
+  function formatTime(t) {
+    if (!t) return '';
+    const [h, m] = t.split(':');
+    const hr = parseInt(h);
+    return `${hr > 12 ? hr - 12 : hr || 12}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
+  }
+
+  function formatDate(d) {
+    if (!d) return '';
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function generatePlan() {
+    const city    = document.getElementById('eventCity').value.trim();
+    const budget  = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const guests  = parseInt(document.getElementById('guestCount').value) || 0;
+    const name    = document.getElementById('eventName').value.trim();
+    const date    = document.getElementById('eventDate').value;
+    const time    = document.getElementById('eventTime').value;
+    const hotel   = document.getElementById('hotelName').value.trim();
+
+    if (!city)   { alert('Please enter a city.'); return; }
+    if (!budget) { alert('Please enter a total budget.'); return; }
+    if (!guests) { alert('Please enter a guest count.'); return; }
+
+    const perPerson = budget / guests;
+
+    const budgetRows = BUDGET_SPLIT.map(b => ({
+      ...b,
+      amount: budget * b.pct,
+      perHead: (budget * b.pct) / guests,
+    }));
+
+    const hotelLink = hotel
+      ? `<a class="hotel-chip" href="${mapsUrl(hotel, city)}" target="_blank">🏨 ${hotel}</a>`
+      : '';
+
+    const eventMeta = [name, date ? formatDate(date) : '', time ? formatTime(time) : '']
+      .filter(Boolean).join(' &nbsp;·&nbsp; ');
+
+    document.getElementById('planResults').innerHTML = `
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-title"><span class="icon">📊</span> Budget Overview</div>
+        ${eventMeta ? `<p style="font-size:13px;color:var(--gray);margin-bottom:16px">${eventMeta}</p>` : ''}
+        ${hotelLink}
+
+        <div class="summary-grid">
+          <div class="summary-box">
+            <div class="val">${fmt(budget)}</div>
+            <div class="lbl">Total Budget</div>
+          </div>
+          <div class="summary-box">
+            <div class="val">${guests}</div>
+            <div class="lbl">Guests</div>
+          </div>
+          <div class="summary-box">
+            <div class="val">${fmt(perPerson)}</div>
+            <div class="lbl">Per Person</div>
+          </div>
+          <div class="summary-box">
+            <div class="val">${fmt(budget * 0.40 / guests)}</div>
+            <div class="lbl">F&B Per Person</div>
+          </div>
+        </div>
+
+        <div class="section-label">Budget Breakdown</div>
+        ${budgetRows.map(b => `
+          <div class="budget-row">
+            <span>
+              <span class="item">${b.label}</span>
+              <span class="pct">${Math.round(b.pct * 100)}%</span>
+            </span>
+            <span class="amt">${fmt(b.amount)} <span style="font-weight:400;color:var(--gray);font-size:11px">(${fmt(b.perHead)}/person)</span></span>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🔍</span> Find Options in ${city}</div>
+        <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Search live results on Google Maps for your event location.</p>
+
+        <div class="section-label">Venues</div>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('event venues', city)}', '_blank')">
+          🏛️ Event Venues
+        </button>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('conference center', city)}', '_blank')">
+          🏢 Conference Centers
+        </button>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('private event space', city)}', '_blank')">
+          🎉 Private Event Spaces
+        </button>
+
+        <div class="section-label">Food & Beverage</div>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('restaurants private dining', city)}', '_blank')">
+          🍽️ Restaurants with Private Dining
+        </button>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('catering company', city)}', '_blank')">
+          🍱 Catering Companies
+        </button>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('bar and restaurant event space', city)}', '_blank')">
+          🍺 Bars & Social Spaces
+        </button>
+
+        ${hotel ? `
+        <div class="section-label">Hotel</div>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl(hotel, city)}', '_blank')">
+          🏨 Directions to ${hotel}
+        </button>
+        <button class="btn btn-search" onclick="window.open('${mapsUrl('restaurants near ' + hotel, city)}', '_blank')">
+          🍽️ Restaurants Near Hotel
+        </button>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function resetPlanner() {
+    ['eventName','eventCity','eventBudget','guestCount','hotelName','eventDate'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('eventTime').value = '18:00';
+    document.getElementById('planResults').innerHTML = `
+      <div class="card result-empty">
+        <div class="big-icon">📅</div>
+        <strong>Fill in your event details to get started</strong>
+        <p style="font-size:13px">Enter a city, budget, and guest count to see your budget breakdown and find nearby venues.</p>
+      </div>`;
+  }
+</script>
+</body>
+</html>
