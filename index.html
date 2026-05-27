@@ -406,12 +406,11 @@
       </div>
       <div class="field">
         <label>Rooms Shared By</label>
-        <select id="roomShare">
-          <option value="1">1 person / room</option>
-          <option value="2" selected>2 people / room</option>
-          <option value="3">3 people / room</option>
-          <option value="4">4 people / room</option>
+        <select id="roomShare" onchange="onRoomShareChange()">
+          <option value="1" selected>1 person / room</option>
+          <option value="custom">Custom</option>
         </select>
+        <input type="number" id="roomShareCustom" min="1" placeholder="People per room" style="display:none;margin-top:6px;width:100%;box-sizing:border-box" />
       </div>
     </div>
 
@@ -797,6 +796,13 @@ function sameFlightAll() {
 
 let isRoundTrip = false;
 
+function onRoomShareChange() {
+  const sel = document.getElementById('roomShare');
+  const inp = document.getElementById('roomShareCustom');
+  inp.style.display = sel.value === 'custom' ? '' : 'none';
+  if (sel.value === 'custom') inp.focus();
+}
+
 function onSignageChange() {
   const sel = document.getElementById('signage');
   const inp = document.getElementById('signageCustom');
@@ -894,7 +900,9 @@ function resetAll() {
   document.getElementById('nights').value = 2;
   document.getElementById('meals').value = 3;
   document.getElementById('uberRides').value = 2;
-  document.getElementById('roomShare').value = 2;
+  document.getElementById('roomShare').value = 1;
+  document.getElementById('roomShareCustom').style.display = 'none';
+  document.getElementById('roomShareCustom').value = '';
 
   // Signage
   document.getElementById('signage').value = '0';
@@ -936,7 +944,10 @@ function calculate() {
   const nights = parseInt(document.getElementById('nights').value) || 1;
   const mealsPerDay = parseInt(document.getElementById('meals').value) || 0;
   const uberRides = parseInt(document.getElementById('uberRides').value) || 0;
-  const roomShare = parseInt(document.getElementById('roomShare').value) || 1;
+  const roomShareSel = document.getElementById('roomShare').value;
+  const roomShare = roomShareSel === 'custom'
+    ? (parseInt(document.getElementById('roomShareCustom').value) || 1)
+    : parseInt(roomShareSel) || 1;
   const signage = getSignageValue();
   const swagPer = getSwagValue();
 
