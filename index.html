@@ -416,7 +416,7 @@
         Round Trip
       </label>
       <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
-        Search Live Prices on Kayak →
+        Search Live Prices on Skyscanner →
       </button>
     </div>
   </div>
@@ -674,9 +674,12 @@ function searchGoogleFlights() {
 
   if (!from || !to) { alert('Airport code not found for one of the selected cities.'); return; }
 
+  // Convert YYYY-MM-DD to YYMMDD for Skyscanner
+  const fmtDate = d => d.replace(/-/g, '').slice(2);
+
   let url = isRT && ret
-    ? `https://www.kayak.com/flights/${from}-${to}/${depart}/${ret}`
-    : `https://www.kayak.com/flights/${from}-${to}/${depart}`;
+    ? `https://www.skyscanner.com/transport/flights/${from}/${to}/${fmtDate(depart)}/${fmtDate(ret)}/`
+    : `https://www.skyscanner.com/transport/flights/${from}/${to}/${fmtDate(depart)}/`;
 
   window.open(url, '_blank');
 }
