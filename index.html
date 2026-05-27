@@ -263,7 +263,6 @@
 
 
   </style>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -391,13 +390,6 @@
 <script>
 
 
-
-// ── Google Sheets Export Config ──────────────────────────────────────────────
-// To enable: create a Google Cloud project → enable Sheets API → create an
-// OAuth 2.0 Web Application client ID → add your GitHub Pages URL as an
-// authorized JavaScript origin → paste your client ID below.
-const GOOGLE_CLIENT_ID = ''; // e.g. '1234567890-abcdef.apps.googleusercontent.com'
-let _gisClient = null;
 
 // ══ TRAVEL CALCULATOR ════════════════════════════════════════════════════════
 
@@ -962,9 +954,9 @@ function calculate() {
     </div>
 
     <div style="text-align:right;margin-top:12px">
-      <button onclick="exportToGoogleSheets()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Export to Google Sheets
+      <button onclick="downloadCSV()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download CSV
       </button>
     </div>
   `;
@@ -973,136 +965,66 @@ function calculate() {
 setAttendeeCount(3);
 
 
-// ── Google Sheets Export ─────────────────────────────────────────────────────
-function exportToGoogleSheets() {
+// ── CSV Export ───────────────────────────────────────────────────────────────
+function downloadCSV() {
   if (!window.lastCalc) { alert('Please run a calculation first.'); return; }
-
-  if (!GOOGLE_CLIENT_ID) {
-    alert(
-      'Google Sheets export needs a Google Cloud OAuth Client ID.\n\n' +
-      'Steps to set up:\n' +
-      '1. Go to console.cloud.google.com → create or select a project\n' +
-      '2. APIs & Services → Enable Google Sheets API\n' +
-      '3. APIs & Services → Credentials → Create OAuth 2.0 Client ID (Web application)\n' +
-      '4. Add https://jacktolson-sys.github.io as an Authorized JavaScript Origin\n' +
-      '5. Paste the Client ID into GOOGLE_CLIENT_ID at the top of index.html\n\n' +
-      'Alternatively, ask your Google Workspace admin to set this up.'
-    );
-    return;
-  }
-
-  if (typeof google === 'undefined' || !google.accounts) {
-    alert('Google Identity Services not loaded yet — please try again in a moment.'); return;
-  }
-
-  if (!_gisClient) {
-    _gisClient = google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/spreadsheets',
-      callback: (resp) => {
-        if (resp.error) { alert('Google auth error: ' + resp.error); return; }
-        _doCreateSheet(resp.access_token);
-      }
-    });
-  }
-  _gisClient.requestAccessToken({ prompt: '' });
-}
-
-async function _doCreateSheet(token) {
   const lc = window.lastCalc;
-  const title = 'Hackdays Trip — ' + lc.cityName + ' (' + new Date().toLocaleDateString() + ')';
 
-  const summaryRows = [
-    [title],
-    ['Generated', new Date().toLocaleString()],
-    [''],
-    ['TRIP DETAILS'],
-    ['Destination City', lc.cityName],
-    ['Attendees', lc.numPeople],
-    ['Nights', lc.nights],
-    ['Hotel Rate / Night (USD)', lc.hotelRate],
-    ['Meals / Person / Day', lc.mealsPerDay],
-    ['Uber Rides / Person', lc.uberRides],
-    ['Rooms Shared By', lc.roomShare],
-    ['Total Rooms', lc.rooms],
-    ['Return Flight', lc.isRoundTrip ? 'Yes (costs doubled)' : 'No (one-way)'],
-    [''],
-    ['COST BREAKDOWN'],
-    ['Category', 'Amount (USD)', 'Details'],
-    ...lc.breakdown.map(b => [b.label, b.amount, b.detail]),
-    [''],
-    ['GRAND TOTAL', lc.grandTotal],
-    ['Per Person', Math.round(lc.perPerson)],
+  function esc(v) {
+    const s = String(v == null ? '' : v);
+    return (s.includes(',') || s.includes('"') || s.includes('
+'))
+      ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function row(...cells) { return cells.map(esc).join(','); }
+
+  const lines = [
+    row('Hackdays Trip Cost — ' + lc.cityName),
+    row('Generated', new Date().toLocaleString()),
+    '',
+    row('TRIP DETAILS'),
+    row('Destination City', lc.cityName),
+    row('Attendees', lc.numPeople),
+    row('Nights', lc.nights),
+    row('Hotel Rate / Night (USD)', lc.hotelRate),
+    row('Meals / Person / Day', lc.mealsPerDay),
+    row('Uber Rides / Person', lc.uberRides),
+    row('Rooms Shared By', lc.roomShare),
+    row('Total Rooms', lc.rooms),
+    row('Return Flight', lc.isRoundTrip ? 'Yes (costs doubled)' : 'No (one-way)'),
+    '',
+    row('COST BREAKDOWN'),
+    row('Category', 'Amount (USD)', 'Details'),
+    ...lc.breakdown.map(b => row(b.label, Math.round(b.amount), b.detail)),
+    '',
+    row('GRAND TOTAL', Math.round(lc.grandTotal)),
+    row('Per Person', Math.round(lc.perPerson)),
+    '',
+    row('PER-ATTENDEE BREAKDOWN'),
+    row('Flying From', 'Flight', 'Hotel Share', 'Food', 'Uber', 'Signage', 'SWAG', 'Misc', 'Total'),
+    ...lc.attendeeData.map(a => row(
+      a.origin || '—',
+      Math.round(a.flight),
+      Math.round(a.personHotel),
+      Math.round(a.personFood),
+      Math.round(a.personUber),
+      Math.round(a.personSignage),
+      Math.round(a.personSwag),
+      Math.round(a.personMisc),
+      Math.round(a.personTotal)
+    )),
+    row('TOTALS', Math.round(lc.flightTotal), Math.round(lc.hotelTotal), Math.round(lc.foodTotal), Math.round(lc.uberTotal), Math.round(lc.signage), Math.round(lc.swagTotal), Math.round(lc.miscTotal), Math.round(lc.grandTotal)),
   ];
 
-  const attendeeHeader = [['Flying From', 'Flight', 'Hotel Share', 'Food', 'Uber', 'Signage', 'SWAG', 'Misc', 'Total']];
-  const attendeeDataRows = lc.attendeeData.map(a => [
-    a.origin || '—',
-    Math.round(a.flight),
-    Math.round(a.personHotel),
-    Math.round(a.personFood),
-    Math.round(a.personUber),
-    Math.round(a.personSignage),
-    Math.round(a.personSwag),
-    Math.round(a.personMisc),
-    Math.round(a.personTotal)
-  ]);
-  const attendeeTotalsRow = [
-    'TOTALS',
-    Math.round(lc.flightTotal),
-    Math.round(lc.hotelTotal),
-    Math.round(lc.foodTotal),
-    Math.round(lc.uberTotal),
-    Math.round(lc.signage),
-    Math.round(lc.swagTotal),
-    Math.round(lc.miscTotal),
-    Math.round(lc.grandTotal)
-  ];
-
-  // Create spreadsheet
-  const createResp = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      properties: { title },
-      sheets: [
-        { properties: { title: 'Summary', sheetId: 0 } },
-        { properties: { title: 'Per Attendee', sheetId: 1 } }
-      ]
-    })
-  });
-
-  if (!createResp.ok) {
-    const err = await createResp.json().catch(() => ({}));
-    alert('Failed to create Google Sheet: ' + (err.error && err.error.message ? err.error.message : createResp.status));
-    return;
-  }
-
-  const sheet = await createResp.json();
-  const sid = sheet.spreadsheetId;
-
-  // Write data to both tabs
-  const writeResp = await fetch(
-    'https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values:batchUpdate',
-    {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        valueInputOption: 'USER_ENTERED',
-        data: [
-          { range: 'Summary!A1', values: summaryRows },
-          { range: 'Per Attendee!A1', values: [...attendeeHeader, ...attendeeDataRows, attendeeTotalsRow] }
-        ]
-      })
-    }
-  );
-
-  if (!writeResp.ok) {
-    const err = await writeResp.json().catch(() => ({}));
-    alert('Sheet created but data write failed: ' + (err.error && err.error.message ? err.error.message : writeResp.status) + '\n\nOpening the blank sheet…');
-  }
-
-  window.open(sheet.spreadsheetUrl, '_blank');
+  const csv = lines.join('
+');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'hackdays-' + lc.cityName.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 </script>
