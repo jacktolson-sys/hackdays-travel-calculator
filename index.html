@@ -674,7 +674,7 @@ function searchGoogleFlights() {
 
   if (!from || !to) { alert('Airport code not found for one of the selected cities.'); return; }
 
-  let url = `https://www.google.com/flights#search;f=${from};t=${to};d=${depart}`;
+  let url = `https://www.google.com/travel/flights#search;f=${from};t=${to};d=${depart}`;
   if (isRT && ret) url += `;r=${ret}`;
   else url += `;tt=o`;
 
