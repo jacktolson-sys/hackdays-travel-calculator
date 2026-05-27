@@ -263,6 +263,7 @@
 
 
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 </head>
 <body>
 
@@ -955,47 +956,162 @@ function calculate() {
     </div>
 
     <div style="text-align:right;margin-top:12px">
-      <button onclick="downloadCSV()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">
-        ⬇ Download Summary (CSV)
+      <button onclick="downloadXLSX()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">
+        ⬇ Download Summary (Excel)
       </button>
     </div>
   `;
 }
 
-function downloadCSV() {
+async function downloadXLSX() {
   var c = window._calc;
-  if (!c) return;
-  function q(s) {
-    s = String(s == null ? '' : s);
-    return (s.indexOf(',') >= 0 || s.indexOf('"') >= 0) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  if (!c) { alert('Please run Calculate first.'); return; }
+  try {
+    var wb = new ExcelJS.Workbook();
+    var ws = wb.addWorksheet('Trip Summary');
+
+    var SLATE  = 'FF1e2a38';
+    var TEAL   = 'FF00a9a5';
+    var TEAL_L = 'FFe6f7f7';
+    var WHITE  = 'FFFFFFFF';
+    var GRAY   = 'FF6b7a8d';
+
+    ws.columns = [
+      {width:28},{width:16},{width:44},
+      {width:14},{width:14},{width:14},{width:14},{width:14},{width:14}
+    ];
+
+    function gc(row, col) { return ws.getRow(row).getCell(col); }
+    function fill(cell, argb) { cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:argb}}; }
+    function font(cell, opts)  { cell.font = Object.assign({name:'Calibri'}, opts); }
+    function aln(cell, h, v)   { cell.alignment = {horizontal:h||'left',vertical:v||'middle',wrapText:true}; }
+    function sectionHeader(r, text, bg) {
+      ws.mergeCells(r,1,r,9);
+      var cl = gc(r,1);
+      cl.value = text;
+      fill(cl, bg); font(cl, {bold:true,size:11,color:{argb:WHITE}}); aln(cl,'left');
+      ws.getRow(r).height = 22;
+    }
+
+    var r = 1;
+
+    // Title
+    ws.mergeCells(r,1,r,9);
+    var tc = gc(r,1);
+    tc.value = 'HACKDAYS TRIP COST SUMMARY';
+    fill(tc,SLATE); font(tc,{bold:true,size:16,color:{argb:WHITE}}); aln(tc,'center');
+    ws.getRow(r).height = 38; r++;
+
+    // Subtitle
+    ws.mergeCells(r,1,r,9);
+    var sc = gc(r,1);
+    sc.value = c.city + '   ·   ' + c.numPeople + ' attendee' + (c.numPeople>1?'s':'') +
+               '   ·   ' + c.nights + ' night' + (c.nights>1?'s':'') +
+               '   ·   Generated ' + new Date().toLocaleDateString();
+    fill(sc,TEAL); font(sc,{size:11,color:{argb:WHITE}}); aln(sc,'center');
+    ws.getRow(r).height = 22; r++;
+
+    r++; // blank
+
+    // Trip Details
+    sectionHeader(r, 'TRIP DETAILS', SLATE); r++;
+    var details = [
+      ['Destination City', c.city],
+      ['Number of Attendees', c.numPeople],
+      ['Number of Nights', c.nights],
+      ['Hotel Rate / Night', c.hotelRate],
+      ['Meals / Person / Day', c.mealsPerDay],
+      ['Uber Rides / Person', c.uberRides],
+      ['Return Flight', c.isRoundTrip ? 'Yes — round-trip (costs doubled)' : 'No — one-way']
+    ];
+    details.forEach(function(d, i) {
+      ws.getRow(r).height = 18;
+      var lc = gc(r,1), vc = gc(r,2);
+      lc.value = d[0]; font(lc, {bold:true, color:{argb:GRAY}});
+      vc.value = d[1]; font(vc, {});
+      if (d[0].indexOf('Rate') >= 0) vc.numFmt = '$#,##0';
+      if (i%2===0) for (var col=1;col<=9;col++) fill(gc(r,col), TEAL_L);
+      r++;
+    });
+
+    r++; // blank
+
+    // Cost Breakdown
+    sectionHeader(r, 'COST BREAKDOWN', SLATE); r++;
+    ['Category','Amount','Details'].forEach(function(h,i) {
+      var cc = gc(r,i+1);
+      cc.value = h; fill(cc,TEAL); font(cc,{bold:true,color:{argb:WHITE}}); aln(cc,i===0?'left':'right');
+    });
+    ws.getRow(r).height = 18; r++;
+
+    c.breakdown.forEach(function(b,i) {
+      ws.getRow(r).height = 18;
+      var lc=gc(r,1), ac=gc(r,2), dc=gc(r,3);
+      lc.value=b.label; font(lc,{});
+      ac.value=b.amount; ac.numFmt='$#,##0'; font(ac,{}); aln(ac,'right');
+      dc.value=b.detail; font(dc,{});
+      if (i%2===0) [1,2,3].forEach(function(col){ fill(gc(r,col),TEAL_L); });
+      r++;
+    });
+
+    r++; // blank
+
+    // Grand Total
+    ws.getRow(r).height = 28;
+    ['GRAND TOTAL', c.grandTotal, '$'+Math.round(c.perPerson)+' per person'].forEach(function(v,i) {
+      var cc = gc(r,i+1);
+      cc.value = v;
+      fill(cc,TEAL); font(cc,{bold:true,size:13,color:{argb:WHITE}}); aln(cc,i===0?'left':'right');
+      if (i===1) cc.numFmt = '$#,##0';
+    });
+    for (var col=4;col<=9;col++) fill(gc(r,col),TEAL);
+    r++;
+
+    r++; // blank
+
+    // Per-Attendee Breakdown
+    sectionHeader(r, 'PER-ATTENDEE BREAKDOWN', SLATE); r++;
+    ['Flying From','Flight','Hotel Share','Food','Uber','Signage','SWAG','Misc','Total'].forEach(function(h,i) {
+      var cc = gc(r,i+1);
+      cc.value=h; fill(cc,TEAL); font(cc,{bold:true,color:{argb:WHITE}}); aln(cc,i===0?'left':'right');
+    });
+    ws.getRow(r).height = 18; r++;
+
+    c.attendeeData.forEach(function(a,i) {
+      ws.getRow(r).height = 18;
+      [a.origin||'—',a.flight,a.hotel,a.food,a.uber,a.signage,a.swag,a.misc,a.total].forEach(function(v,col) {
+        var cc = gc(r,col+1);
+        cc.value = col===0 ? v : Math.round(v);
+        font(cc,{}); aln(cc,col===0?'left':'right');
+        if (col>0) cc.numFmt = '$#,##0';
+        if (i%2===0) fill(cc,TEAL_L);
+      });
+      r++;
+    });
+
+    // Totals row
+    ws.getRow(r).height = 22;
+    [
+      'TOTALS',c.flightTotal,c.hotelTotal,c.foodTotal,
+      c.uberTotal,c.signage,c.swagTotal,c.miscTotal,c.grandTotal
+    ].forEach(function(v,col) {
+      var cc = gc(r,col+1);
+      cc.value = col===0 ? v : Math.round(v);
+      fill(cc,SLATE); font(cc,{bold:true,color:{argb:WHITE}}); aln(cc,col===0?'left':'right');
+      if (col>0) cc.numFmt = '$#,##0';
+    });
+
+    var buffer = await wb.xlsx.writeBuffer();
+    var blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'hackdays-' + c.city.replace(/[^a-z0-9]+/gi,'-').toLowerCase() + '.xlsx';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Error generating file: ' + e.message);
   }
-  var lines = [
-    'Hackdays Trip Cost Summary',
-    'City,' + q(c.city),
-    'Attendees,' + c.numPeople,
-    'Nights,' + c.nights,
-    'Hotel Rate / Night,' + c.hotelRate,
-    'Meals / Person / Day,' + c.mealsPerDay,
-    'Uber Rides / Person,' + c.uberRides,
-    'Return Flight,' + (c.isRoundTrip ? 'Yes' : 'No'),
-    '',
-    'Cost Breakdown',
-    'Category,Amount (USD),Details'
-  ];
-  c.breakdown.forEach(function(b) { lines.push(q(b.label) + ',' + Math.round(b.amount) + ',' + q(b.detail)); });
-  lines.push('', 'Grand Total,' + Math.round(c.grandTotal), 'Per Person,' + Math.round(c.perPerson));
-  lines.push('', 'Per-Attendee Breakdown', 'Flying From,Flight,Hotel Share,Food,Uber,Signage,SWAG,Misc,Total');
-  c.attendeeData.forEach(function(a) {
-    lines.push([q(a.origin), Math.round(a.flight), Math.round(a.hotel), Math.round(a.food), Math.round(a.uber), Math.round(a.signage), Math.round(a.swag), Math.round(a.misc), Math.round(a.total)].join(','));
-  });
-  lines.push(['TOTALS', Math.round(c.flightTotal), Math.round(c.hotelTotal), Math.round(c.foodTotal), Math.round(c.uberTotal), Math.round(c.signage), Math.round(c.swagTotal), Math.round(c.miscTotal), Math.round(c.grandTotal)].join(','));
-  var csv = lines.join('\n');
-  var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url; a.download = 'hackdays-' + c.city.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.csv';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }
 
 setAttendeeCount(3);
