@@ -9,8 +9,6 @@
 
     :root {
       --teal: #00a9a5;
-      --teal-dark: #007f7c;
-      --teal-light: #e6f7f7;
       --slate: #1e2a38;
       --slate-mid: #2f3e50;
       --gray: #6b7a8d;
@@ -21,7 +19,9 @@
       --purple-dark: #5e3fa3;
       --purple-light: #f0ebfa;
       --purple-mid: #d4c8ee;
-      --green: #27ae60;
+      --green: #1e7a30;
+      --green-light: #edf7ee;
+      --green-mid: #b8deba;
       --shadow: 0 2px 16px rgba(0,0,0,0.09);
       --radius: 12px;
     }
@@ -62,11 +62,11 @@
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 32px 20px;
       display: grid;
-      grid-template-columns: 400px 1fr;
+      grid-template-columns: 320px 1fr;
       gap: 24px;
       align-items: start;
     }
@@ -122,137 +122,203 @@
     }
     select:focus, input:focus { outline: none; border-color: var(--purple); }
 
-    .field-hint { font-size: 11px; color: var(--gray); margin-top: 5px; }
+    .field-hint { font-size: 11px; color: var(--gray); margin-top: 5px; line-height: 1.5; }
 
-    .size-pills {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .size-pill {
-      flex: 1;
-      padding: 9px 6px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--gray);
-      transition: all 0.15s;
-      background: var(--white);
-    }
-    .size-pill.active {
-      border-color: var(--purple);
+    .tip-box {
       background: var(--purple-light);
-      color: var(--purple);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--purple-dark);
+      line-height: 1.6;
+      margin-top: 4px;
     }
-    .size-pill .pill-label { font-size: 11px; opacity: 0.8; margin-top: 2px; font-weight: 400; }
 
-    .btn-calculate {
-      width: 100%;
-      padding: 14px;
-      background: var(--purple);
-      color: var(--white);
-      border: none;
-      border-radius: 9px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.15s;
-      letter-spacing: 0.2px;
-    }
-    .btn-calculate:hover { background: var(--purple-dark); }
-
-    /* Results */
+    /* ── Empty state ── */
     .result-empty {
       display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 70px 20px;
+      justify-content: center; padding: 80px 20px;
       color: var(--gray); text-align: center; gap: 14px;
     }
     .result-empty .big-icon { font-size: 52px; opacity: 0.35; }
 
+    /* ── City banner ── */
     .city-banner {
       background: linear-gradient(135deg, var(--slate), var(--slate-mid));
       color: var(--white);
       border-radius: var(--radius);
-      padding: 22px 26px;
+      padding: 20px 26px;
       margin-bottom: 20px;
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+    .city-banner h2 { font-size: 22px; font-weight: 800; }
+    .city-banner .sub { font-size: 12px; color: #9aacbd; margin-top: 3px; }
+    .city-banner .size-chip {
+      margin-left: auto;
+      background: rgba(124,92,191,0.35);
+      color: var(--purple-mid);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* ── Venue sections ── */
+    .venue-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    @media (max-width: 700px) { .venue-sections { grid-template-columns: 1fr; } }
+
+    .venue-section-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .section-heading {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .section-heading.rec { color: var(--purple); }
+    .section-heading.hh  { color: var(--green); }
+
+    .venue-card {
+      border: 2px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 14px;
+      margin-bottom: 9px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--white);
+    }
+    .venue-card:last-child { margin-bottom: 0; }
+    .venue-card:hover { border-color: var(--purple); box-shadow: 0 2px 10px rgba(124,92,191,0.18); }
+    .venue-card.selected.rec-type { border-color: var(--purple); background: var(--purple-light); }
+    .venue-card.selected.hh-type  { border-color: var(--green);  background: var(--green-light); }
+
+    .vc-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--slate);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vc-name a { color: inherit; text-decoration: none; }
+    .vc-name a:hover { color: var(--purple); text-decoration: underline; }
+    .vc-notes { font-size: 11px; color: var(--gray); line-height: 1.45; }
+
+    .no-venues-msg {
+      font-size: 13px;
+      color: var(--gray);
+      font-style: italic;
+      padding: 10px 0;
+    }
+
+    /* ── Cost panel ── */
+    .cost-panel {
+      background: linear-gradient(135deg, var(--slate), var(--slate-mid));
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 26px 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .cp-header {
+      display: flex;
       align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
-      gap: 14px;
     }
-    .city-banner h2 { font-size: 24px; font-weight: 800; }
-    .city-banner .sub { font-size: 13px; color: #9aacbd; margin-top: 5px; }
-    .grand-total { text-align: right; }
-    .grand-total .gt-label { font-size: 11px; color: #9aacbd; text-transform: uppercase; letter-spacing: 0.6px; }
-    .grand-total .gt-amount { font-size: 36px; font-weight: 900; color: var(--purple); line-height: 1.1; }
-    .grand-total .gt-sub { font-size: 12px; color: #9aacbd; margin-top: 3px; }
-
-    .breakdown-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
+    .cp-venue-name { font-size: 22px; font-weight: 800; }
+    .cp-venue-name a { color: var(--white); text-decoration: none; }
+    .cp-venue-name a:hover { text-decoration: underline; }
+    .cp-type-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      margin-top: 4px;
     }
-    @media (max-width: 600px) { .breakdown-grid { grid-template-columns: 1fr; } }
+    .cp-type-badge.rec { background: rgba(124,92,191,0.35); color: var(--purple-mid); }
+    .cp-type-badge.hh  { background: rgba(30,122,48,0.35);  color: #a8d9ae; }
 
-    .breakdown-item {
-      background: var(--gray-light);
-      border-radius: 10px;
-      padding: 16px 18px;
-      border-left: 3px solid var(--purple);
-    }
-    .breakdown-item .bi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); margin-bottom: 7px; }
-    .breakdown-item .bi-amount { font-size: 26px; font-weight: 800; color: var(--slate); }
-    .breakdown-item .bi-detail { font-size: 11px; color: var(--gray); margin-top: 4px; line-height: 1.4; }
-
-    .venues-section { margin-top: 20px; }
-    .venues-card {
-      border-radius: 10px;
-      padding: 18px 20px;
+    .cp-size-row {
+      font-size: 12px;
+      color: #9aacbd;
       margin-bottom: 14px;
     }
-    .venues-card.rec-card { background: var(--purple-light); border: 1px solid var(--purple-mid); }
-    .venues-card.hh-card { background: #edf7ee; border: 1px solid #b8deba; }
-    .venues-card h4 {
+    .cp-size-row strong { color: var(--white); }
+
+    .cp-notes {
+      font-size: 13px;
+      color: #ccd6e0;
+      line-height: 1.55;
+      padding: 14px 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+    }
+
+    .cost-items {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 600px) { .cost-items { grid-template-columns: 1fr 1fr; } }
+
+    .cost-item .ci-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #9aacbd;
+      margin-bottom: 5px;
+    }
+    .cost-item .ci-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.1;
+    }
+    .cost-item .ci-detail { font-size: 11px; color: #9aacbd; margin-top: 4px; line-height: 1.4; }
+    .cost-item.total .ci-value { font-size: 36px; color: #b9a0f0; }
+
+    .tier-note {
+      margin-top: 18px;
+      font-size: 11px;
+      color: #6b808f;
+      text-align: center;
+    }
+
+    /* ── All-tiers table ── */
+    .tiers-section {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 22px;
+      margin-top: 20px;
+    }
+    .tiers-title {
       font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
-    .venues-card.rec-card h4 { color: var(--purple); }
-    .venues-card.hh-card h4 { color: #1e7a30; }
-    .venue-tags { display: flex; flex-wrap: wrap; gap: 7px; }
-    .venue-tag {
-      display: inline-block;
-      background: var(--white);
-      border-radius: 6px;
-      padding: 5px 12px;
-      font-size: 13px;
-      color: var(--slate);
-      font-weight: 500;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-    }
-    .venue-tag a {
-      color: inherit;
-      text-decoration: none;
-    }
-    .venue-tag a:hover {
-      color: var(--purple);
-      text-decoration: underline;
-    }
-    .no-venues { font-size: 13px; color: var(--gray); font-style: italic; }
-
-    .tier-table-section { margin-top: 20px; }
-    .tier-table-section h3 {
-      font-size: 13px; font-weight: 700; color: var(--gray);
-      text-transform: uppercase; letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      color: var(--gray);
+      margin-bottom: 14px;
     }
     table.tier-table {
       width: 100%;
@@ -262,7 +328,7 @@
     table.tier-table th {
       background: var(--purple-light);
       color: var(--purple);
-      padding: 10px 14px;
+      padding: 9px 14px;
       text-align: left;
       font-size: 11px;
       font-weight: 700;
@@ -270,7 +336,7 @@
       letter-spacing: 0.4px;
     }
     table.tier-table td {
-      padding: 11px 14px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
       color: var(--slate);
     }
@@ -288,550 +354,813 @@
   <div class="logo">🏛️</div>
   <div>
     <h1>Hackdays Pre-Event Venue Planner</h1>
-    <p>Estimate venue &amp; F&amp;B costs for receptions and happy hours by city</p>
+    <p>Click a venue to see its F&amp;B minimum and estimated cost</p>
   </div>
   <div class="badge">PRE-EVENT</div>
 </header>
 
 <div class="container">
-  <!-- LEFT: Form -->
+  <!-- LEFT: inputs -->
   <div class="card">
     <div class="card-title"><span class="icon">📋</span> Event Details</div>
 
     <div class="field">
       <label>Destination City</label>
-      <select id="city" onchange="autoSize()">
+      <select id="city" onchange="onCityChange()">
         <option value="">— Select a city —</option>
       </select>
     </div>
 
     <div class="field">
       <label>Number of Attendees</label>
-      <input type="number" id="attendees" value="25" min="1" max="500" oninput="autoSize()" />
-      <div class="field-hint">Used to determine venue size and total F&B minimum</div>
+      <input type="number" id="attendees" value="50" min="1" max="500" oninput="onAttendeesChange()" />
+      <div class="field-hint">Determines venue size tier: Small &lt;30 · Medium 30–100 · Large 100+</div>
     </div>
 
-    <div class="field">
-      <label>Venue Size</label>
-      <div class="size-pills">
-        <div class="size-pill" id="pill-s" onclick="selectSize('s')">
-          Small
-          <div class="pill-label">&lt; 30 people</div>
-        </div>
-        <div class="size-pill active" id="pill-m" onclick="selectSize('m')">
-          Medium
-          <div class="pill-label">30 – 100 people</div>
-        </div>
-        <div class="size-pill" id="pill-l" onclick="selectSize('l')">
-          Large
-          <div class="pill-label">100+ people</div>
-        </div>
-      </div>
-      <div class="field-hint" id="sizeHint" style="margin-top:8px">Auto-selected from attendee count — click to override</div>
+    <div class="tip-box">
+      Select a city, then <strong>click any venue card</strong> to see its venue fee, F&amp;B minimum, and total cost estimate.
     </div>
-
-    <button class="btn-calculate" onclick="calculate()">Calculate Venue Costs →</button>
   </div>
 
-  <!-- RIGHT: Results -->
+  <!-- RIGHT: results -->
   <div id="results">
     <div class="card result-empty">
       <div class="big-icon">🏛️</div>
-      <strong>Select a city and attendee count</strong>
-      <p style="font-size:13px">Venue fees, F&amp;B minimums, and notable spots will appear here.</p>
+      <strong>Select a city to browse venues</strong>
+      <p style="font-size:13px;max-width:300px">Click any venue card to instantly see its fee, F&amp;B minimum, and all-in cost estimate.</p>
     </div>
   </div>
 </div>
 
 <script>
-// venue name can be a plain string or an HTML string with an <a> tag
-function v(name, url) {
-  return url ? `<a href="${url}" target="_blank" rel="noopener">${name}</a>` : name;
-}
-
 const CITY_DATA = [
   { name:"Vancouver, BC",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("Steamworks Brewery","https://steamworks.com/"),v("The Roundhouse Community Arts","https://www.roundhouse.ca/")],
-    hhVenues:[v("Guilt & Co.","https://www.guiltandcompany.com/"),v("The Diamond","https://www.ablf.ca/"),v("Mahony & Sons","https://www.mahonystavern.com/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"Steamworks Brewery",url:"https://steamworks.com/",notes:"Craft beer-focused menu, shared plates, Pacific NW ingredients"},
+      {name:"The Roundhouse Community Arts",url:"https://www.roundhouse.ca/",notes:"Catered events, customizable menus, artisan fare"}
+    ],
+    hhVenues:[
+      {name:"Guilt & Co.",url:"https://www.guiltandcompany.com/",notes:"Underground jazz club, tapas-style small plates, cocktail-forward"},
+      {name:"The Diamond",url:"https://www.ablf.ca/",notes:"Elevated bar snacks, curated cocktails"},
+      {name:"Mahony & Sons",url:"https://www.mahonystavern.com/",notes:"Irish pub fare, hearty appetizers"}
+    ]
+  },
+  { name:"Jacksonville, FL",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"St. Louis, MO",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("The Coronado Ballroom","https://thecoronado.com/"),v("City Museum","https://citymuseum.org/")],
-    hhVenues:[v("Narwhal's Crafted","https://narwhalscrafted.com/"),v("The Midwestern","https://midwesternstl.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"The Coronado Ballroom",url:"https://thecoronado.com/",notes:"Upscale banquet catering, plated dinners, Midwest comfort with flair"},
+      {name:"City Museum",url:"https://citymuseum.org/",notes:"Unconventional event space, casual creative fare"}
+    ],
+    hhVenues:[
+      {name:"Narwhal's Crafted",url:"https://narwhalscrafted.com/",notes:"Craft cocktail bar, light bites, charcuterie boards"},
+      {name:"The Midwestern",url:"https://midwesternstl.com/",notes:"Farm-to-table bar snacks, local brews"}
+    ]
+  },
   { name:"New Orleans, LA",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Mardi Gras World","https://www.mardigrasworld.com/"),v("Warehouse 535","https://warehouse535.com/")],
-    hhVenues:[v("Fulton Alley","https://www.fultonalley.com/"),v("Willa Jean","https://www.willajean.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Mardi Gras World",url:"https://www.mardigrasworld.com/",notes:"Full Creole/Cajun catering, NOLA classics, beignets and gumbo"},
+      {name:"Warehouse 535",url:"https://warehouse535.com/",notes:"Upscale Southern catering, plated or stations"}
+    ],
+    hhVenues:[
+      {name:"Fulton Alley",url:"https://www.fultonalley.com/",notes:"Bowling alley bar, New Orleans-inspired bites, cocktails"},
+      {name:"Willa Jean",url:"https://www.willajean.com/",notes:"Southern bakery-cafe, biscuits, creative cocktails"}
+    ]
+  },
   { name:"Tampa, FL",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Armature Works","https://armatureworks.com/"),v("Tampa Museum of Art","https://tampamuseum.org/")],
-    hhVenues:[v("Armature Works Heights Market","https://armatureworks.com/"),v("Trophy Fish","https://trophyfish.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Armature Works",url:"https://armatureworks.com/",notes:"Food hall format, diverse stations, local Tampa vendors, shareable plates"},
+      {name:"Tampa Museum of Art",url:"https://tampamuseum.org/",notes:"Elegant catering partnerships, curated menus"}
+    ],
+    hhVenues:[
+      {name:"Armature Works Heights Market",url:"https://armatureworks.com/",notes:"Casual food hall bites, local craft beers, diverse cuisines"},
+      {name:"Trophy Fish",url:"https://trophyfish.com/",notes:"Raw bar, seafood-forward, nautical theme"}
+    ]
+  },
   { name:"Grand Rapids, MI",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Seattle, WA",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("Rainier Tower","https://columbiacenterseattle.com/"),v("The Hall at Columbia Center","https://columbiacenterseattle.com/")],
-    hhVenues:[v("Bathtub Gin & Co.","https://bathtubginseattle.com/"),v("Canon Bar","https://www.canonseattle.com/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"Rainier Tower",url:"https://columbiacenterseattle.com/",notes:"Corporate-style catering, Pacific NW cuisine, salmon and local produce"},
+      {name:"The Hall at Columbia Center",url:"https://columbiacenterseattle.com/",notes:"Panoramic city views, upscale event catering"}
+    ],
+    hhVenues:[
+      {name:"Bathtub Gin & Co.",url:"https://bathtubginseattle.com/",notes:"Craft cocktail speakeasy, prohibition-era small plates, intimate vibe"},
+      {name:"Canon Bar",url:"https://www.canonseattle.com/",notes:"Award-winning whiskey bar, bar bites, premium spirits"}
+    ]
+  },
   { name:"Las Vegas, NV",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("Wynn Event Spaces","https://www.wynnlasvegas.com/"),v("MGM Grand Ballroom","https://mgmgrand.mgmresorts.com/")],
-    hhVenues:[v("LAVO","https://taogroup.com/venues/lavo-italian-restaurant-las-vegas/"),v("The Chandelier at Cosmopolitan","https://www.cosmopolitanlasvegas.com/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"Wynn Event Spaces",url:"https://www.wynnlasvegas.com/",notes:"Luxury banquet catering, celebrity chef partnerships, upscale multi-course menus"},
+      {name:"MGM Grand Ballroom",url:"https://mgmgrand.mgmresorts.com/",notes:"Large-scale catering, diverse menu options, full AV"}
+    ],
+    hhVenues:[
+      {name:"LAVO",url:"https://taogroup.com/venues/lavo-italian-restaurant-las-vegas/",notes:"Italian-American, shareable dishes, nightclub-adjacent energy"},
+      {name:"The Chandelier at Cosmopolitan",url:"https://www.cosmopolitanlasvegas.com/",notes:"Three-story bar, cocktail-forward, light bites"}
+    ]
+  },
   { name:"Charlotte, NC",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Foundation for the Carolinas","https://fftc.org/"),v("Discovery Place","https://www.discoveryplace.org/")],
-    hhVenues:[v("Heist Brewery","https://heistbrewery.com/"),v("Dot Dot Dot","https://dotdotdotcharlotte.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Foundation for the Carolinas",url:"https://fftc.org/",notes:"Elegant catering partnerships, Southern-inspired menus"},
+      {name:"Discovery Place",url:"https://www.discoveryplace.org/",notes:"Science museum events, catered, range from family-friendly to upscale"}
+    ],
+    hhVenues:[
+      {name:"Heist Brewery",url:"https://heistbrewery.com/",notes:"Craft beer, pizza and pub fare"},
+      {name:"Dot Dot Dot",url:"https://dotdotdotcharlotte.com/",notes:"Craft cocktails, creative bar snacks"}
+    ]
+  },
   { name:"Chicago, IL",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("The Ivy Room","https://ivyroomchicago.com/"),v("Salvage One","https://salvageone.com/")],
-    hhVenues:[v("Cindy's Rooftop","https://cindysrooftop.com/"),v("Broken Shaker","https://www.brokenshaker.com/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"The Ivy Room",url:"https://ivyroomchicago.com/",notes:"Intimate garden venue, farm-to-table catering, seasonal menus"},
+      {name:"Salvage One",url:"https://salvageone.com/",notes:"Industrial chic, diverse catering partnerships, eclectic fare"}
+    ],
+    hhVenues:[
+      {name:"Cindy's Rooftop",url:"https://cindysrooftop.com/",notes:"Rooftop views, Midwest comfort meets upscale, craft cocktails"},
+      {name:"Broken Shaker",url:"https://www.brokenshaker.com/",notes:"Tropical cocktails, globally inspired small plates"}
+    ]
+  },
   { name:"Indianapolis, IN",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Newfields","https://discovernewfields.org/"),v("The Biltwell Event Center","https://www.biltwelleventcenter.com/")],
-    hhVenues:[v("The Loom","https://www.blackcirclebrewing.com/loom"),v("Tinker Street","https://tinkerstreetrestaurant.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Newfields",url:"https://discovernewfields.org/",notes:"Museum gardens catering, upscale seasonal menus"},
+      {name:"The Biltwell Event Center",url:"https://www.biltwelleventcenter.com/",notes:"Large-scale events, diverse catering options, versatile space"}
+    ],
+    hhVenues:[
+      {name:"The Loom",url:"https://www.blackcirclebrewing.com/loom",notes:"Craft cocktails, small plates, industrial-chic setting"},
+      {name:"Tinker Street",url:"https://tinkerstreetrestaurant.com/",notes:"Neighborhood bar, snacks and shareable plates"}
+    ]
+  },
   { name:"Louisville, KY",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Louisville Slugger Museum","https://www.sluggermuseum.com/"),v("21c Museum Hotel","https://21cmuseumhotels.com/louisville/")],
-    hhVenues:[v("Proof on Main","https://proofonmain.com/"),"The Silver Dollar"] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Louisville Slugger Museum",url:"https://www.sluggermuseum.com/",notes:"Baseball-themed receptions, Southern hospitality catering"},
+      {name:"21c Museum Hotel",url:"https://21cmuseumhotels.com/louisville/",notes:"Contemporary art hotel, upscale curated menus"}
+    ],
+    hhVenues:[
+      {name:"Proof on Main",url:"https://proofonmain.com/",notes:"Farm-to-table, bourbon-forward cocktails, Kentucky classics"},
+      {name:"The Silver Dollar",url:"",notes:"Honky-tonk style, casual bar fare, excellent bourbon list"}
+    ]
+  },
   { name:"Lafayette, IN",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
+  { name:"Fort Wayne, IN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Berlin, Germany",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Crackers Berlin","https://crackers-berlin.de/"),v("Tempodrom","https://www.tempodrom.de/")],
-    hhVenues:[v("Monkey Bar","https://monkeybarberlin.de/"),v("Klunkerkranich","https://klunkerkranich.org/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Crackers Berlin",url:"https://crackers-berlin.de/",notes:"Historic venue, German-European catering, elegant banquet style"},
+      {name:"Tempodrom",url:"https://www.tempodrom.de/",notes:"Large event tent, diverse catering, international cuisine"}
+    ],
+    hhVenues:[
+      {name:"Monkey Bar",url:"https://monkeybarberlin.de/",notes:"Rooftop bar, cocktail-forward, light international bites"},
+      {name:"Klunkerkranich",url:"https://klunkerkranich.org/",notes:"Rooftop garden bar, casual snacks, eclectic atmosphere"}
+    ]
+  },
   { name:"Denver, CO",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Wings Over the Rockies","https://wingsmuseum.org/"),v("Mile High Station","https://milehighstation.com/")],
-    hhVenues:[v("ViewHouse","https://www.viewhouse.com/"),v("Ophelia's Electric Soapbox","https://opheliasdenver.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Wings Over the Rockies",url:"https://wingsmuseum.org/",notes:"Aviation museum, unique catering partnerships, patriotic/industrial theme"},
+      {name:"Mile High Station",url:"https://milehighstation.com/",notes:"Industrial venue, diverse catering options, fully customizable menus"}
+    ],
+    hhVenues:[
+      {name:"ViewHouse",url:"https://www.viewhouse.com/",notes:"Rooftop bar, casual American fare, craft cocktails"},
+      {name:"Ophelia's Electric Soapbox",url:"https://opheliasdenver.com/",notes:"Eclectic multi-level bar, creative cocktails, shareable plates"}
+    ]
+  },
   { name:"Oakville, ON",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Orlando, FL",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("The Mezz","https://www.mezzorlando.com/"),v("Orlando Museum of Art","https://omart.org/")],
-    hhVenues:[v("The Osprey Tavern","https://www.theospreyorlando.com/"),v("The Courtesy Bar","https://www.thecourtesybar.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"The Mezz",url:"https://www.mezzorlando.com/",notes:"Upscale hotel ballroom catering, plated dinners, Florida-inspired menus"},
+      {name:"Orlando Museum of Art",url:"https://omart.org/",notes:"Elegant catered events, arts-forward atmosphere"}
+    ],
+    hhVenues:[
+      {name:"The Osprey Tavern",url:"https://www.theospreyorlando.com/",notes:"Farm-to-table gastropub, craft cocktails, seasonal menus"},
+      {name:"The Courtesy Bar",url:"https://www.thecourtesybar.com/",notes:"Craft cocktails, light snacks, intimate speakeasy vibe"}
+    ]
+  },
   { name:"Cleveland, OH",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Windows on the River","https://windowsontheriver.com/"),v("Playhouse Square","https://www.playhousesquare.org/")],
-    hhVenues:[v("Porco Lounge","https://porcolounge.com/"),v("The Spotted Owl","https://spottedowlbar.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Windows on the River",url:"https://windowsontheriver.com/",notes:"Waterfront catering, classic American fare with lakeside views"},
+      {name:"Playhouse Square",url:"https://www.playhousesquare.org/",notes:"Theatrical venue, upscale catering partnerships"}
+    ],
+    hhVenues:[
+      {name:"Porco Lounge",url:"https://porcolounge.com/",notes:"Tiki bar, tropical cocktails, casual bar snacks"},
+      {name:"The Spotted Owl",url:"https://spottedowlbar.com/",notes:"Craft cocktail bar, thoughtfully curated bar bites"}
+    ]
+  },
   { name:"Midland, TX",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Mississauga, ON",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Mississauga Convention Centre","https://mississaugaconventioncentre.com/"),v("Living Arts Centre","https://www.livingartscentre.ca/")],
-    hhVenues:[] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Mississauga Convention Centre",url:"https://mississaugaconventioncentre.com/",notes:"Large-scale corporate catering, diverse international menu options"},
+      {name:"Living Arts Centre",url:"https://www.livingartscentre.ca/",notes:"Performing arts venue, catered events, flexible spaces"}
+    ],
+    hhVenues:[]
+  },
   { name:"Nashville, TN",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("The Cannery Ballroom","https://www.canneryballroom.com/"),v("The Cordelle","https://www.thecordelle.com/")],
-    hhVenues:[v("Dierks Bentley's Whiskey Row","https://dierkswhiskeyrow.com/nashville-tn/"),v("Ole Red Nashville","https://olered.com/nashville/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"The Cannery Ballroom",url:"https://www.canneryballroom.com/",notes:"Music venue events, creative catering, Southern-influenced fare"},
+      {name:"The Cordelle",url:"https://www.thecordelle.com/",notes:"Elegant intimate venue, farm-to-table catering, Victorian + modern mix"}
+    ],
+    hhVenues:[
+      {name:"Dierks Bentley's Whiskey Row",url:"https://dierkswhiskeyrow.com/nashville-tn/",notes:"Country music themed, Southern BBQ bites, extensive whiskey list"},
+      {name:"Ole Red Nashville",url:"https://olered.com/nashville/",notes:"Nashville hot chicken, country bar atmosphere, casual fare"}
+    ]
+  },
   { name:"Kitchener, ON",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Atlanta, GA",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Ponce City Market","https://www.poncecitymarket.com/"),v("Georgia Aquarium","https://www.georgiaaquarium.org/")],
-    hhVenues:[v("Whiskey Bird","https://www.eatwhiskeybird.com/"),v("Krog Street Market","https://www.thekrogdistrict.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Ponce City Market",url:"https://www.poncecitymarket.com/",notes:"Food hall receptions, diverse Atlanta vendors, approachable and upscale options"},
+      {name:"Georgia Aquarium",url:"https://www.georgiaaquarium.org/",notes:"Underwater ambiance, full-service catering, marine-themed fare"}
+    ],
+    hhVenues:[
+      {name:"Whiskey Bird",url:"https://www.eatwhiskeybird.com/",notes:"Southeast Asian-inspired bar snacks, craft cocktails"},
+      {name:"Krog Street Market",url:"https://www.thekrogdistrict.com/",notes:"Food hall atmosphere, diverse vendors, shareable plates"}
+    ]
+  },
   { name:"Marietta, GA",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Washington, DC",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("National Building Museum","https://www.nbm.org/"),v("The Hay-Adams Hotel","https://www.hayadams.com/")],
-    hhVenues:[v("Wunder Garten","https://www.wundergartendc.com/"),v("POV Rooftop","https://povrooftop.com/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"National Building Museum",url:"https://www.nbm.org/",notes:"Grand hall receptions, upscale catering, DC-inspired menus"},
+      {name:"The Hay-Adams Hotel",url:"https://www.hayadams.com/",notes:"Luxury hotel catering, classic American fine dining, iconic DC location"}
+    ],
+    hhVenues:[
+      {name:"Wunder Garten",url:"https://www.wundergartendc.com/",notes:"Outdoor beer garden, German sausages and pretzels, casual bites"},
+      {name:"POV Rooftop",url:"https://povrooftop.com/",notes:"Panoramic DC views, craft cocktails, upscale bar menu"}
+    ]
+  },
   { name:"Anaheim, CA",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Anaheim Convention Center","https://www.anaheimconventioncenter.com/"),v("House of Blues Anaheim","https://www.houseofblues.com/anaheim/")],
-    hhVenues:[] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Anaheim Convention Center",url:"https://www.anaheimconventioncenter.com/",notes:"Large-scale corporate catering, diverse menu packages"},
+      {name:"House of Blues Anaheim",url:"https://www.houseofblues.com/anaheim/",notes:"Concert venue dining, Southern soul food, eclectic menus"}
+    ],
+    hhVenues:[]
+  },
   { name:"Toronto, ON",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Arcadian Court","https://www.arcadianevents.ca/"),v("Steam Whistle Brewery","https://steamwhistle.ca/")],
-    hhVenues:[v("BarChef","https://www.barchef.com/"),v("The Drake Hotel","https://www.thedrakehotel.ca/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Arcadian Court",url:"https://www.arcadianevents.ca/",notes:"Historic Toronto ballroom, upscale catering, classic elegant menus"},
+      {name:"Steam Whistle Brewery",url:"https://steamwhistle.ca/",notes:"Industrial brewery events, beer-paired bites, casual creative fare"}
+    ],
+    hhVenues:[
+      {name:"BarChef",url:"https://www.barchef.com/",notes:"Molecular cocktail bar, avant-garde bar bites, innovative drinks"},
+      {name:"The Drake Hotel",url:"https://www.thedrakehotel.ca/",notes:"Boutique hotel bar, eclectic Canadian fare, creative cocktails"}
+    ]
+  },
   { name:"Des Moines, IA",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Iowa Events Center","https://www.iowaeventscenter.com/"),v("Mainframe Studios","https://www.mainframestudios.org/")],
-    hhVenues:[v("Exile Brewing Co.","https://www.exilebrewing.com/"),"Proof Pub & Kitchen"] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Iowa Events Center",url:"https://www.iowaeventscenter.com/",notes:"Large convention catering, traditional American fare"},
+      {name:"Mainframe Studios",url:"https://www.mainframestudios.org/",notes:"Creative tech hub, diverse catering partnerships, modern menus"}
+    ],
+    hhVenues:[
+      {name:"Exile Brewing Co.",url:"https://www.exilebrewing.com/",notes:"Craft brewery, beer hall food, pretzels and shareable plates"},
+      {name:"Proof Pub & Kitchen",url:"",notes:"Gastropub, farm-to-table small plates"}
+    ]
+  },
   { name:"San Antonio, TX",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Pearl Stable","https://www.pearlsanantonio.com/"),v("McNay Art Museum","https://www.mcnayart.org/")],
-    hhVenues:[v("The Espee","https://www.theespee.com/"),v("Paramour Bar","https://paramourbar.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Pearl Stable",url:"https://www.pearlsanantonio.com/",notes:"Rustic-chic venue, Texas-inspired catering, BBQ and Tex-Mex options"},
+      {name:"McNay Art Museum",url:"https://www.mcnayart.org/",notes:"Upscale museum catering, elegant plated events"}
+    ],
+    hhVenues:[
+      {name:"The Espee",url:"https://www.theespee.com/",notes:"Outdoor venue, casual Texas bar fare, live music atmosphere"},
+      {name:"Paramour Bar",url:"https://paramourbar.com/",notes:"Rooftop bar, cocktail-forward, light bites with skyline views"}
+    ]
+  },
   { name:"Birmingham, AL",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[v("Sloss Furnaces","https://slossfurnaces.com/"),v("Alabama Theatre","https://alabamatheatre.com/")],
-    hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[
+      {name:"Sloss Furnaces",url:"https://slossfurnaces.com/",notes:"Industrial heritage venue, BBQ-style catering, Southern comfort fare"},
+      {name:"Alabama Theatre",url:"https://alabamatheatre.com/",notes:"Historic theater events, catered receptions"}
+    ],
+    hhVenues:[]
+  },
   { name:"Sudbury, ON",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Philadelphia, PA",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("The Horticultural Center","https://horticulturalcenter.com/"),v("The Crystal Tea Room","https://finleycatering.com/")],
-    hhVenues:[v("Rosy's Taco Bar","https://www.rosystacobar.com/"),v("Attico Rooftop","https://www.atticorooftop.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"The Horticultural Center",url:"https://horticulturalcenter.com/",notes:"Garden venue, farm-to-table catering, seasonal and elegant"},
+      {name:"The Crystal Tea Room",url:"https://finleycatering.com/",notes:"Historic ballroom, classic American fine dining catering"}
+    ],
+    hhVenues:[
+      {name:"Rosy's Taco Bar",url:"https://www.rosystacobar.com/",notes:"Casual Mexican fare, margaritas and craft cocktails"},
+      {name:"Attico Rooftop",url:"https://www.atticorooftop.com/",notes:"Rooftop bar, Italian-inspired bites, upscale cocktails"}
+    ]
+  },
   { name:"Baltimore, MD",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("The Grand Historic Venue","https://thegrandbaltimore.com/"),v("Sagamore Pendry Baltimore","https://www.sagamorependry.com/")],
-    hhVenues:[v("Barcocina","https://www.barcocina.com/"),"Ekiben"] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"The Grand Historic Venue",url:"https://thegrandbaltimore.com/",notes:"19th-century ballroom, upscale catering, classic American menus"},
+      {name:"Sagamore Pendry Baltimore",url:"https://www.sagamorependry.com/",notes:"Luxury hotel catering, waterfront views, curated menus"}
+    ],
+    hhVenues:[
+      {name:"Barcocina",url:"https://www.barcocina.com/",notes:"Mexican-inspired bar, waterfront setting, tacos and craft cocktails"},
+      {name:"Ekiben",url:"",notes:"Asian fusion snacks, creative combos, casual and trendy"}
+    ]
+  },
   { name:"Columbus, OH",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("The Ohio Statehouse","https://www.ohiostatehouse.org/"),v("Short North Stage","https://www.shortnorthstage.org/")],
-    hhVenues:[v("Seventh Son Brewing","https://seventhsonbrewing.com/"),"Juniper"] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"The Ohio Statehouse",url:"https://www.ohiostatehouse.org/",notes:"Government building events, upscale catering, classic American fare"},
+      {name:"Short North Stage",url:"https://www.shortnorthstage.org/",notes:"Arts district venue, creative catering partnerships"}
+    ],
+    hhVenues:[
+      {name:"Seventh Son Brewing",url:"https://seventhsonbrewing.com/",notes:"Craft brewery, beer hall snacks, casual atmosphere"},
+      {name:"Juniper",url:"",notes:"Rooftop bar, creative cocktails, light bites (permanently closed)"}
+    ]
+  },
   { name:"Corpus Christi, TX",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Williamsburg, VA",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Portland, OR",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("The Nines Hotel","https://www.thenines.com/"),v("Leftbank Annex","https://www.leftbankannex.com/")],
-    hhVenues:[v("Departure Lounge","https://www.departureportland.com/"),v("Multnomah Whiskey Library","https://mwlpdx.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"The Nines Hotel",url:"https://www.thenines.com/",notes:"Boutique luxury hotel, Pacific NW catering, locally sourced menus"},
+      {name:"Leftbank Annex",url:"https://www.leftbankannex.com/",notes:"Large event space, diverse catering options, versatile menus"}
+    ],
+    hhVenues:[
+      {name:"Departure Lounge",url:"https://www.departureportland.com/",notes:"Asian-fusion rooftop bar, shared plates, craft cocktails"},
+      {name:"Multnomah Whiskey Library",url:"https://mwlpdx.com/",notes:"Speakeasy, curated whiskey selection, sophisticated bar snacks"}
+    ]
+  },
   { name:"Phoenix, AZ",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Musical Instrument Museum","https://mim.org/"),v("Phoenix Art Museum","https://phxart.org/")],
-    hhVenues:[v("Undertow","https://www.drinkundertow.com/"),v("Valley Bar","https://www.valleybarphx.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Musical Instrument Museum",url:"https://mim.org/",notes:"Unique museum setting, upscale catering, arts-forward atmosphere"},
+      {name:"Phoenix Art Museum",url:"https://phxart.org/",notes:"Gallery events, creative catering partnerships"}
+    ],
+    hhVenues:[
+      {name:"Undertow",url:"https://www.drinkundertow.com/",notes:"Tropical cocktails, fun bar bites, nautical theme"},
+      {name:"Valley Bar",url:"https://www.valleybarphx.com/",notes:"Indie music venue bar, casual snacks, great cocktails"}
+    ]
+  },
   { name:"San Diego, CA",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("The Prado at Balboa Park","https://www.pradobalboa.com/"),v("Hotel del Coronado","https://www.hoteldel.com/")],
-    hhVenues:[v("Raised by Wolves","https://raisedxwolves.com/"),v("Craft & Commerce","https://craft-commerce.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"The Prado at Balboa Park",url:"https://www.pradobalboa.com/",notes:"Historic garden venue, upscale catering, elegant atmosphere"},
+      {name:"Hotel del Coronado",url:"https://www.hoteldel.com/",notes:"Resort luxury catering, California-coastal menus, oceanfront setting"}
+    ],
+    hhVenues:[
+      {name:"Raised by Wolves",url:"https://raisedxwolves.com/",notes:"Underground bar, sophisticated cocktails, curated bar bites"},
+      {name:"Craft & Commerce",url:"https://craft-commerce.com/",notes:"Craft cocktail bar, creative American small plates"}
+    ]
+  },
   { name:"Calgary, AB",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Arts Commons","https://artscommons.ca/"),v("TELUS Spark Science Centre","https://www.sparkscience.ca/")],
-    hhVenues:[v("National on 8th","https://www.ntnl.ca/"),v("Betty Lou's Library","https://www.bettylouslibrary.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Arts Commons",url:"https://artscommons.ca/",notes:"Performing arts venue, upscale catering partnerships, multiple event spaces"},
+      {name:"TELUS Spark Science Centre",url:"https://www.sparkscience.ca/",notes:"Science centre events, creative catering, interactive atmosphere — great for tech teams"}
+    ],
+    hhVenues:[
+      {name:"National on 8th",url:"https://www.ntnl.ca/",notes:"Upscale Canadian fare, cocktail bar"},
+      {name:"Betty Lou's Library",url:"https://www.bettylouslibrary.com/",notes:"Speakeasy-style, craft cocktails, light bites"}
+    ]
+  },
   { name:"Petawawa, ON",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Edmonton, AB",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Shaw Conference Centre","https://www.edmontonconventioncentre.com/"),v("Hotel Macdonald","https://www.hotelmacdonald.com/")],
-    hhVenues:["Rig & Reel",v("Woodwork Bar","https://woodworkyeg.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Shaw Conference Centre",url:"https://www.edmontonconventioncentre.com/",notes:"Large-scale convention catering, diverse international menus, purpose-built for corporate events"},
+      {name:"Hotel Macdonald",url:"https://www.hotelmacdonald.com/",notes:"Historic luxury hotel, classic Canadian fine dining"}
+    ],
+    hhVenues:[
+      {name:"Rig & Reel",url:"",notes:"Alberta-themed bar, Western Canadian fare, craft beers"},
+      {name:"Woodwork Bar",url:"https://woodworkyeg.com/",notes:"Craft cocktails, bar snacks, warm industrial atmosphere"}
+    ]
+  },
   { name:"Portland, ME",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Ocean Gateway","https://www.portlandmaine.gov/1167/Ocean-Gateway"),v("Portland Museum of Art","https://portlandmuseum.org/")],
-    hhVenues:[v("Eventide Oyster Co.","https://www.eventiderestaurant.com/"),v("Vena's Fizz House","https://venasfizzhouse.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Ocean Gateway",url:"https://www.portlandmaine.gov/1167/Ocean-Gateway",notes:"Waterfront terminal venue, New England-inspired catering, lobster and seafood"},
+      {name:"Portland Museum of Art",url:"https://portlandmuseum.org/",notes:"Elegant museum receptions, curated menus"}
+    ],
+    hhVenues:[
+      {name:"Eventide Oyster Co.",url:"https://www.eventiderestaurant.com/",notes:"Raw oyster bar, New England seafood, craft beers"},
+      {name:"Vena's Fizz House",url:"https://venasfizzhouse.com/",notes:"Zero-proof and cocktail bar, light snacks, unique atmosphere"}
+    ]
+  },
   { name:"Reno, NV",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("National Automobile Museum","https://automuseum.org/"),v("Whitney Peak Hotel","https://www.whitneypeakhotel.com/")],
-    hhVenues:[v("Pignic Pub & Patio","https://pignicpubandpatio.com/"),v("Chapel Tavern","https://www.chapeltavern.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"National Automobile Museum",url:"https://automuseum.org/",notes:"Car-themed receptions, catered events, fun casual atmosphere"},
+      {name:"Whitney Peak Hotel",url:"https://www.whitneypeakhotel.com/",notes:"Boutique hotel catering, Nevada-inspired menus"}
+    ],
+    hhVenues:[
+      {name:"Pignic Pub & Patio",url:"https://pignicpubandpatio.com/",notes:"Outdoor patio, casual pub fare, craft beers"},
+      {name:"Chapel Tavern",url:"https://www.chapeltavern.com/",notes:"Craft cocktails, bar bites, neighborhood feel"}
+    ]
+  },
   { name:"Scottsdale, AZ",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("Hyatt Regency Scottsdale","https://www.hyatt.com/en-US/hotel/arizona/hyatt-regency-scottsdale-resort-and-spa-at-gainey-ranch/phxrs"),v("Scottsdale Museum of Contemporary Art","https://smoca.org/")],
-    hhVenues:[v("Swig","https://swig.com/"),"Old Town Scottsdale rooftop bars"] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"Hyatt Regency Scottsdale",url:"https://www.hyatt.com/en-US/hotel/arizona/hyatt-regency-scottsdale-resort-and-spa-at-gainey-ranch/phxrs",notes:"Resort luxury catering, Southwestern menus, poolside event options"},
+      {name:"Scottsdale Museum of Contemporary Art",url:"https://smoca.org/",notes:"Gallery events, upscale catering partnerships"}
+    ],
+    hhVenues:[
+      {name:"Swig",url:"https://swig.com/",notes:"Cocktail bar, creative drinks, light food"},
+      {name:"Old Town Scottsdale rooftop bars",url:"",notes:"Casual Southwestern fare, cocktails, desert views"}
+    ]
+  },
   { name:"Dallas, TX",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("The Perot Museum","https://www.perotmuseum.org/"),v("Gilley's Dallas","https://gilleysdallas.com/")],
-    hhVenues:[v("Midnight Rambler","https://midnightramblerbar.com/"),v("The Rustic","https://therustic.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"The Perot Museum",url:"https://www.perotmuseum.org/",notes:"Science museum events, upscale catering, creative menus"},
+      {name:"Gilley's Dallas",url:"https://gilleysdallas.com/",notes:"Country music venue, Texas BBQ and Southern fare"}
+    ],
+    hhVenues:[
+      {name:"Midnight Rambler",url:"https://midnightramblerbar.com/",notes:"Subterranean cocktail lounge, bar snacks, craft spirits"},
+      {name:"The Rustic",url:"https://therustic.com/",notes:"Outdoor patio, Texas comfort food, live music"}
+    ]
+  },
   { name:"Lakeville, MN",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"New York, NY",
     rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
-    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
-    recVenues:[v("Gotham Hall","https://gothamhallnyc.com/"),v("The Glasshouses","https://www.theglasshouses.com/")],
-    hhVenues:[v("The Press Lounge","https://www.ink48.com/"),v("Employees Only","https://www.employeesonlynyc.com/")] },
-
+    hh: {s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[
+      {name:"Gotham Hall",url:"https://gothamhallnyc.com/",notes:"Grand Beaux-Arts ballroom, upscale catering, NYC-caliber menus"},
+      {name:"The Glasshouses",url:"https://www.theglasshouses.com/",notes:"Rooftop and floor venue, contemporary catering, diverse options, broadcast-ready tech"}
+    ],
+    hhVenues:[
+      {name:"The Press Lounge",url:"https://www.ink48.com/",notes:"Rooftop bar with Hudson River views, craft cocktails, upscale bar bites"},
+      {name:"Employees Only",url:"https://www.employeesonlynyc.com/",notes:"Prohibition-style cocktail bar, European bistro bites, intimate atmosphere"}
+    ]
+  },
   { name:"Waukesha, WI",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Ottawa, ON",
     rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
-    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
-    recVenues:[v("National Arts Centre","https://nac-cna.ca/"),v("Chateau Laurier","https://www.fairmont.com/laurier-ottawa/")],
-    hhVenues:[v("Zoe's Restaurant","https://www.zoesottawa.com/"),v("The Barley Mow","https://barleymow.com/")] },
-
+    hh: {s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[
+      {name:"National Arts Centre",url:"https://nac-cna.ca/",notes:"Performing arts venue, elevated catering, Canadian-inspired menus"},
+      {name:"Chateau Laurier",url:"https://www.fairmont.com/laurier-ottawa/",notes:"Historic castle hotel, classic French-Canadian fine dining catering"}
+    ],
+    hhVenues:[
+      {name:"Zoe's Restaurant",url:"https://www.zoesottawa.com/",notes:"Contemporary Canadian cuisine, cocktails"},
+      {name:"The Barley Mow",url:"https://barleymow.com/",notes:"British-style pub, ale selection, classic pub fare"}
+    ]
+  },
   { name:"Virginia Beach, VA",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Loveland, CO",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Houston, TX",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("The Ion Houston","https://iondistrict.com/"),v("Buffalo Bayou Park","https://buffalobayou.org/")],
-    hhVenues:["Mongoose versus Cobra",v("Axelrad Beer Garden","https://www.axelradhouston.com/")] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"The Ion Houston",url:"https://iondistrict.com/",notes:"Innovation hub venue, modern catering, tech-forward atmosphere — perfect for Geotab"},
+      {name:"Buffalo Bayou Park",url:"https://buffalobayou.org/",notes:"Outdoor waterfront venue, diverse catering options"}
+    ],
+    hhVenues:[
+      {name:"Mongoose versus Cobra",url:"",notes:"Craft cocktail bar, small plates (permanently closed)"},
+      {name:"Axelrad Beer Garden",url:"https://www.axelradhouston.com/",notes:"Outdoor beer garden, casual snacks, relaxed vibe"}
+    ]
+  },
   { name:"Mt. Laurel, NJ",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Hooksett, NH",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Muncie, IN",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
-
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  },
   { name:"Providence, RI",
     rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
-    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
-    recVenues:[v("Providence Athenaeum","https://www.providenceathenaeum.org/"),v("RISD Museum","https://risdmuseum.org/")],
-    hhVenues:[v("Oberlin","https://oberlinrestaurant.com/"),"Faust Bar & Bottle"] },
-
+    hh: {s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[
+      {name:"Providence Athenaeum",url:"https://www.providenceathenaeum.org/",notes:"Historic library venue, elegant catering, literary atmosphere"},
+      {name:"RISD Museum",url:"https://risdmuseum.org/",notes:"Art museum events, curated catering, creative menus"}
+    ],
+    hhVenues:[
+      {name:"Oberlin",url:"https://oberlinrestaurant.com/",notes:"Craft cocktails, New American small plates"},
+      {name:"Faust Bar & Bottle",url:"",notes:"Intimate bar, curated spirits, light snacks (permanently closed)"}
+    ]
+  },
   { name:"Hershey, PA",
     rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
-    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
-    recVenues:[], hhVenues:[] },
+    hh: {s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[]
+  }
 ];
 
-// Sort alphabetically and populate dropdown
-CITY_DATA.sort((a,b) => a.name.localeCompare(b.name));
-const citySelect = document.getElementById('city');
-CITY_DATA.forEach(c => {
-  const opt = document.createElement('option');
-  opt.value = c.name;
-  opt.textContent = c.name;
-  citySelect.appendChild(opt);
-});
+// ── State ──
+let selectedCity = null;
+let selectedVenueKey = null; // "rec-0", "hh-1" etc.
 
-// ─── Size selection ───────────────────────────────────────────────────────────
-let selectedSize = 'm';
+// ── Init ──
+(function init() {
+  const sel = document.getElementById('city');
+  CITY_DATA.forEach((c, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+})();
 
-function selectSize(s) {
-  selectedSize = s;
-  ['s','m','l'].forEach(k => document.getElementById(`pill-${k}`).classList.toggle('active', k === s));
-  document.getElementById('sizeHint').textContent = 'Manually overridden — click another size to change';
+// ── Helpers ──
+function getSize(n) {
+  return n < 30 ? 's' : n <= 100 ? 'm' : 'l';
 }
-
-function autoSize() {
-  const n = parseInt(document.getElementById('attendees').value) || 1;
-  const s = n < 30 ? 's' : n <= 100 ? 'm' : 'l';
-  selectedSize = s;
-  ['s','m','l'].forEach(k => document.getElementById(`pill-${k}`).classList.toggle('active', k === s));
-  document.getElementById('sizeHint').textContent = 'Auto-selected from attendee count — click to override';
-}
-
-function fmt(n) {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-}
-
 function sizeLabel(s) {
   return s === 's' ? 'Small (< 30 people)' : s === 'm' ? 'Medium (30–100 people)' : 'Large (100+ people)';
 }
+function fmt(n) { return '$' + n.toLocaleString(); }
+function attendees() { return parseInt(document.getElementById('attendees').value) || 50; }
 
-function calculate() {
-  const cityName = citySelect.value;
-  if (!cityName) { alert('Please select a destination city.'); return; }
-  const city = CITY_DATA.find(c => c.name === cityName);
-  const n = parseInt(document.getElementById('attendees').value) || 1;
-  const sz = selectedSize;
+function venueName(v) {
+  if (v.url) return `<a href="${v.url}" target="_blank" rel="noopener">${v.name}</a>`;
+  return v.name;
+}
 
-  const recD = city.rec[sz];
-  const hhD  = city.hh[sz];
-  const recFBTotal = recD.fb * n;
-  const recTotal   = recD.fee + recFBTotal;
-  const hhFBTotal  = hhD.min * n;
-  const hhTotal    = hhD.fee + hhFBTotal;
+// ── Render ──
+function onCityChange() {
+  const idx = document.getElementById('city').value;
+  selectedCity = idx !== '' ? parseInt(idx) : null;
+  selectedVenueKey = null;
+  render();
+}
 
-  function tierRow(key, d, isRec) {
-    const fbKey = isRec ? 'fb' : 'min';
-    const total = d.fee + d[fbKey] * n;
-    return `<tr class="${key === sz ? 'active-row' : ''}">
-      <td>${sizeLabel(key)}${key === sz ? ' <span style="font-size:10px;background:var(--purple);color:#fff;border-radius:3px;padding:1px 5px;margin-left:4px">selected</span>' : ''}</td>
-      <td>${fmt(d.fee)}</td>
-      <td>${fmt(d[fbKey])}/person</td>
-      <td class="total-col">${fmt(total)}</td>
-    </tr>`;
+function onAttendeesChange() {
+  if (selectedVenueKey !== null) renderCostPanel();
+  if (selectedCity !== null) updateSizeChip();
+}
+
+function updateSizeChip() {
+  const chip = document.getElementById('size-chip');
+  if (chip) chip.textContent = sizeLabel(getSize(attendees()));
+}
+
+function render() {
+  const el = document.getElementById('results');
+  if (selectedCity === null) {
+    el.innerHTML = `<div class="card result-empty">
+      <div class="big-icon">🏛️</div>
+      <strong>Select a city to browse venues</strong>
+      <p style="font-size:13px;max-width:300px">Click any venue card to instantly see its fee, F&amp;B minimum, and all-in cost estimate.</p>
+    </div>`;
+    return;
   }
 
-  function venueTagsHtml(list) {
-    if (!list.length) return '<span class="no-venues">No specific venues on file — check local event directories</span>';
-    return `<div class="venue-tags">${list.map(item => `<span class="venue-tag">${item}</span>`).join('')}</div>`;
-  }
+  const city = CITY_DATA[selectedCity];
+  const sz = getSize(attendees());
 
-  document.getElementById('results').innerHTML = `
+  const recCards = venueCardsHtml(city.recVenues, 'rec');
+  const hhCards  = venueCardsHtml(city.hhVenues,  'hh');
+
+  el.innerHTML = `
     <div class="city-banner">
       <div>
-        <h2>📍 ${city.name}</h2>
-        <div class="sub">${n} attendee${n>1?'s':''} · ${sizeLabel(sz)}</div>
+        <h2>${city.name}</h2>
+        <div class="sub">${attendees()} attendees · select a venue below for cost details</div>
       </div>
-      <div class="grand-total">
-        <div class="gt-label">Reception Total</div>
-        <div class="gt-amount">${fmt(recTotal)}</div>
-        <div class="gt-sub">${fmt(hhTotal)} for happy hour</div>
+      <div class="size-chip" id="size-chip">${sizeLabel(sz)}</div>
+    </div>
+
+    <div class="venue-sections">
+      <div class="venue-section-card">
+        <div class="section-heading rec">🥂 Reception Venues</div>
+        ${recCards || '<p class="no-venues-msg">No venues on file — contact your event coordinator.</p>'}
+      </div>
+      <div class="venue-section-card">
+        <div class="section-heading hh">🍻 Happy Hour Venues</div>
+        ${hhCards  || '<p class="no-venues-msg">No venues on file — contact your event coordinator.</p>'}
       </div>
     </div>
 
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title"><span class="icon">🥂</span> Reception / Evening Event</div>
-      <div class="breakdown-grid">
-        <div class="breakdown-item">
-          <div class="bi-label">Venue Fee</div>
-          <div class="bi-amount">${fmt(recD.fee)}</div>
-          <div class="bi-detail">Flat venue rental · ${sizeLabel(sz)}</div>
-        </div>
-        <div class="breakdown-item">
-          <div class="bi-label">F&amp;B Minimum</div>
-          <div class="bi-amount">${fmt(recD.fb)}<span style="font-size:14px;font-weight:500">/person</span></div>
-          <div class="bi-detail">${fmt(recFBTotal)} total · ${n} people</div>
-        </div>
-        <div class="breakdown-item" style="border-left-color:var(--teal)">
-          <div class="bi-label">Reception Total</div>
-          <div class="bi-amount" style="color:var(--purple)">${fmt(recTotal)}</div>
-          <div class="bi-detail">${fmt(Math.round(recTotal/n))} per person</div>
-        </div>
-      </div>
-      <div class="tier-table-section">
-        <h3>All Size Tiers</h3>
-        <table class="tier-table">
-          <thead><tr><th>Size</th><th>Venue Fee</th><th>F&amp;B Min</th><th>Total (${n} people)</th></tr></thead>
-          <tbody>
-            ${tierRow('s', city.rec.s, true)}
-            ${tierRow('m', city.rec.m, true)}
-            ${tierRow('l', city.rec.l, true)}
-          </tbody>
-        </table>
-      </div>
-      <div class="venues-section">
-        <div class="venues-card rec-card">
-          <h4>📌 Notable Reception Venues in ${city.name}</h4>
-          ${venueTagsHtml(city.recVenues)}
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon">🍺</span> Happy Hour / Casual Gathering</div>
-      <div class="breakdown-grid">
-        <div class="breakdown-item">
-          <div class="bi-label">Venue Fee</div>
-          <div class="bi-amount">${fmt(hhD.fee)}</div>
-          <div class="bi-detail">Flat venue rental · ${sizeLabel(sz)}</div>
-        </div>
-        <div class="breakdown-item">
-          <div class="bi-label">Min Spend</div>
-          <div class="bi-amount">${fmt(hhD.min)}<span style="font-size:14px;font-weight:500">/person</span></div>
-          <div class="bi-detail">${fmt(hhFBTotal)} total · ${n} people</div>
-        </div>
-        <div class="breakdown-item" style="border-left-color:#27ae60">
-          <div class="bi-label">Happy Hour Total</div>
-          <div class="bi-amount" style="color:#1e7a30">${fmt(hhTotal)}</div>
-          <div class="bi-detail">${fmt(Math.round(hhTotal/n))} per person</div>
-        </div>
-      </div>
-      <div class="tier-table-section">
-        <h3>All Size Tiers</h3>
-        <table class="tier-table">
-          <thead><tr><th>Size</th><th>Venue Fee</th><th>Min Spend</th><th>Total (${n} people)</th></tr></thead>
-          <tbody>
-            ${tierRow('s', city.hh.s, false)}
-            ${tierRow('m', city.hh.m, false)}
-            ${tierRow('l', city.hh.l, false)}
-          </tbody>
-        </table>
-      </div>
-      <div class="venues-section">
-        <div class="venues-card hh-card">
-          <h4>📌 Notable Happy Hour Spots in ${city.name}</h4>
-          ${venueTagsHtml(city.hhVenues)}
-        </div>
-      </div>
-    </div>
+    <div id="cost-panel-container"></div>
   `;
 }
 
-autoSize();
+function venueCardsHtml(venues, type) {
+  if (!venues || venues.length === 0) return '';
+  return venues.map((v, i) => {
+    const key = `${type}-${i}`;
+    const sel = selectedVenueKey === key ? ' selected' : '';
+    return `<div class="venue-card ${type}-type${sel}" onclick="selectVenue('${type}', ${i})">
+      <div class="vc-name">${venueName(v)}</div>
+      ${v.notes ? `<div class="vc-notes">${v.notes}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function selectVenue(type, idx) {
+  const key = `${type}-${idx}`;
+  if (selectedVenueKey === key) {
+    // toggle off
+    selectedVenueKey = null;
+    document.getElementById('cost-panel-container').innerHTML = '';
+    // deselect card
+    document.querySelectorAll('.venue-card.selected').forEach(el => el.classList.remove('selected'));
+    return;
+  }
+  selectedVenueKey = key;
+
+  // update selected state
+  document.querySelectorAll('.venue-card.selected').forEach(el => el.classList.remove('selected'));
+  const cards = document.querySelectorAll(`.venue-card.${type}-type`);
+  if (cards[idx]) cards[idx].classList.add('selected');
+
+  renderCostPanel();
+}
+
+function renderCostPanel() {
+  if (selectedCity === null || selectedVenueKey === null) return;
+  const [type, idxStr] = selectedVenueKey.split('-');
+  const idx = parseInt(idxStr);
+  const city = CITY_DATA[selectedCity];
+  const venue = type === 'rec' ? city.recVenues[idx] : city.hhVenues[idx];
+  const pricing = type === 'rec' ? city.rec : city.hh;
+  const n = attendees();
+  const sz = getSize(n);
+  const tier = pricing[sz];
+
+  const isRec = type === 'rec';
+  const feeKey   = isRec ? 'fee' : 'fee';
+  const fbKey    = isRec ? 'fb'  : 'min';
+  const fbLabel  = isRec ? 'F&B Min / Person' : 'Min Spend / Person';
+
+  const venueFee   = tier[feeKey];
+  const fbPerPerson = tier[fbKey];
+  const fbTotal    = fbPerPerson * n;
+  const grandTotal = venueFee + fbTotal;
+
+  const typeLabel  = isRec ? 'Reception Venue' : 'Happy Hour Venue';
+  const badgeClass = isRec ? 'rec' : 'hh';
+
+  const tiers = ['s','m','l'];
+  const tierRows = tiers.map(t => {
+    const tr = pricing[t];
+    const fa = isRec ? tr.fb : tr.min;
+    const tot = tr.fee + fa * n;
+    const active = t === sz ? ' class="active-row"' : '';
+    return `<tr${active}>
+      <td>${sizeLabel(t)}</td>
+      <td>${fmt(tr.fee)}</td>
+      <td>${fmt(fa)}/person</td>
+      <td>${fmt(fa * n)} (${n} people)</td>
+      <td class="total-col">${fmt(tot)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('cost-panel-container').innerHTML = `
+    <div class="cost-panel">
+      <div class="cp-header">
+        <div class="cp-venue-name">${venueName(venue)}</div>
+        <div class="cp-type-badge ${badgeClass}">${typeLabel}</div>
+      </div>
+      <div class="cp-size-row">Showing <strong>${sizeLabel(sz)}</strong> tier · ${n} attendees</div>
+      ${venue.notes ? `<div class="cp-notes">${venue.notes}</div>` : ''}
+      <div class="cost-items">
+        <div class="cost-item">
+          <div class="ci-label">Venue Fee</div>
+          <div class="ci-value">${fmt(venueFee)}</div>
+          <div class="ci-detail">Flat venue booking fee</div>
+        </div>
+        <div class="cost-item">
+          <div class="ci-label">${fbLabel}</div>
+          <div class="ci-value">${fmt(fbPerPerson)}</div>
+          <div class="ci-detail">${fmt(fbTotal)} total (${n} people)</div>
+        </div>
+        <div class="cost-item total">
+          <div class="ci-label">Estimated Total</div>
+          <div class="ci-value">${fmt(grandTotal)}</div>
+          <div class="ci-detail">Venue fee + F&amp;B minimum</div>
+        </div>
+      </div>
+      <div class="tier-note">All figures are estimates in USD · Actual pricing requires a venue quote</div>
+    </div>
+
+    <div class="tiers-section">
+      <div class="tiers-title">All size tiers for ${city.name} — ${typeLabel}</div>
+      <table class="tier-table">
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>Venue Fee</th>
+            <th>${fbLabel}</th>
+            <th>F&amp;B Total</th>
+            <th>Estimated Total</th>
+          </tr>
+        </thead>
+        <tbody>${tierRows}</tbody>
+      </table>
+    </div>
+  `;
+}
 </script>
 </body>
 </html>
