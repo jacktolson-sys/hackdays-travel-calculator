@@ -361,7 +361,10 @@
 
     <button class="btn btn-secondary" style="margin-bottom:12px" onclick="addMiscLine()">+ Add Cost</button>
 
-    <button class="btn btn-primary" onclick="calculate()">Calculate Trip Cost</button>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:12px;font-size:15px" onclick="resetAll()">↺ Reset</button>
+      <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="calculate()">Calculate Trip Cost</button>
+    </div>
   </div>
 
   <!-- RIGHT: Results -->
@@ -724,6 +727,48 @@ function getAttendees() {
       flight: parseFloat(document.getElementById(`flight-${id}`)?.value) || 0,
     };
   });
+}
+
+function resetAll() {
+  // Attendees
+  document.getElementById('numAttendees').value = 3;
+  document.getElementById('attendeeList').innerHTML = '';
+  attendeeCount = 0;
+  setAttendeeCount(3);
+
+  // Destination & trip details
+  document.getElementById('city').value = '';
+  document.getElementById('nights').value = 2;
+  document.getElementById('meals').value = 3;
+  document.getElementById('uberRides').value = 2;
+  document.getElementById('roomShare').value = 2;
+
+  // Signage
+  document.getElementById('signage').value = '0';
+  document.getElementById('signageCustom').style.display = 'none';
+  document.getElementById('signageCustom').value = '';
+
+  // SWAG
+  document.getElementById('swag').value = '73.16';
+  document.getElementById('swagCustom').style.display = 'none';
+  document.getElementById('swagCustom').value = '';
+
+  // Miscellaneous
+  document.getElementById('miscList').innerHTML = '';
+  miscCount = 0;
+
+  // Return Flight toggle
+  isRoundTrip = false;
+  const rBtn = document.getElementById('returnFlightBtn');
+  if (rBtn) { rBtn.style.background = ''; rBtn.style.color = ''; }
+
+  // Results panel
+  document.getElementById('results').innerHTML = `
+    <div class="card result-empty">
+      <div class="big-icon">🧮</div>
+      <strong>Fill in trip details to see cost breakdown</strong>
+      <p style="font-size:13px">Select a city, add attendees, and click Calculate.</p>
+    </div>`;
 }
 
 function fmt(n) {
