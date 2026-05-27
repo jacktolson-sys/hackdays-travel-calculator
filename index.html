@@ -359,8 +359,10 @@
       <div class="field">
         <label>SWAG per Person (USD)</label>
         <select id="swag" onchange="onSwagChange()">
-          <option value="36.29">$36.29 / person</option>
           <option value="0">No SWAG 💔</option>
+          <option value="10">Budget — $10 / person</option>
+          <option value="30">Standard — $30 / person</option>
+          <option value="60">Premium — $60 / person</option>
           <option value="custom">Custom...</option>
         </select>
         <input type="number" id="swagCustom" placeholder="Enter amount per person" min="0" step="0.01" style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1.5px solid var(--teal);border-radius:7px;font-size:14px;color:var(--slate)" />
@@ -795,7 +797,7 @@ function resetAll() {
   document.getElementById('signageCustom').value = '';
 
   // SWAG
-  document.getElementById('swag').value = '36.29';
+  document.getElementById('swag').value = '0';
   document.getElementById('swagCustom').style.display = 'none';
   document.getElementById('swagCustom').value = '';
 
