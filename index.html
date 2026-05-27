@@ -683,7 +683,7 @@ function onRoomShareChange() {
 function onSignageChange() {
   const sel = document.getElementById('signage');
   const inp = document.getElementById('signageCustom');
-  inp.style.display = sel.value === 'custom' ? '' : 'none';
+  inp.style.display = sel.value === 'custom' ? 'block' : 'none';
   if (sel.value === 'custom') inp.focus();
 }
 
@@ -696,7 +696,7 @@ function getSignageValue() {
 function onSwagChange() {
   const sel = document.getElementById('swag');
   const inp = document.getElementById('swagCustom');
-  inp.style.display = sel.value === 'custom' ? '' : 'none';
+  inp.style.display = sel.value === 'custom' ? 'block' : 'none';
   if (sel.value === 'custom') inp.focus();
 }
 
