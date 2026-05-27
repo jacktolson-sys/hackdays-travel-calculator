@@ -382,6 +382,45 @@
     </div>
   </div>
 
+  <!-- Live Flight Search -->
+  <div class="card" style="grid-column:1/-1;margin-top:0">
+    <div class="card-title"><span class="icon">✈️</span> Live Flight Search</div>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Select cities and dates to search real-time prices on Google Flights.</p>
+    <div class="row-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Flying From</label>
+        <select id="flightOrigin">
+          <option value="">Select origin city...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Flying To</label>
+        <select id="flightDest">
+          <option value="">Select destination city...</option>
+        </select>
+      </div>
+    </div>
+    <div class="row-2" style="margin-bottom:16px">
+      <div class="field">
+        <label>Departure Date</label>
+        <input type="date" id="flightDepart" />
+      </div>
+      <div class="field">
+        <label>Return Date</label>
+        <input type="date" id="flightReturn" />
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer">
+        <input type="checkbox" id="flightRoundTrip" checked style="width:16px;height:16px;accent-color:var(--teal)" />
+        Round Trip
+      </label>
+      <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
+        Search Live Prices on Google Flights →
+      </button>
+    </div>
+  </div>
+
   <!-- RIGHT: Results -->
   <div id="results">
     <div class="card result-empty">
@@ -572,6 +611,76 @@ const CITY_DATA = [
   { name: "Winnipeg, MB",        hotel: 115, food: 17, uber: 18 },
 ];
 
+// City → IATA airport code mapping
+const CITY_IATA = {
+  'Albuquerque, NM':   'ABQ', 'Anaheim, CA':        'SNA',
+  'Atlanta, GA':       'ATL', 'Atlantic City, NJ':  'ACY',
+  'Austin, TX':        'AUS', 'Baltimore, MD':       'BWI',
+  'Berlin, Germany':   'BER', 'Birmingham, AL':      'BHM',
+  'Boston, MA':        'BOS', 'Calgary, AB':         'YYC',
+  'Charlotte, NC':     'CLT', 'Chicago, IL':         'ORD',
+  'Cincinnati, OH':    'CVG', 'Cleveland, OH':       'CLE',
+  'Columbus, OH':      'CMH', 'Concord, NC':         'CLT',
+  'Corpus Christi, TX':'CRP', 'Dallas, TX':          'DFW',
+  'Denver, CO':        'DEN', 'Des Moines, IA':      'DSM',
+  'Detroit, MI':       'DTW', 'Edmonton, AB':        'YEG',
+  'Fort Lauderdale, FL':'FLL','Fort Wayne, IN':      'FWA',
+  'Fort Worth, TX':    'DFW', 'Grand Rapids, MI':    'GRR',
+  'Halifax, NS':       'YHZ', 'Hershey, PA':         'MDT',
+  'Hooksett, NH':      'MHT', 'Houston, TX':         'IAH',
+  'Indianapolis, IN':  'IND', 'Jacksonville, FL':    'JAX',
+  'Kansas City, MO':   'MCI', 'Kitchener, ON':       'YKF',
+  'Lafayette, IN':     'LAF', 'Lakeville, MN':       'MSP',
+  'Las Vegas, NV':     'LAS', 'Lexington, KY':       'LEX',
+  'London, UK':        'LHR', 'Louisville, KY':      'SDF',
+  'Loveland, CO':      'DEN', 'Madrid, Spain':       'MAD',
+  'Marietta, GA':      'ATL', 'Miami, FL':           'MIA',
+  'Midland, TX':       'MAF', 'Minneapolis, MN':     'MSP',
+  'Mississauga, ON':   'YYZ', 'Moncton, NB':         'YQM',
+  'Mt. Laurel, NJ':    'PHL', 'Muncie, IN':          'IND',
+  'Nashville, TN':     'BNA', 'New Orleans, LA':     'MSY',
+  'New York, NY':      'JFK', 'Oakville, ON':        'YYZ',
+  'Omaha, NE':         'OMA', 'Orlando, FL':         'MCO',
+  'Ottawa, ON':        'YOW', 'Petawawa, ON':        'YOW',
+  'Philadelphia, PA':  'PHL', 'Phoenix, AZ':         'PHX',
+  'Pittsburgh, PA':    'PIT', 'Portland, ME':        'PWM',
+  'Portland, OR':      'PDX', 'Providence, RI':      'PVD',
+  'Reno, NV':          'RNO', 'Sacramento, CA':      'SMF',
+  'Salt Lake City, UT':'SLC', 'San Antonio, TX':     'SAT',
+  'San Diego, CA':     'SAN', 'San Francisco, CA':   'SFO',
+  'San Juan, PR':      'SJU', 'Scottsdale, AZ':      'PHX',
+  'Seattle, WA':       'SEA', 'Spokane, WA':         'GEG',
+  'St. Louis, MO':     'STL', 'Sudbury, ON':         'YSB',
+  'Tampa, FL':         'TPA', 'Toronto, ON':         'YYZ',
+  'Tucson, AZ':        'TUS', 'Vancouver, BC':       'YVR',
+  'Virginia Beach, VA':'ORF', 'Washington, DC':      'DCA',
+  'Waukesha, WI':      'MKE', 'Williamsburg, VA':    'PHF',
+  'Winnipeg, MB':      'YWG',
+};
+
+function searchGoogleFlights() {
+  const origin = document.getElementById('flightOrigin').value;
+  const dest   = document.getElementById('flightDest').value;
+  const depart = document.getElementById('flightDepart').value;
+  const ret    = document.getElementById('flightReturn').value;
+  const isRT   = document.getElementById('flightRoundTrip').checked;
+
+  if (!origin || !dest)   { alert('Please select both an origin and destination city.'); return; }
+  if (!depart)            { alert('Please select a departure date.'); return; }
+  if (isRT && !ret)       { alert('Please select a return date for round trip.'); return; }
+
+  const from = CITY_IATA[origin];
+  const to   = CITY_IATA[dest];
+
+  if (!from || !to) { alert('Airport code not found for one of the selected cities.'); return; }
+
+  let url = `https://www.google.com/flights#search;f=${from};t=${to};d=${depart}`;
+  if (isRT && ret) url += `;r=${ret}`;
+  else url += `;tt=o`;
+
+  window.open(url, '_blank');
+}
+
 // Populate destination dropdown
 const citySelect = document.getElementById('city');
 CITY_DATA.forEach(c => {
@@ -579,6 +688,17 @@ CITY_DATA.forEach(c => {
   opt.value = c.name;
   opt.textContent = c.name;
   citySelect.appendChild(opt);
+});
+
+// Populate live flight search dropdowns
+['flightOrigin','flightDest'].forEach(id => {
+  const sel = document.getElementById(id);
+  CITY_DATA.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
 });
 
 // When destination changes, auto-fill hotel rate and re-fill all attendee flight costs
