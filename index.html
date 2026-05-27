@@ -831,6 +831,9 @@ function calculate() {
         <td>${fmt(personHotel)}</td>
         <td>${fmt(personFood)}</td>
         <td>${fmt(personUber)}</td>
+        <td>${fmt(personSignage)}</td>
+        <td>${fmt(personSwag)}</td>
+        <td>${fmt(personMisc)}</td>
         <td><strong>${fmt(personTotal)}</strong></td>
       </tr>`;
   }).join('');
@@ -868,7 +871,7 @@ function calculate() {
       <table class="attendees-table">
         <thead>
           <tr>
-            <th>Flying From</th><th>Flight</th><th>Hotel Share</th><th>Food</th><th>Uber</th><th>Total</th>
+            <th>Flying From</th><th>Flight</th><th>Hotel Share</th><th>Food</th><th>Uber</th><th>Signage</th><th>SWAG</th><th>Misc</th><th>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -878,6 +881,9 @@ function calculate() {
             <td>${fmt(hotelTotal)}</td>
             <td>${fmt(foodTotal)}</td>
             <td>${fmt(uberTotal)}</td>
+            <td>${fmt(signage)}</td>
+            <td>${fmt(swagTotal)}</td>
+            <td>${fmt(miscTotal)}</td>
             <td>${fmt(grandTotal)}</td>
           </tr>
         </tbody>
