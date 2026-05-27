@@ -308,6 +308,12 @@
       </select>
     </div>
 
+    <div class="field">
+      <label>Hotel Rate per Night (USD)</label>
+      <input type="number" id="hotelRate" min="0" placeholder="Auto-filled from city" style="border-color:var(--border)" />
+      <div class="field-hint" id="hotelRateHint">Auto-filled when you select a city — edit to override</div>
+    </div>
+
     <div class="row-2">
       <div class="field">
         <label>Number of Nights</label>
@@ -572,8 +578,25 @@ CITY_DATA.forEach(c => {
   citySelect.appendChild(opt);
 });
 
-// When destination changes, re-fill all attendee flight costs
+// When destination changes, auto-fill hotel rate and re-fill all attendee flight costs
 citySelect.addEventListener('change', () => {
+  const cityName = citySelect.value;
+  const cityData = CITY_DATA.find(c => c.name === cityName);
+  const hotelRateEl = document.getElementById('hotelRate');
+  const hotelRateHint = document.getElementById('hotelRateHint');
+  if (cityData) {
+    hotelRateEl.value = cityData.hotel;
+    hotelRateEl.style.borderColor = 'var(--teal)';
+    hotelRateHint.textContent = 'Rate from city data — edit to override';
+  } else {
+    hotelRateEl.value = '';
+    hotelRateEl.style.borderColor = 'var(--border)';
+    hotelRateHint.textContent = 'Auto-filled when you select a city — edit to override';
+  }
+  hotelRateEl.addEventListener('input', () => {
+    hotelRateEl.style.borderColor = 'var(--teal-dark)';
+    hotelRateHint.textContent = 'Manually set';
+  }, { once: true });
   document.querySelectorAll('.attendee-row').forEach(row => {
     const id = row.id.replace('att-', '');
     lookupAndFillFlight(id);
@@ -747,6 +770,10 @@ function getAttendees() {
 }
 
 function resetAll() {
+  const hotelRateEl = document.getElementById('hotelRate');
+  hotelRateEl.value = '';
+  hotelRateEl.style.borderColor = 'var(--border)';
+  document.getElementById('hotelRateHint').textContent = 'Auto-filled when you select a city — edit to override';
   // Attendees
   document.getElementById('numAttendees').value = 3;
   document.getElementById('attendeeList').innerHTML = '';
@@ -815,7 +842,9 @@ function calculate() {
   if (numPeople === 0) { alert('Please add at least one attendee.'); return; }
 
   const rooms = Math.ceil(numPeople / roomShare);
-  const hotelTotal = city.hotel * nights * rooms;
+  const hotelRateInput = parseFloat(document.getElementById('hotelRate').value);
+  const hotelRate = isNaN(hotelRateInput) || hotelRateInput < 0 ? city.hotel : hotelRateInput;
+  const hotelTotal = hotelRate * nights * rooms;
   const foodTotal = city.food * mealsPerDay * nights * numPeople;
   const uberTotal = city.uber * uberRides * numPeople;
   const flightMult = isRoundTrip ? 2 : 1;
@@ -829,7 +858,7 @@ function calculate() {
   const hasFlights = flightTotal > 0;
 
   const breakdown = [
-    { label: 'Hotel',   amount: hotelTotal, detail: `${fmt(city.hotel)}/night × ${nights} nights × ${rooms} room${rooms>1?'s':''}` },
+    { label: 'Hotel',   amount: hotelTotal, detail: `${fmt(hotelRate)}/night × ${nights} nights × ${rooms} room${rooms>1?'s':''}` },
     { label: 'Food',    amount: foodTotal,  detail: `${fmt(city.food)}/meal × ${mealsPerDay} meals × ${nights} days × ${numPeople} people` },
     { label: 'Uber',    amount: uberTotal,  detail: `${fmt(city.uber)}/ride × ${uberRides} rides × ${numPeople} people` },
     { label: 'Flights', amount: flightTotal, detail: hasFlights ? `${isRoundTrip ? 'Round-trip' : 'One-way'} — sum of individual costs` : 'No flights entered' },
@@ -884,7 +913,7 @@ function calculate() {
           </div>`).join('')}
       </div>
       <div class="rates-box">
-        <div>Base rates from spreadsheet &nbsp;·&nbsp; <span>Hotel:</span> ${fmt(city.hotel)}/night &nbsp;·&nbsp; <span>Food:</span> ${fmt(city.food)}/meal &nbsp;·&nbsp; <span>Uber:</span> ${fmt(city.uber)}/ride</div>
+        <div>Rates used &nbsp;·&nbsp; <span>Hotel:</span> ${fmt(hotelRate)}/night${hotelRate !== city.hotel ? ' <em>(custom)</em>' : ''} &nbsp;·&nbsp; <span>Food:</span> ${fmt(city.food)}/meal &nbsp;·&nbsp; <span>Uber:</span> ${fmt(city.uber)}/ride</div>
       </div>
     </div>
 
