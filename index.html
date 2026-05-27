@@ -324,6 +324,18 @@
 
     <div class="section-label">Attendees & Flights</div>
 
+    <div class="field" style="margin-bottom:12px">
+      <label>Number of People</label>
+      <input type="number" id="numAttendees" value="3" min="1" max="50" oninput="setAttendeeCount(this.value)" />
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 2fr 1fr 24px;gap:10px;padding:0 10px;margin-bottom:4px">
+      <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--gray)">Name</span>
+      <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--gray)">Flying From</span>
+      <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--gray)">Flight ($)</span>
+      <span></span>
+    </div>
+
     <div id="attendeeList" class="attendee-list"></div>
 
     <button class="btn btn-secondary" onclick="addAttendee()">+ Add Attendee</button>
@@ -425,7 +437,7 @@ function addAttendee() {
   row.innerHTML = `
     <input class="name" type="text" placeholder="Name" id="name-${id}" />
     <input class="origin" type="text" placeholder="Flying from" id="origin-${id}" />
-    <input class="flight" type="number" placeholder="Flight $" min="0" id="flight-${id}" />
+    <input class="flight" type="number" placeholder="0" min="0" id="flight-${id}" />
     <button class="btn-remove" onclick="removeAttendee(${id})" title="Remove">×</button>
   `;
   list.appendChild(row);
@@ -434,6 +446,18 @@ function addAttendee() {
 function removeAttendee(id) {
   const el = document.getElementById(`att-${id}`);
   if (el) el.remove();
+  document.getElementById('numAttendees').value = document.querySelectorAll('.attendee-row').length;
+}
+
+function setAttendeeCount(n) {
+  n = Math.max(1, Math.min(50, parseInt(n) || 1));
+  const current = document.querySelectorAll('.attendee-row').length;
+  if (n > current) {
+    for (let i = current; i < n; i++) addAttendee();
+  } else {
+    const rows = document.querySelectorAll('.attendee-row');
+    for (let i = rows.length - 1; i >= n; i--) rows[i].remove();
+  }
 }
 
 function getAttendees() {
@@ -560,10 +584,7 @@ function calculate() {
   `;
 }
 
-// Add 3 attendees to start
-addAttendee();
-addAttendee();
-addAttendee();
+setAttendeeCount(3);
 </script>
 </body>
 </html>
