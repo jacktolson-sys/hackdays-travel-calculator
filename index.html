@@ -345,18 +345,24 @@
 
     <div class="row-2">
       <div class="field">
-        <label>Signage</label>
+        <label>Signage Tier</label>
         <select id="signage" onchange="onSignageChange()">
-          <option value="0">None</option>
+          <option value="0">None — $0</option>
+          <option value="523">Small — $523</option>
+          <option value="1167">Medium — $1,167</option>
+          <option value="2175">Large — $2,175</option>
           <option value="custom">Custom...</option>
         </select>
         <input type="number" id="signageCustom" placeholder="Enter amount" min="0" style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1.5px solid var(--teal);border-radius:7px;font-size:14px;color:var(--slate)" />
         <div class="field-hint">One-time fixed cost</div>
       </div>
       <div class="field">
-        <label>SWAG</label>
+        <label>SWAG per Person (USD)</label>
         <select id="swag" onchange="onSwagChange()">
           <option value="0">No SWAG 💔</option>
+          <option value="10">Budget — $10 / person</option>
+          <option value="30">Standard — $30 / person</option>
+          <option value="60">Premium — $60 / person</option>
           <option value="custom">Custom...</option>
         </select>
         <input type="number" id="swagCustom" placeholder="Enter amount per person" min="0" step="0.01" style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1.5px solid var(--teal);border-radius:7px;font-size:14px;color:var(--slate)" />
@@ -804,7 +810,7 @@ function resetAll() {
   const rBtn = document.getElementById('returnFlightBtn');
   if (rBtn) { rBtn.style.background = ''; rBtn.style.color = ''; }
 
-  // Reset results panel
+  // Results panel
   document.getElementById('results').innerHTML = `
     <div class="card result-empty">
       <div class="big-icon">🧮</div>
@@ -885,19 +891,6 @@ function calculate() {
       </tr>`;
   }).join('');
 
-  // Capture raw per-attendee data for CSV export
-  const attendeeData = attendees.map(a => {
-    const personHotel   = hotelTotal / numPeople;
-    const personFood    = city.food * mealsPerDay * nights;
-    const personUber    = city.uber * uberRides;
-    const personSwag    = swagPer;
-    const personSignage = signage / numPeople;
-    const personMisc    = miscTotal / numPeople;
-    const personTotal   = personHotel + personFood + personUber + (a.flight * flightMult) + personSwag + personSignage + personMisc;
-    return { origin: a.origin, flight: a.flight * flightMult, personHotel, personFood, personUber, personSwag, personSignage, personMisc, personTotal };
-  });
-  window.lastCalc = { cityName, numPeople, nights, mealsPerDay, uberRides, hotelRate, roomShare, rooms, isRoundTrip, flightMult, breakdown, grandTotal, perPerson, attendeeData, hotelTotal, foodTotal, uberTotal, flightTotal, swagTotal, signage, miscTotal };
-
   document.getElementById('results').innerHTML = `
     <div class="city-banner">
       <div>
@@ -949,78 +942,13 @@ function calculate() {
         </tbody>
       </table>
     </div>
-
-    <div style="text-align:right;margin-top:12px">
-      <button onclick="downloadCSV()" style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download CSV
-      </button>
-    </div>
   `;
 }
 
 setAttendeeCount(3);
 
 
-// ── CSV Export ───────────────────────────────────────────────────────────────
-function downloadCSV() {
-  if (!window.lastCalc) { alert('Please run a calculation first.'); return; }
-  const lc = window.lastCalc;
-
-  function esc(v) {
-    const s = String(v == null ? '' : v);
-    return (s.includes(',') || s.includes('"')) ? '"' + s.replace(/"/g, '""') + '"' : s;
-  }
-    function row(...cells) { return cells.map(esc).join(','); }
-
-  const lines = [
-    row('Hackdays Trip Cost — ' + lc.cityName),
-    row('Generated', new Date().toLocaleString()),
-    '',
-    row('TRIP DETAILS'),
-    row('Destination City', lc.cityName),
-    row('Attendees', lc.numPeople),
-    row('Nights', lc.nights),
-    row('Hotel Rate / Night (USD)', lc.hotelRate),
-    row('Meals / Person / Day', lc.mealsPerDay),
-    row('Uber Rides / Person', lc.uberRides),
-    row('Rooms Shared By', lc.roomShare),
-    row('Total Rooms', lc.rooms),
-    row('Return Flight', lc.isRoundTrip ? 'Yes (costs doubled)' : 'No (one-way)'),
-    '',
-    row('COST BREAKDOWN'),
-    row('Category', 'Amount (USD)', 'Details'),
-    ...lc.breakdown.map(b => row(b.label, Math.round(b.amount), b.detail)),
-    '',
-    row('GRAND TOTAL', Math.round(lc.grandTotal)),
-    row('Per Person', Math.round(lc.perPerson)),
-    '',
-    row('PER-ATTENDEE BREAKDOWN'),
-    row('Flying From', 'Flight', 'Hotel Share', 'Food', 'Uber', 'Signage', 'SWAG', 'Misc', 'Total'),
-    ...lc.attendeeData.map(a => row(
-      a.origin || '—',
-      Math.round(a.flight),
-      Math.round(a.personHotel),
-      Math.round(a.personFood),
-      Math.round(a.personUber),
-      Math.round(a.personSignage),
-      Math.round(a.personSwag),
-      Math.round(a.personMisc),
-      Math.round(a.personTotal)
-    )),
-    row('TOTALS', Math.round(lc.flightTotal), Math.round(lc.hotelTotal), Math.round(lc.foodTotal), Math.round(lc.uberTotal), Math.round(lc.signage), Math.round(lc.swagTotal), Math.round(lc.miscTotal), Math.round(lc.grandTotal)),
-  ];
-
-  const csv = lines.join('
-');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'hackdays-' + lc.cityName.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-}
+// ══ PRE-EVENT PLANNER ════════════════════════════════════════════════════════
 
 </script>
 </body>
