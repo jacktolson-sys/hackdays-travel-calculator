@@ -17,6 +17,12 @@
       --gray-light: #f4f6f9;
       --border: #dde3ea;
       --white: #ffffff;
+      --green: #27ae60;
+      --green-light: #eafaf1;
+      --yellow: #f39c12;
+      --yellow-light: #fef9e7;
+      --red: #e74c3c;
+      --red-light: #fdecea;
       --shadow: 0 2px 16px rgba(0,0,0,0.09);
       --radius: 12px;
     }
@@ -59,18 +65,21 @@
       font-weight: 600;
       padding: 10px 16px;
       border-bottom: 3px solid transparent;
-      transition: color 0.15s;
     }
-    nav a:hover { color: var(--white); }
     nav a.active { color: var(--white); border-bottom-color: var(--teal); }
+    nav a:hover  { color: var(--white); }
 
-    .container {
+    .page-wrap {
+      max-width: 1300px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    .top-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
-      max-width: 1200px;
-      margin: 32px auto;
-      padding: 0 24px;
+      margin-bottom: 24px;
     }
 
     .card {
@@ -83,12 +92,11 @@
       font-size: 16px;
       font-weight: 700;
       color: var(--slate);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .card-title .icon { font-size: 18px; }
 
     .section-label {
       font-size: 11px;
@@ -96,67 +104,58 @@
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: var(--gray);
-      margin: 20px 0 12px;
+      margin: 18px 0 10px;
       padding-bottom: 6px;
       border-bottom: 1px solid var(--border);
     }
 
-    .field { margin-bottom: 14px; }
+    .field { margin-bottom: 12px; }
     .field label {
       display: block;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--gray);
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       text-transform: uppercase;
       letter-spacing: 0.4px;
     }
     .field input, .field select, .field textarea {
       width: 100%;
-      padding: 10px 12px;
+      padding: 9px 11px;
       border: 1.5px solid var(--border);
       border-radius: 8px;
       font-size: 14px;
       color: var(--slate);
       background: var(--white);
-      transition: border-color 0.15s;
     }
     .field input:focus, .field select:focus, .field textarea:focus {
       outline: none;
       border-color: var(--teal);
     }
-    .field-hint {
-      font-size: 11px;
-      color: var(--gray);
-      margin-top: 4px;
-    }
+    .field-hint { font-size: 11px; color: var(--gray); margin-top: 3px; }
 
-    .row-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 10px 18px;
+      padding: 9px 16px;
       border: none;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, color 0.15s;
     }
     .btn-primary {
       background: var(--teal);
       color: var(--white);
       width: 100%;
       justify-content: center;
-      padding: 13px;
-      font-size: 15px;
-      margin-top: 8px;
+      padding: 12px;
+      font-size: 14px;
     }
     .btn-primary:hover { background: var(--teal-dark); }
     .btn-secondary {
@@ -171,95 +170,147 @@
       border: 1.5px solid var(--teal);
       width: 100%;
       justify-content: center;
-      padding: 11px;
-      font-size: 14px;
-      margin-bottom: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
     }
     .btn-search:hover { background: var(--teal); color: var(--white); }
-
-    .result-empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .btn-add {
+      background: var(--teal);
+      color: var(--white);
+      width: 100%;
       justify-content: center;
-      text-align: center;
-      padding: 48px 24px;
-      color: var(--gray);
-      gap: 12px;
-      min-height: 300px;
+      padding: 12px;
+      font-size: 14px;
+      margin-top: 4px;
     }
-    .result-empty .big-icon { font-size: 52px; opacity: 0.35; }
+    .btn-add:hover { background: var(--teal-dark); }
 
-    .summary-grid {
+    /* Budget summary */
+    .budget-pills {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
     }
-    .summary-box {
+    .pill {
       background: var(--gray-light);
       border-radius: 8px;
-      padding: 14px;
+      padding: 12px;
       text-align: center;
     }
-    .summary-box .val {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--teal-dark);
-    }
-    .summary-box .lbl {
-      font-size: 11px;
-      color: var(--gray);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-top: 2px;
-    }
+    .pill .val { font-size: 20px; font-weight: 800; color: var(--teal-dark); }
+    .pill .lbl { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
 
-    .budget-bar-wrap {
-      margin-bottom: 20px;
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
-    .budget-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--gray);
-      margin-bottom: 4px;
-      font-weight: 600;
-    }
-    .budget-bar {
-      height: 8px;
-      border-radius: 4px;
-      background: var(--teal);
-      margin-bottom: 10px;
-    }
-    .budget-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
       font-size: 13px;
     }
-    .budget-row:last-child { border-bottom: none; }
-    .budget-row .item { font-weight: 600; }
-    .budget-row .pct  { color: var(--gray); font-size: 11px; margin-left: 6px; }
-    .budget-row .amt  { font-weight: 700; color: var(--slate); }
+    th {
+      background: var(--slate);
+      color: var(--white);
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--gray-light); }
 
-    .hotel-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+    .rank-input {
+      width: 48px;
+      padding: 5px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--slate);
+    }
+    .rank-input:focus { outline: none; border-color: var(--teal); }
+
+    .venue-name { font-weight: 700; color: var(--slate); }
+    .venue-name a { color: var(--teal-dark); text-decoration: none; }
+    .venue-name a:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-venue  { background: #eef2ff; color: #4338ca; }
+    .badge-restaurant { background: #fef3c7; color: #92400e; }
+    .badge-bar    { background: #fce7f3; color: #9d174d; }
+
+    .fit-good { background: var(--green-light); color: var(--green); font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 12px; }
+    .fit-warn { background: var(--yellow-light); color: var(--yellow); font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 12px; }
+    .fit-over { background: var(--red-light); color: var(--red); font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 12px; }
+
+    .btn-menu {
       background: var(--teal-light);
       color: var(--teal-dark);
       border: 1px solid var(--teal);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 13px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
-      margin-bottom: 16px;
+      cursor: pointer;
       text-decoration: none;
+      display: inline-block;
     }
-    .hotel-chip:hover { background: var(--teal); color: var(--white); }
+    .btn-menu:hover { background: var(--teal); color: var(--white); }
+    .btn-menu.disabled { background: var(--gray-light); color: var(--gray); border-color: var(--border); cursor: default; pointer-events: none; }
+
+    .btn-remove {
+      background: var(--red-light);
+      color: var(--red);
+      border: 1px solid #f5c6c6;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-remove:hover { background: var(--red); color: var(--white); }
+
+    .empty-table {
+      text-align: center;
+      padding: 40px;
+      color: var(--gray);
+      font-size: 13px;
+    }
+    .empty-table .icon { font-size: 36px; opacity: 0.3; display: block; margin-bottom: 8px; }
+
+    .notes-cell {
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--gray);
+      font-size: 12px;
+    }
+
+    .price-highlight {
+      font-weight: 700;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -277,217 +328,332 @@
   <a href="event-planner.html" class="active">Event Planner</a>
 </nav>
 
-<div class="container">
+<div class="page-wrap">
 
-  <!-- LEFT: Event Details Form -->
-  <div class="card">
-    <div class="card-title"><span class="icon">📅</span> Event Details</div>
+  <!-- TOP GRID: Event Details + Add Venue -->
+  <div class="top-grid">
 
-    <div class="section-label">Basic Info</div>
+    <!-- Event Details -->
+    <div class="card">
+      <div class="card-title"><span>📋</span> Event Details</div>
 
-    <div class="field">
-      <label>Event Name</label>
-      <input type="text" id="eventName" placeholder="e.g. Hackdays Chicago 2026" />
-    </div>
-
-    <div class="field">
-      <label>City</label>
-      <input type="text" id="eventCity" placeholder="e.g. Chicago, IL" />
-      <div class="field-hint">Used to find nearby venues, restaurants, and F&B options</div>
-    </div>
-
-    <div class="row-2">
       <div class="field">
-        <label>Event Date</label>
-        <input type="date" id="eventDate" />
+        <label>Event Name</label>
+        <input type="text" id="eventName" placeholder="e.g. Hackdays Chicago 2026" />
       </div>
+
       <div class="field">
-        <label>Event Time</label>
-        <input type="time" id="eventTime" value="18:00" />
+        <label>City</label>
+        <input type="text" id="eventCity" placeholder="e.g. Chicago, IL" oninput="updateSearchButtons()" />
+        <div class="field-hint">Used to search for nearby venues and restaurants</div>
       </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Event Date</label>
+          <input type="date" id="eventDate" />
+        </div>
+        <div class="field">
+          <label>Event Time</label>
+          <input type="time" id="eventTime" value="18:00" />
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Total Budget (USD)</label>
+          <input type="number" id="eventBudget" placeholder="e.g. 15000" min="0" step="100" oninput="updateBudgetSummary()" />
+        </div>
+        <div class="field">
+          <label>Guest Count</label>
+          <input type="number" id="guestCount" placeholder="e.g. 50" min="1" oninput="updateBudgetSummary()" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Hotel Name</label>
+        <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" />
+      </div>
+
+      <!-- Live budget summary -->
+      <div id="budgetSummary" style="display:none;margin-top:16px">
+        <div class="section-label" style="margin-top:0">Budget at a Glance</div>
+        <div class="budget-pills">
+          <div class="pill"><div class="val" id="pillTotal">—</div><div class="lbl">Total Budget</div></div>
+          <div class="pill"><div class="val" id="pillPer">—</div><div class="lbl">Per Person</div></div>
+          <div class="pill"><div class="val" id="pillFB">—</div><div class="lbl">F&B Budget</div></div>
+        </div>
+      </div>
+
+      <!-- Search buttons -->
+      <div class="section-label">Find Options in <span id="cityLabel">your city</span></div>
+      <button class="btn btn-search" onclick="openSearch('event venue space')">🏛️ Search Event Venues</button>
+      <button class="btn btn-search" onclick="openSearch('private dining restaurant')">🍽️ Search Restaurants</button>
+      <button class="btn btn-search" onclick="openSearch('bar happy hour event space')">🍺 Search Bars & Social Spaces</button>
     </div>
 
-    <div class="section-label">Budget & Guests</div>
+    <!-- Add Venue / Restaurant -->
+    <div class="card">
+      <div class="card-title"><span>➕</span> Add Venue or Restaurant</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Find an option you like and enter the details here to add it to your comparison list.</p>
 
-    <div class="row-2">
-      <div class="field">
-        <label>Total Budget (USD)</label>
-        <input type="number" id="eventBudget" placeholder="e.g. 15000" min="0" step="100" />
+      <div class="row-2">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="addName" placeholder="e.g. The Ivy Room" />
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select id="addType">
+            <option value="venue">Venue</option>
+            <option value="restaurant">Restaurant</option>
+            <option value="bar">Bar / Social Space</option>
+          </select>
+        </div>
       </div>
+
       <div class="field">
-        <label>Guest Count</label>
-        <input type="number" id="guestCount" placeholder="e.g. 50" min="1" />
+        <label>Website URL</label>
+        <input type="url" id="addWebsite" placeholder="https://..." />
       </div>
-    </div>
 
-    <div class="section-label">Accommodation</div>
+      <div class="field">
+        <label>Menu URL</label>
+        <input type="url" id="addMenu" placeholder="https://... (link to menu page)" />
+        <div class="field-hint">Direct link to their menu — shown as a button in the comparison table</div>
+      </div>
 
-    <div class="field">
-      <label>Hotel Name</label>
-      <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" />
-      <div class="field-hint">Optional — used for reference and directions</div>
-    </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Max Capacity</label>
+          <input type="number" id="addCapacity" placeholder="e.g. 80" min="1" />
+        </div>
+        <div class="field">
+          <label>Venue / Space Fee ($)</label>
+          <input type="number" id="addFee" placeholder="e.g. 2500" min="0" />
+          <div class="field-hint">Room rental or buyout fee</div>
+        </div>
+      </div>
 
-    <div style="display:flex;gap:10px;margin-top:20px">
-      <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:12px" onclick="resetPlanner()">↺ Reset</button>
-      <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="generatePlan()">Generate Event Plan</button>
+      <div class="row-2">
+        <div class="field">
+          <label>F&B Minimum / Person ($)</label>
+          <input type="number" id="addFBper" placeholder="e.g. 65" min="0" />
+        </div>
+        <div class="field">
+          <label>F&B Minimum Total ($)</label>
+          <input type="number" id="addFBtotal" placeholder="auto-calculated" min="0" readonly style="background:var(--gray-light);color:var(--gray)" />
+          <div class="field-hint">Per person × guest count</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notes</label>
+        <input type="text" id="addNotes" placeholder="e.g. Includes AV, outdoor patio available" />
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="clearAddForm()">Clear</button>
+        <button class="btn btn-add" style="flex:2" onclick="addEntry()">+ Add to Comparison</button>
+      </div>
     </div>
   </div>
 
-  <!-- RIGHT: Results -->
-  <div id="planResults">
-    <div class="card result-empty">
-      <div class="big-icon">📅</div>
-      <strong>Fill in your event details to get started</strong>
-      <p style="font-size:13px">Enter a city, budget, and guest count to see your budget breakdown and find nearby venues.</p>
+  <!-- COMPARISON TABLE -->
+  <div class="card" style="margin-bottom:32px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div class="card-title" style="margin-bottom:0"><span>📊</span> Venue & Restaurant Comparison</div>
+      <button class="btn btn-secondary" onclick="clearAll()" style="font-size:12px">Clear All</button>
+    </div>
+
+    <div class="table-wrap">
+      <table id="compTable">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Venue Fee</th>
+            <th>F&B / Person</th>
+            <th>F&B Total</th>
+            <th>Est. Total Cost</th>
+            <th>Cost / Person</th>
+            <th>Budget Fit</th>
+            <th>Menu</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="compBody">
+          <tr>
+            <td colspan="13" class="empty-table">
+              <span class="icon">🏛️</span>
+              No venues added yet — search for options on the left and add them above
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
 </div>
 
 <script>
-  const fmt = n => '$' + Math.round(n).toLocaleString();
+  let entries = [];
+  let nextId  = 1;
 
-  const BUDGET_SPLIT = [
-    { label: 'Venue Rental',    pct: 0.25, color: '#00a9a5' },
-    { label: 'Food & Beverage', pct: 0.40, color: '#2ecc71' },
-    { label: 'Audio / Visual',  pct: 0.10, color: '#9b59b6' },
-    { label: 'Decor & Signage', pct: 0.10, color: '#e67e22' },
-    { label: 'Miscellaneous',   pct: 0.15, color: '#3498db' },
-  ];
+  const fmt  = n  => '$' + Math.round(n).toLocaleString();
+  const fmtD = n  => n != null && n !== '' ? fmt(n) : '—';
 
-  function mapsUrl(query, city) {
-    return `https://www.google.com/maps/search/${encodeURIComponent(query + ' near ' + city)}`;
+  // ── Live F&B total calc ──────────────────────────────────────
+  document.getElementById('addFBper').addEventListener('input', calcFBTotal);
+  document.getElementById('guestCount').addEventListener('input', calcFBTotal);
+
+  function calcFBTotal() {
+    const per    = parseFloat(document.getElementById('addFBper').value) || 0;
+    const guests = parseInt(document.getElementById('guestCount').value) || 0;
+    const total  = per && guests ? per * guests : '';
+    document.getElementById('addFBtotal').value = total ? Math.round(total) : '';
   }
 
-  function formatTime(t) {
-    if (!t) return '';
-    const [h, m] = t.split(':');
-    const hr = parseInt(h);
-    return `${hr > 12 ? hr - 12 : hr || 12}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
-  }
-
-  function formatDate(d) {
-    if (!d) return '';
-    const dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  }
-
-  function generatePlan() {
-    const city    = document.getElementById('eventCity').value.trim();
+  // ── Budget summary pills ─────────────────────────────────────
+  function updateBudgetSummary() {
     const budget  = parseFloat(document.getElementById('eventBudget').value) || 0;
     const guests  = parseInt(document.getElementById('guestCount').value) || 0;
-    const name    = document.getElementById('eventName').value.trim();
-    const date    = document.getElementById('eventDate').value;
-    const time    = document.getElementById('eventTime').value;
-    const hotel   = document.getElementById('hotelName').value.trim();
+    const wrap    = document.getElementById('budgetSummary');
 
-    if (!city)   { alert('Please enter a city.'); return; }
-    if (!budget) { alert('Please enter a total budget.'); return; }
-    if (!guests) { alert('Please enter a guest count.'); return; }
-
-    const perPerson = budget / guests;
-
-    const budgetRows = BUDGET_SPLIT.map(b => ({
-      ...b,
-      amount: budget * b.pct,
-      perHead: (budget * b.pct) / guests,
-    }));
-
-    const hotelLink = hotel
-      ? `<a class="hotel-chip" href="${mapsUrl(hotel, city)}" target="_blank">🏨 ${hotel}</a>`
-      : '';
-
-    const eventMeta = [name, date ? formatDate(date) : '', time ? formatTime(time) : '']
-      .filter(Boolean).join(' &nbsp;·&nbsp; ');
-
-    document.getElementById('planResults').innerHTML = `
-      <div class="card" style="margin-bottom:24px">
-        <div class="card-title"><span class="icon">📊</span> Budget Overview</div>
-        ${eventMeta ? `<p style="font-size:13px;color:var(--gray);margin-bottom:16px">${eventMeta}</p>` : ''}
-        ${hotelLink}
-
-        <div class="summary-grid">
-          <div class="summary-box">
-            <div class="val">${fmt(budget)}</div>
-            <div class="lbl">Total Budget</div>
-          </div>
-          <div class="summary-box">
-            <div class="val">${guests}</div>
-            <div class="lbl">Guests</div>
-          </div>
-          <div class="summary-box">
-            <div class="val">${fmt(perPerson)}</div>
-            <div class="lbl">Per Person</div>
-          </div>
-          <div class="summary-box">
-            <div class="val">${fmt(budget * 0.40 / guests)}</div>
-            <div class="lbl">F&B Per Person</div>
-          </div>
-        </div>
-
-        <div class="section-label">Budget Breakdown</div>
-        ${budgetRows.map(b => `
-          <div class="budget-row">
-            <span>
-              <span class="item">${b.label}</span>
-              <span class="pct">${Math.round(b.pct * 100)}%</span>
-            </span>
-            <span class="amt">${fmt(b.amount)} <span style="font-weight:400;color:var(--gray);font-size:11px">(${fmt(b.perHead)}/person)</span></span>
-          </div>
-        `).join('')}
-      </div>
-
-      <div class="card">
-        <div class="card-title"><span class="icon">🔍</span> Find Options in ${city}</div>
-        <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Search live results on Google Maps for your event location.</p>
-
-        <div class="section-label">Venues</div>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('event venues', city)}', '_blank')">
-          🏛️ Event Venues
-        </button>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('conference center', city)}', '_blank')">
-          🏢 Conference Centers
-        </button>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('private event space', city)}', '_blank')">
-          🎉 Private Event Spaces
-        </button>
-
-        <div class="section-label">Food & Beverage</div>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('restaurants private dining', city)}', '_blank')">
-          🍽️ Restaurants with Private Dining
-        </button>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('catering company', city)}', '_blank')">
-          🍱 Catering Companies
-        </button>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('bar and restaurant event space', city)}', '_blank')">
-          🍺 Bars & Social Spaces
-        </button>
-
-        ${hotel ? `
-        <div class="section-label">Hotel</div>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl(hotel, city)}', '_blank')">
-          🏨 Directions to ${hotel}
-        </button>
-        <button class="btn btn-search" onclick="window.open('${mapsUrl('restaurants near ' + hotel, city)}', '_blank')">
-          🍽️ Restaurants Near Hotel
-        </button>
-        ` : ''}
-      </div>
-    `;
+    if (!budget || !guests) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    document.getElementById('pillTotal').textContent = fmt(budget);
+    document.getElementById('pillPer').textContent   = fmt(budget / guests);
+    document.getElementById('pillFB').textContent    = fmt(budget * 0.40);
+    renderTable();
   }
 
-  function resetPlanner() {
-    ['eventName','eventCity','eventBudget','guestCount','hotelName','eventDate'].forEach(id => {
+  // ── Search buttons ───────────────────────────────────────────
+  function updateSearchButtons() {
+    const city = document.getElementById('eventCity').value.trim();
+    document.getElementById('cityLabel').textContent = city || 'your city';
+  }
+
+  function openSearch(query) {
+    const city = document.getElementById('eventCity').value.trim();
+    if (!city) { alert('Please enter a city first.'); return; }
+    window.open(`https://www.google.com/maps/search/${encodeURIComponent(query + ' in ' + city)}`, '_blank');
+  }
+
+  // ── Add entry ────────────────────────────────────────────────
+  function addEntry() {
+    const name    = document.getElementById('addName').value.trim();
+    const type    = document.getElementById('addType').value;
+    const website = document.getElementById('addWebsite').value.trim();
+    const menu    = document.getElementById('addMenu').value.trim();
+    const cap     = parseInt(document.getElementById('addCapacity').value) || null;
+    const fee     = parseFloat(document.getElementById('addFee').value) || 0;
+    const fbPer   = parseFloat(document.getElementById('addFBper').value) || 0;
+    const notes   = document.getElementById('addNotes').value.trim();
+    const guests  = parseInt(document.getElementById('guestCount').value) || 0;
+
+    if (!name) { alert('Please enter a venue or restaurant name.'); return; }
+
+    const fbTotal = fbPer && guests ? fbPer * guests : (fbPer || 0);
+    const total   = fee + fbTotal;
+
+    entries.push({ id: nextId++, rank: entries.length + 1, name, type, website, menu, cap, fee, fbPer, fbTotal, total, notes });
+    renderTable();
+    clearAddForm();
+  }
+
+  // ── Render table ─────────────────────────────────────────────
+  function renderTable() {
+    const budget = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const guests = parseInt(document.getElementById('guestCount').value) || 0;
+    const tbody  = document.getElementById('compBody');
+
+    if (entries.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="13" class="empty-table"><span class="icon">🏛️</span>No venues added yet — search for options on the left and add them above</td></tr>`;
+      return;
+    }
+
+    // Sort by rank
+    const sorted = [...entries].sort((a, b) => (a.rank || 99) - (b.rank || 99));
+
+    tbody.innerHTML = sorted.map(e => {
+      const perPerson = guests && e.total ? e.total / guests : null;
+      const pct       = budget ? e.total / budget : null;
+
+      let fitClass = '', fitLabel = '—';
+      if (budget && e.total) {
+        if (e.total <= budget * 0.85)       { fitClass = 'fit-good'; fitLabel = '✓ Within Budget'; }
+        else if (e.total <= budget)          { fitClass = 'fit-warn'; fitLabel = '⚠ Close to Budget'; }
+        else                                 { fitClass = 'fit-over'; fitLabel = '✗ Over Budget'; }
+      }
+
+      const typeBadge = {
+        venue:      '<span class="badge badge-venue">Venue</span>',
+        restaurant: '<span class="badge badge-restaurant">Restaurant</span>',
+        bar:        '<span class="badge badge-bar">Bar</span>',
+      }[e.type] || '';
+
+      const menuBtn = e.menu
+        ? `<a class="btn-menu" href="${e.menu}" target="_blank">Menu →</a>`
+        : `<span class="btn-menu disabled">No Menu</span>`;
+
+      const nameDisplay = e.website
+        ? `<a href="${e.website}" target="_blank">${e.name}</a>`
+        : e.name;
+
+      const capDisplay = e.cap
+        ? (guests && e.cap < guests ? `<span style="color:var(--red);font-weight:700">${e.cap} ⚠</span>` : e.cap)
+        : '—';
+
+      const pctDisplay = pct ? ` <span style="color:var(--gray);font-size:11px">(${Math.round(pct*100)}%)</span>` : '';
+
+      return `
+        <tr>
+          <td><input class="rank-input" type="number" min="1" value="${e.rank || ''}" placeholder="#" onchange="setRank(${e.id}, this.value)" /></td>
+          <td class="venue-name">${nameDisplay}</td>
+          <td>${typeBadge}</td>
+          <td>${capDisplay}</td>
+          <td class="price-highlight">${fmtD(e.fee || null)}</td>
+          <td class="price-highlight">${e.fbPer ? fmt(e.fbPer) : '—'}</td>
+          <td class="price-highlight">${e.fbTotal ? fmt(e.fbTotal) : '—'}</td>
+          <td class="price-highlight">${e.total ? fmt(e.total) : '—'}${pctDisplay}</td>
+          <td class="price-highlight">${perPerson ? fmt(perPerson) : '—'}</td>
+          <td><span class="${fitClass}">${fitLabel}</span></td>
+          <td>${menuBtn}</td>
+          <td class="notes-cell" title="${e.notes}">${e.notes || '—'}</td>
+          <td><button class="btn-remove" onclick="removeEntry(${e.id})">✕</button></td>
+        </tr>`;
+    }).join('');
+  }
+
+  // ── Ranking ──────────────────────────────────────────────────
+  function setRank(id, val) {
+    const entry = entries.find(e => e.id === id);
+    if (entry) entry.rank = parseInt(val) || 99;
+    renderTable();
+  }
+
+  // ── Remove ───────────────────────────────────────────────────
+  function removeEntry(id) {
+    entries = entries.filter(e => e.id !== id);
+    renderTable();
+  }
+
+  // ── Clear ────────────────────────────────────────────────────
+  function clearAddForm() {
+    ['addName','addWebsite','addMenu','addCapacity','addFee','addFBper','addFBtotal','addNotes'].forEach(id => {
       document.getElementById(id).value = '';
     });
-    document.getElementById('eventTime').value = '18:00';
-    document.getElementById('planResults').innerHTML = `
-      <div class="card result-empty">
-        <div class="big-icon">📅</div>
-        <strong>Fill in your event details to get started</strong>
-        <p style="font-size:13px">Enter a city, budget, and guest count to see your budget breakdown and find nearby venues.</p>
-      </div>`;
+    document.getElementById('addType').value = 'venue';
+  }
+
+  function clearAll() {
+    if (entries.length && !confirm('Clear all venues from the comparison list?')) return;
+    entries = [];
+    renderTable();
   }
 </script>
 </body>
