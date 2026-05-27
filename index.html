@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hackdays Travel Cost Calculator</title>
+  <title>Hackdays Planning Tools</title>
   <style>
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -255,18 +256,103 @@
       flex-wrap: wrap;
     }
     .rates-box span { font-weight: 600; }
+  
+
+  :root {
+    --purple: #7c5cbf;
+    --purple-dark: #5e3fa3;
+    --purple-light: #f0ebfa;
+    --purple-mid: #d4c8ee;
+  }
+
+  .size-pills { display: flex; gap: 8px; margin-top: 8px; }
+  .size-pill {
+    flex: 1; padding: 9px 6px; border: 2px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    font-size: 12px; font-weight: 600; color: var(--gray);
+    transition: all 0.15s; background: var(--white);
+  }
+  .size-pill.active { border-color: var(--purple); background: var(--purple-light); color: var(--purple); }
+  .size-pill .pill-label { font-size: 11px; opacity: 0.8; margin-top: 2px; font-weight: 400; }
+
+  .btn-calculate {
+    width: 100%; padding: 14px; background: var(--purple); color: var(--white);
+    border: none; border-radius: 9px; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 8px; transition: background 0.15s; letter-spacing: 0.2px;
+  }
+  .btn-calculate:hover { background: var(--purple-dark); }
+
+  .venues-section { margin-top: 20px; }
+  .venues-card { border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; }
+  .venues-card.rec-card { background: var(--purple-light); border: 1px solid var(--purple-mid); }
+  .venues-card.hh-card  { background: #edf7ee; border: 1px solid #b8deba; }
+  .venues-card h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .venues-card.rec-card h4 { color: var(--purple); }
+  .venues-card.hh-card  h4 { color: #1e7a30; }
+  .venue-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .venue-tag { display: inline-block; background: var(--white); border-radius: 6px; padding: 5px 12px; font-size: 13px; color: var(--slate); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .venue-tag a { color: inherit; text-decoration: none; }
+  .venue-tag a:hover { color: var(--purple); text-decoration: underline; }
+  .no-venues { font-size: 13px; color: var(--gray); font-style: italic; }
+
+  .tier-table-section { margin-top: 20px; }
+  .tier-table-section h3 { font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  table.tier-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.tier-table th { background: var(--purple-light); color: var(--purple); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+  table.tier-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--slate); }
+  table.tier-table tr:last-child td { border-bottom: none; }
+  table.tier-table tr.active-row td { background: var(--purple-light); font-weight: 600; }
+  table.tier-table td.total-col { font-weight: 700; color: var(--purple); }
+
+
+  /* Pre-event scoped overrides */
+  #pe-panel select:focus, #pe-panel input:focus { border-color: var(--purple); }
+  #pe-panel .breakdown-grid { grid-template-columns: repeat(3, 1fr); }
+  #pe-panel .breakdown-item { border-left-color: var(--purple); }
+
+
+  .tab-bar {
+    background: var(--slate-mid);
+    display: flex;
+    padding: 0 24px;
+    gap: 4px;
+  }
+  .tab-btn {
+    padding: 12px 22px;
+    border: none;
+    background: none;
+    color: #9aacbd;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active-tc { color: var(--teal); border-bottom-color: var(--teal); }
+  .tab-btn.active-pe { color: var(--purple); border-bottom-color: var(--purple); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">✈️</div>
+  <div class="logo">📋</div>
   <div>
-    <h1>Hackdays Travel Cost Calculator</h1>
-    <p>Estimate travel costs based on destination metrics</p>
+    <h1>Hackdays Planning Tools</h1>
+    <p>Travel costs &amp; pre-event venue planning</p>
   </div>
 </header>
 
+<div class="tab-bar">
+  <button id="tab-btn-travel" class="tab-btn active-tc" onclick="switchTab('travel')">✈️ Travel Calculator</button>
+  <button id="tab-btn-pe" class="tab-btn" onclick="switchTab('pe')">🏛️ Pre-Event Planner</button>
+</div>
+
+<div id="travel-panel" class="tab-panel active">
 <div class="container">
   <!-- LEFT: Form -->
   <div class="card">
@@ -376,8 +462,75 @@
     </div>
   </div>
 </div>
+</div>
+
+<div id="pe-panel" class="tab-panel">
+<div class="container">
+  <!-- LEFT: Form -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Event Details</div>
+
+    <div class="field">
+      <label>Destination City</label>
+      <select id="pe-city" onchange="peAutoSize()">
+        <option value="">— Select a city —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Number of Attendees</label>
+      <input type="number" id="pe-attendees" value="25" min="1" max="500" oninput="peAutoSize()" />
+      <div class="field-hint">Used to determine venue size and total F&B minimum</div>
+    </div>
+
+    <div class="field">
+      <label>Venue Size</label>
+      <div class="size-pills">
+        <div class="size-pill" id="pe-pill-s" onclick="peSelectSize('s')">
+          Small
+          <div class="pill-label">&lt; 30 people</div>
+        </div>
+        <div class="size-pill active" id="pe-pill-m" onclick="peSelectSize('m')">
+          Medium
+          <div class="pill-label">30 – 100 people</div>
+        </div>
+        <div class="size-pill" id="pe-pill-l" onclick="peSelectSize('l')">
+          Large
+          <div class="pill-label">100+ people</div>
+        </div>
+      </div>
+      <div class="field-hint" id="pe-sizeHint" style="margin-top:8px">Auto-selected from attendee count — click to override</div>
+    </div>
+
+    <button class="btn-calculate" onclick="peCalculate()">Calculate Venue Costs →</button>
+  </div>
+
+  <!-- RIGHT: Results -->
+  <div id="pe-results">
+    <div class="card result-empty">
+      <div class="big-icon">🏛️</div>
+      <strong>Select a city and attendee count</strong>
+      <p style="font-size:13px">Venue fees, F&amp;B minimums, and notable spots will appear here.</p>
+    </div>
+  </div>
+</div>
+</div>
 
 <script>
+
+function switchTab(tab) {
+  document.getElementById('travel-panel').classList.toggle('active', tab === 'travel');
+  document.getElementById('pe-panel').classList.toggle('active', tab === 'pe');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('active-tc', 'active-pe');
+  });
+  const activeBtn = document.getElementById('tab-btn-' + tab);
+  if (activeBtn) activeBtn.classList.add(tab === 'travel' ? 'active-tc' : 'active-pe');
+}
+
+
+// ══ TRAVEL CALCULATOR ════════════════════════════════════════════════════════
+
 const FLIGHT_MATRIX = {
   "Albuquerque, NM":{"Jacksonville, FL":420,"Vancouver, BC":410,"Pittsburgh, PA":420,"St. Louis, MO":340,"New Orleans, LA":350,"Tampa, FL":420,"Grand Rapids, MI":410,"Seattle, WA":360,"Las Vegas, NV":250,"Charlotte, NC":420,"Fort Wayne, IN":360,"Chicago, IL":360,"Indianapolis, IN":360,"Louisville, KY":360,"Lafayette, IN":360,"Berlin, Germany":1210,"Denver, CO":230,"Oakville, ON":430,"Orlando, FL":430,"Cleveland, OH":420,"Midland, TX":240,"Mississauga, ON":430,"Nashville, TN":350,"Kitchener, ON":430,"Atlanta, GA":410,"Marietta, GA":410,"Washington, DC":430,"Anaheim, CA":320,"Toronto, ON":430,"Des Moines, IA":330,"San Antonio, TX":260,"Birmingham, AL":360,"Sudbury, ON":430,"Philadelphia, PA":440,"Baltimore, MD":430,"Columbus, OH":420,"Corpus Christi, TX":320,"Williamsburg, VA":430,"Portland, OR":350,"Phoenix, AZ":230,"San Diego, CA":320,"Calgary, AB":360,"Petawawa, ON":440,"Edmonton, AB":410,"Portland, ME":450,"Reno, NV":330,"Scottsdale, AZ":230,"Dallas, TX":260,"Lakeville, MN":340,"New York, NY":440,"Waukesha, WI":360,"Ottawa, ON":440,"Virginia Beach, VA":440,"Loveland, CO":240,"Houston, TX":330,"Mt. Laurel, NJ":440,"Hooksett, NH":450,"Muncie, IN":360,"Providence, RI":450,"Hershey, PA":430,"Miami, FL":440,"Minneapolis, MN":340,"Boston, MA":450,"Kansas City, MO":320,"San Francisco, CA":340,"Detroit, MI":420,"Cincinnati, OH":410,"Austin, TX":260,"Salt Lake City, UT":250,"Fort Worth, TX":260,"Fort Lauderdale, FL":430,"Sacramento, CA":330,"Atlantic City, NJ":440,"Concord, NC":420,"Omaha, NE":320,"Spokane, WA":350,"Tucson, AZ":230,"Lexington, KY":410,"Halifax, NS":500,"Winnipeg, MB":360,"Moncton, NB":500,"San Juan, PR":520,"London, UK":1170,"Madrid, Spain":1200},
   "Anaheim, CA":{"Jacksonville, FL":460,"Vancouver, BC":350,"Pittsburgh, PA":460,"St. Louis, MO":430,"New Orleans, LA":430,"Tampa, FL":460,"Grand Rapids, MI":440,"Seattle, WA":340,"Las Vegas, NV":180,"Charlotte, NC":460,"Fort Wayne, IN":440,"Chicago, IL":440,"Indianapolis, IN":440,"Louisville, KY":440,"Lafayette, IN":440,"Berlin, Germany":1260,"Denver, CO":330,"Oakville, ON":460,"Orlando, FL":500,"Cleveland, OH":450,"Midland, TX":340,"Mississauga, ON":460,"Nashville, TN":440,"Kitchener, ON":460,"Atlanta, GA":450,"Marietta, GA":450,"Washington, DC":500,"Toronto, ON":460,"Des Moines, IA":420,"San Antonio, TX":360,"Birmingham, AL":440,"Sudbury, ON":460,"Philadelphia, PA":500,"Baltimore, MD":500,"Columbus, OH":450,"Corpus Christi, TX":410,"Williamsburg, VA":500,"Portland, OR":330,"Phoenix, AZ":240,"San Diego, CA":160,"Calgary, AB":360,"Petawawa, ON":500,"Edmonton, AB":420,"Portland, ME":510,"Reno, NV":240,"Scottsdale, AZ":240,"Dallas, TX":360,"Lakeville, MN":430,"New York, NY":510,"Waukesha, WI":440,"Ottawa, ON":500,"Virginia Beach, VA":500,"Loveland, CO":330,"Houston, TX":420,"Mt. Laurel, NJ":500,"Hooksett, NH":510,"Muncie, IN":440,"Providence, RI":510,"Hershey, PA":500,"Miami, FL":500,"Minneapolis, MN":430,"Boston, MA":510,"Kansas City, MO":420,"San Francisco, CA":240,"Detroit, MI":450,"Cincinnati, OH":440,"Austin, TX":360,"Salt Lake City, UT":260,"Fort Worth, TX":360,"Fort Lauderdale, FL":500,"Sacramento, CA":240,"Albuquerque, NM":320,"Atlantic City, NJ":510,"Concord, NC":460,"Omaha, NE":410,"Spokane, WA":340,"Tucson, AZ":240,"Lexington, KY":440,"Halifax, NS":520,"Winnipeg, MB":430,"Moncton, NB":520,"San Juan, PR":580,"London, UK":1220,"Madrid, Spain":1260},
@@ -893,6 +1046,496 @@ function calculate() {
 }
 
 setAttendeeCount(3);
+
+
+// ══ PRE-EVENT PLANNER ════════════════════════════════════════════════════════
+
+// venue name can be a plain string or an HTML string with an <a> tag
+function v(name, url) {
+  return url ? `<a href="${url}" target="_blank" rel="noopener">${name}</a>` : name;
+}
+
+const PE_CITY_DATA = [
+  { name:"Vancouver, BC",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Steamworks Brewery","https://steamworks.com/"),v("The Roundhouse Community Arts","https://www.roundhouse.ca/")],
+    hhVenues:[v("Guilt & Co.","https://www.guiltandcompany.com/"),v("The Diamond","https://www.ablf.ca/"),v("Mahony & Sons","https://www.mahonystavern.com/")] },
+
+  { name:"St. Louis, MO",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Coronado Ballroom","https://thecoronado.com/"),v("City Museum","https://citymuseum.org/")],
+    hhVenues:[v("Narwhal's Crafted","https://narwhalscrafted.com/"),v("The Midwestern","https://midwesternstl.com/")] },
+
+  { name:"New Orleans, LA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Mardi Gras World","https://www.mardigrasworld.com/"),v("Warehouse 535","https://warehouse535.com/")],
+    hhVenues:[v("Fulton Alley","https://www.fultonalley.com/"),v("Willa Jean","https://www.willajean.com/")] },
+
+  { name:"Tampa, FL",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Armature Works","https://armatureworks.com/"),v("Tampa Museum of Art","https://tampamuseum.org/")],
+    hhVenues:[v("Armature Works Heights Market","https://armatureworks.com/"),v("Trophy Fish","https://trophyfish.com/")] },
+
+  { name:"Grand Rapids, MI",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Seattle, WA",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Rainier Tower","https://columbiacenterseattle.com/"),v("The Hall at Columbia Center","https://columbiacenterseattle.com/")],
+    hhVenues:[v("Bathtub Gin & Co.","https://bathtubginseattle.com/"),v("Canon Bar","https://www.canonseattle.com/")] },
+
+  { name:"Las Vegas, NV",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Wynn Event Spaces","https://www.wynnlasvegas.com/"),v("MGM Grand Ballroom","https://mgmgrand.mgmresorts.com/")],
+    hhVenues:[v("LAVO","https://taogroup.com/venues/lavo-italian-restaurant-las-vegas/"),v("The Chandelier at Cosmopolitan","https://www.cosmopolitanlasvegas.com/")] },
+
+  { name:"Charlotte, NC",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Foundation for the Carolinas","https://fftc.org/"),v("Discovery Place","https://www.discoveryplace.org/")],
+    hhVenues:[v("Heist Brewery","https://heistbrewery.com/"),v("Dot Dot Dot","https://dotdotdotcharlotte.com/")] },
+
+  { name:"Chicago, IL",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("The Ivy Room","https://ivyroomchicago.com/"),v("Salvage One","https://salvageone.com/")],
+    hhVenues:[v("Cindy's Rooftop","https://cindysrooftop.com/"),v("Broken Shaker","https://www.brokenshaker.com/")] },
+
+  { name:"Indianapolis, IN",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Newfields","https://discovernewfields.org/"),v("The Biltwell Event Center","https://www.biltwelleventcenter.com/")],
+    hhVenues:[v("The Loom","https://www.blackcirclebrewing.com/loom"),v("Tinker Street","https://tinkerstreetrestaurant.com/")] },
+
+  { name:"Louisville, KY",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Louisville Slugger Museum","https://www.sluggermuseum.com/"),v("21c Museum Hotel","https://21cmuseumhotels.com/louisville/")],
+    hhVenues:[v("Proof on Main","https://proofonmain.com/"),"The Silver Dollar"] },
+
+  { name:"Lafayette, IN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Berlin, Germany",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Crackers Berlin","https://crackers-berlin.de/"),v("Tempodrom","https://www.tempodrom.de/")],
+    hhVenues:[v("Monkey Bar","https://monkeybarberlin.de/"),v("Klunkerkranich","https://klunkerkranich.org/")] },
+
+  { name:"Denver, CO",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Wings Over the Rockies","https://wingsmuseum.org/"),v("Mile High Station","https://milehighstation.com/")],
+    hhVenues:[v("ViewHouse","https://www.viewhouse.com/"),v("Ophelia's Electric Soapbox","https://opheliasdenver.com/")] },
+
+  { name:"Oakville, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Orlando, FL",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Mezz","https://www.mezzorlando.com/"),v("Orlando Museum of Art","https://omart.org/")],
+    hhVenues:[v("The Osprey Tavern","https://www.theospreyorlando.com/"),v("The Courtesy Bar","https://www.thecourtesybar.com/")] },
+
+  { name:"Cleveland, OH",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Windows on the River","https://windowsontheriver.com/"),v("Playhouse Square","https://www.playhousesquare.org/")],
+    hhVenues:[v("Porco Lounge","https://porcolounge.com/"),v("The Spotted Owl","https://spottedowlbar.com/")] },
+
+  { name:"Midland, TX",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Mississauga, ON",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Mississauga Convention Centre","https://mississaugaconventioncentre.com/"),v("Living Arts Centre","https://www.livingartscentre.ca/")],
+    hhVenues:[] },
+
+  { name:"Nashville, TN",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("The Cannery Ballroom","https://www.canneryballroom.com/"),v("The Cordelle","https://www.thecordelle.com/")],
+    hhVenues:[v("Dierks Bentley's Whiskey Row","https://dierkswhiskeyrow.com/nashville-tn/"),v("Ole Red Nashville","https://olered.com/nashville/")] },
+
+  { name:"Kitchener, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Atlanta, GA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Ponce City Market","https://www.poncecitymarket.com/"),v("Georgia Aquarium","https://www.georgiaaquarium.org/")],
+    hhVenues:[v("Whiskey Bird","https://www.eatwhiskeybird.com/"),v("Krog Street Market","https://www.thekrogdistrict.com/")] },
+
+  { name:"Marietta, GA",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Washington, DC",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("National Building Museum","https://www.nbm.org/"),v("The Hay-Adams Hotel","https://www.hayadams.com/")],
+    hhVenues:[v("Wunder Garten","https://www.wundergartendc.com/"),v("POV Rooftop","https://povrooftop.com/")] },
+
+  { name:"Anaheim, CA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Anaheim Convention Center","https://www.anaheimconventioncenter.com/"),v("House of Blues Anaheim","https://www.houseofblues.com/anaheim/")],
+    hhVenues:[] },
+
+  { name:"Toronto, ON",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Arcadian Court","https://www.arcadianevents.ca/"),v("Steam Whistle Brewery","https://steamwhistle.ca/")],
+    hhVenues:[v("BarChef","https://www.barchef.com/"),v("The Drake Hotel","https://www.thedrakehotel.ca/")] },
+
+  { name:"Des Moines, IA",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Iowa Events Center","https://www.iowaeventscenter.com/"),v("Mainframe Studios","https://www.mainframestudios.org/")],
+    hhVenues:[v("Exile Brewing Co.","https://www.exilebrewing.com/"),"Proof Pub & Kitchen"] },
+
+  { name:"San Antonio, TX",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Pearl Stable","https://www.pearlsanantonio.com/"),v("McNay Art Museum","https://www.mcnayart.org/")],
+    hhVenues:[v("The Espee","https://www.theespee.com/"),v("Paramour Bar","https://paramourbar.com/")] },
+
+  { name:"Birmingham, AL",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[v("Sloss Furnaces","https://slossfurnaces.com/"),v("Alabama Theatre","https://alabamatheatre.com/")],
+    hhVenues:[] },
+
+  { name:"Sudbury, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Philadelphia, PA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("The Horticultural Center","https://horticulturalcenter.com/"),v("The Crystal Tea Room","https://finleycatering.com/")],
+    hhVenues:[v("Rosy's Taco Bar","https://www.rosystacobar.com/"),v("Attico Rooftop","https://www.atticorooftop.com/")] },
+
+  { name:"Baltimore, MD",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Grand Historic Venue","https://thegrandbaltimore.com/"),v("Sagamore Pendry Baltimore","https://www.sagamorependry.com/")],
+    hhVenues:[v("Barcocina","https://www.barcocina.com/"),"Ekiben"] },
+
+  { name:"Columbus, OH",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Ohio Statehouse","https://www.ohiostatehouse.org/"),v("Short North Stage","https://www.shortnorthstage.org/")],
+    hhVenues:[v("Seventh Son Brewing","https://seventhsonbrewing.com/"),"Juniper"] },
+
+  { name:"Corpus Christi, TX",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Williamsburg, VA",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Portland, OR",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("The Nines Hotel","https://www.thenines.com/"),v("Leftbank Annex","https://www.leftbankannex.com/")],
+    hhVenues:[v("Departure Lounge","https://www.departureportland.com/"),v("Multnomah Whiskey Library","https://mwlpdx.com/")] },
+
+  { name:"Phoenix, AZ",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Musical Instrument Museum","https://mim.org/"),v("Phoenix Art Museum","https://phxart.org/")],
+    hhVenues:[v("Undertow","https://www.drinkundertow.com/"),v("Valley Bar","https://www.valleybarphx.com/")] },
+
+  { name:"San Diego, CA",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("The Prado at Balboa Park","https://www.pradobalboa.com/"),v("Hotel del Coronado","https://www.hoteldel.com/")],
+    hhVenues:[v("Raised by Wolves","https://raisedxwolves.com/"),v("Craft & Commerce","https://craft-commerce.com/")] },
+
+  { name:"Calgary, AB",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Arts Commons","https://artscommons.ca/"),v("TELUS Spark Science Centre","https://www.sparkscience.ca/")],
+    hhVenues:[v("National on 8th","https://www.ntnl.ca/"),v("Betty Lou's Library","https://www.bettylouslibrary.com/")] },
+
+  { name:"Petawawa, ON",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Edmonton, AB",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Shaw Conference Centre","https://www.edmontonconventioncentre.com/"),v("Hotel Macdonald","https://www.hotelmacdonald.com/")],
+    hhVenues:["Rig & Reel",v("Woodwork Bar","https://woodworkyeg.com/")] },
+
+  { name:"Portland, ME",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Ocean Gateway","https://www.portlandmaine.gov/1167/Ocean-Gateway"),v("Portland Museum of Art","https://portlandmuseum.org/")],
+    hhVenues:[v("Eventide Oyster Co.","https://www.eventiderestaurant.com/"),v("Vena's Fizz House","https://venasfizzhouse.com/")] },
+
+  { name:"Reno, NV",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("National Automobile Museum","https://automuseum.org/"),v("Whitney Peak Hotel","https://www.whitneypeakhotel.com/")],
+    hhVenues:[v("Pignic Pub & Patio","https://pignicpubandpatio.com/"),v("Chapel Tavern","https://www.chapeltavern.com/")] },
+
+  { name:"Scottsdale, AZ",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("Hyatt Regency Scottsdale","https://www.hyatt.com/en-US/hotel/arizona/hyatt-regency-scottsdale-resort-and-spa-at-gainey-ranch/phxrs"),v("Scottsdale Museum of Contemporary Art","https://smoca.org/")],
+    hhVenues:[v("Swig","https://swig.com/"),"Old Town Scottsdale rooftop bars"] },
+
+  { name:"Dallas, TX",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Perot Museum","https://www.perotmuseum.org/"),v("Gilley's Dallas","https://gilleysdallas.com/")],
+    hhVenues:[v("Midnight Rambler","https://midnightramblerbar.com/"),v("The Rustic","https://therustic.com/")] },
+
+  { name:"Lakeville, MN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"New York, NY",
+    rec:{s:{fee:800,fb:75},m:{fee:2500,fb:90},l:{fee:6000,fb:115}},
+    hh:{s:{fee:300,min:45},m:{fee:800,min:60},l:{fee:2000,min:80}},
+    recVenues:[v("Gotham Hall","https://gothamhallnyc.com/"),v("The Glasshouses","https://www.theglasshouses.com/")],
+    hhVenues:[v("The Press Lounge","https://www.ink48.com/"),v("Employees Only","https://www.employeesonlynyc.com/")] },
+
+  { name:"Waukesha, WI",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Ottawa, ON",
+    rec:{s:{fee:500,fb:60},m:{fee:1800,fb:75},l:{fee:4000,fb:95}},
+    hh:{s:{fee:200,min:38},m:{fee:600,min:50},l:{fee:1500,min:65}},
+    recVenues:[v("National Arts Centre","https://nac-cna.ca/"),v("Chateau Laurier","https://www.fairmont.com/laurier-ottawa/")],
+    hhVenues:[v("Zoe's Restaurant","https://www.zoesottawa.com/"),v("The Barley Mow","https://barleymow.com/")] },
+
+  { name:"Virginia Beach, VA",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Loveland, CO",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Houston, TX",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("The Ion Houston","https://iondistrict.com/"),v("Buffalo Bayou Park","https://buffalobayou.org/")],
+    hhVenues:["Mongoose versus Cobra",v("Axelrad Beer Garden","https://www.axelradhouston.com/")] },
+
+  { name:"Mt. Laurel, NJ",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Hooksett, NH",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Muncie, IN",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+
+  { name:"Providence, RI",
+    rec:{s:{fee:350,fb:50},m:{fee:1200,fb:65},l:{fee:2800,fb:80}},
+    hh:{s:{fee:150,min:30},m:{fee:400,min:42},l:{fee:1000,min:55}},
+    recVenues:[v("Providence Athenaeum","https://www.providenceathenaeum.org/"),v("RISD Museum","https://risdmuseum.org/")],
+    hhVenues:[v("Oberlin","https://oberlinrestaurant.com/"),"Faust Bar & Bottle"] },
+
+  { name:"Hershey, PA",
+    rec:{s:{fee:200,fb:40},m:{fee:700,fb:55},l:{fee:1800,fb:70}},
+    hh:{s:{fee:100,min:25},m:{fee:300,min:35},l:{fee:750,min:45}},
+    recVenues:[], hhVenues:[] },
+];
+
+// Sort alphabetically and populate dropdown
+PE_CITY_DATA.sort((a,b) => a.name.localeCompare(b.name));
+const peCitySelect = document.getElementById('pe-city');
+PE_CITY_DATA.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c.name;
+  opt.textContent = c.name;
+  peCitySelect.appendChild(opt);
+});
+
+// ─── Size selection ───────────────────────────────────────────────────────────
+let peSelectedSize = 'm';
+
+function peSelectSize(s) {
+  peSelectedSize = s;
+  ['s','m','l'].forEach(k => document.getElementById(`pe-pill-${k}`).classList.toggle('active', k === s));
+  document.getElementById('pe-sizeHint').textContent = 'Manually overridden — click another size to change';
+}
+
+function peAutoSize() {
+  const n = parseInt(document.getElementById('pe-attendees').value) || 1;
+  const s = n < 30 ? 's' : n <= 100 ? 'm' : 'l';
+  peSelectedSize = s;
+  ['s','m','l'].forEach(k => document.getElementById(`pe-pill-${k}`).classList.toggle('active', k === s));
+  document.getElementById('pe-sizeHint').textContent = 'Auto-selected from attendee count — click to override';
+}
+
+
+function peSizeLabel(s) {
+  return s === 's' ? 'Small (< 30 people)' : s === 'm' ? 'Medium (30–100 people)' : 'Large (100+ people)';
+}
+
+function peCalculate() {
+  const cityName = peCitySelect.value;
+  if (!cityName) { alert('Please select a destination city.'); return; }
+  const city = PE_CITY_DATA.find(c => c.name === cityName);
+  const n = parseInt(document.getElementById('pe-attendees').value) || 1;
+  const sz = peSelectedSize;
+
+  const recD = city.rec[sz];
+  const hhD  = city.hh[sz];
+  const recFBTotal = recD.fb * n;
+  const recTotal   = recD.fee + recFBTotal;
+  const hhFBTotal  = hhD.min * n;
+  const hhTotal    = hhD.fee + hhFBTotal;
+
+  function tierRow(key, d, isRec) {
+    const fbKey = isRec ? 'fb' : 'min';
+    const total = d.fee + d[fbKey] * n;
+    return `<tr class="${key === sz ? 'active-row' : ''}">
+      <td>${peSizeLabel(key)}${key === sz ? ' <span style="font-size:10px;background:var(--purple);color:#fff;border-radius:3px;padding:1px 5px;margin-left:4px">selected</span>' : ''}</td>
+      <td>${fmt(d.fee)}</td>
+      <td>${fmt(d[fbKey])}/person</td>
+      <td class="total-col">${fmt(total)}</td>
+    </tr>`;
+  }
+
+  function venueTagsHtml(list) {
+    if (!list.length) return '<span class="no-venues">No specific venues on file — check local event directories</span>';
+    return `<div class="venue-tags">${list.map(item => `<span class="venue-tag">${item}</span>`).join('')}</div>`;
+  }
+
+  document.getElementById('pe-results').innerHTML = `
+    <div class="city-banner">
+      <div>
+        <h2>📍 ${city.name}</h2>
+        <div class="sub">${n} attendee${n>1?'s':''} · ${peSizeLabel(sz)}</div>
+      </div>
+      <div class="grand-total">
+        <div class="gt-label">Reception Total</div>
+        <div class="gt-amount">${fmt(recTotal)}</div>
+        <div class="gt-sub">${fmt(hhTotal)} for happy hour</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><span class="icon">🥂</span> Reception / Evening Event</div>
+      <div class="breakdown-grid">
+        <div class="breakdown-item">
+          <div class="bi-label">Venue Fee</div>
+          <div class="bi-amount">${fmt(recD.fee)}</div>
+          <div class="bi-detail">Flat venue rental · ${peSizeLabel(sz)}</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="bi-label">F&amp;B Minimum</div>
+          <div class="bi-amount">${fmt(recD.fb)}<span style="font-size:14px;font-weight:500">/person</span></div>
+          <div class="bi-detail">${fmt(recFBTotal)} total · ${n} people</div>
+        </div>
+        <div class="breakdown-item" style="border-left-color:var(--teal)">
+          <div class="bi-label">Reception Total</div>
+          <div class="bi-amount" style="color:var(--purple)">${fmt(recTotal)}</div>
+          <div class="bi-detail">${fmt(Math.round(recTotal/n))} per person</div>
+        </div>
+      </div>
+      <div class="tier-table-section">
+        <h3>All Size Tiers</h3>
+        <table class="tier-table">
+          <thead><tr><th>Size</th><th>Venue Fee</th><th>F&amp;B Min</th><th>Total (${n} people)</th></tr></thead>
+          <tbody>
+            ${tierRow('s', city.rec.s, true)}
+            ${tierRow('m', city.rec.m, true)}
+            ${tierRow('l', city.rec.l, true)}
+          </tbody>
+        </table>
+      </div>
+      <div class="venues-section">
+        <div class="venues-card rec-card">
+          <h4>📌 Notable Reception Venues in ${city.name}</h4>
+          ${venueTagsHtml(city.recVenues)}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🍺</span> Happy Hour / Casual Gathering</div>
+      <div class="breakdown-grid">
+        <div class="breakdown-item">
+          <div class="bi-label">Venue Fee</div>
+          <div class="bi-amount">${fmt(hhD.fee)}</div>
+          <div class="bi-detail">Flat venue rental · ${peSizeLabel(sz)}</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="bi-label">Min Spend</div>
+          <div class="bi-amount">${fmt(hhD.min)}<span style="font-size:14px;font-weight:500">/person</span></div>
+          <div class="bi-detail">${fmt(hhFBTotal)} total · ${n} people</div>
+        </div>
+        <div class="breakdown-item" style="border-left-color:#27ae60">
+          <div class="bi-label">Happy Hour Total</div>
+          <div class="bi-amount" style="color:#1e7a30">${fmt(hhTotal)}</div>
+          <div class="bi-detail">${fmt(Math.round(hhTotal/n))} per person</div>
+        </div>
+      </div>
+      <div class="tier-table-section">
+        <h3>All Size Tiers</h3>
+        <table class="tier-table">
+          <thead><tr><th>Size</th><th>Venue Fee</th><th>Min Spend</th><th>Total (${n} people)</th></tr></thead>
+          <tbody>
+            ${tierRow('s', city.hh.s, false)}
+            ${tierRow('m', city.hh.m, false)}
+            ${tierRow('l', city.hh.l, false)}
+          </tbody>
+        </table>
+      </div>
+      <div class="venues-section">
+        <div class="venues-card hh-card">
+          <h4>📌 Notable Happy Hour Spots in ${city.name}</h4>
+          ${venueTagsHtml(city.hhVenues)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+peAutoSize();
+
 </script>
 </body>
 </html>
