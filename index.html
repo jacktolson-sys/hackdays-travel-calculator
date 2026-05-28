@@ -42,6 +42,22 @@
     }
     header h1 { font-size: 20px; font-weight: 600; }
     header p { font-size: 13px; color: #9aacbd; margin-top: 2px; }
+    .header-guide-link {
+      margin-left: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 7px;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .header-guide-link:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.45); }
 
     .container {
       max-width: 1100px;
@@ -268,6 +284,9 @@
     <p>Travel cost calculator</p>
   </div>
   <img src="geotab-logo.png" alt="Geotab" style="height:32px;width:auto;margin-left:auto" />
+  <a class="header-guide-link" href="https://docs.google.com/document/d/1D-Y62wVIQhzDTLTuBC1FUqR3SM4_QM9hJUufmadCCeY/edit?tab=t.0" target="_blank" rel="noopener">
+    📄 User Guide
+  </a>
 </header>
 
 <nav style="background:#1d3561;display:flex;gap:4px;padding:0 36px">
