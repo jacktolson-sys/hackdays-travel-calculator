@@ -8,13 +8,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --teal: #00a9a5;
-      --teal-dark: #007f7c;
-      --teal-light: #e6f7f7;
-      --slate: #1e2a38;
-      --slate-mid: #2f3e50;
+      --teal: #0078d3;
+      --teal-dark: #25477b;
+      --teal-light: #e0f0fc;
+      --accent: #00aeff;
+      --slate: #25477b;
+      --slate-mid: #1d3561;
       --gray: #6b7a8d;
-      --gray-light: #f4f6f9;
+      --gray-light: #f0f4f9;
       --border: #dde3ea;
       --white: #ffffff;
       --green: #27ae60;
@@ -23,7 +24,7 @@
       --yellow-light: #fef9e7;
       --red: #e74c3c;
       --red-light: #fdecea;
-      --shadow: 0 2px 16px rgba(0,0,0,0.09);
+      --shadow: 0 2px 16px rgba(37,71,123,0.10);
       --radius: 12px;
     }
 
@@ -66,7 +67,7 @@
       padding: 10px 16px;
       border-bottom: 3px solid transparent;
     }
-    nav a.active { color: var(--white); border-bottom-color: var(--teal); }
+    nav a.active { color: var(--white); border-bottom-color: var(--accent); }
     nav a:hover  { color: var(--white); }
 
     .page-wrap {
@@ -396,6 +397,7 @@
     <h1>Hackdays Planning Tools</h1>
     <p>Event planner</p>
   </div>
+  <img src="geotab-logo.png" alt="Geotab" style="height:32px;width:auto;margin-left:auto" />
 </header>
 
 <nav>
