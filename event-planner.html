@@ -568,15 +568,9 @@
         </div>
       </div>
 
-      <div class="row-2">
-        <div class="field">
-          <label>F&amp;B Minimum / Person ($)</label>
-          <input type="number" id="addFBper" placeholder="e.g. 65" min="0" oninput="calcFBTotal()" />
-        </div>
-        <div class="field">
-          <label>F&amp;B Total ($)</label>
-          <input type="number" id="addFBtotal" placeholder="auto" readonly style="background:var(--gray-light);color:var(--gray)" />
-        </div>
+      <div class="field">
+        <label>Food &amp; Beverage ($)</label>
+        <input type="number" id="addFBper" placeholder="e.g. 3000" min="0" />
       </div>
 
       <div class="field">
@@ -671,12 +665,6 @@
     renderList();
   }
 
-  function calcFBTotal() {
-    const per    = parseFloat(document.getElementById('addFBper').value) || 0;
-    const guests = parseInt(document.getElementById('guestCount').value) || 0;
-    document.getElementById('addFBtotal').value = per && guests ? Math.round(per * guests) : '';
-  }
-
   function openSearch(query) {
     const hotel = document.getElementById('hotelName').value.trim();
     const city  = document.getElementById('eventCity').value.trim();
@@ -696,15 +684,13 @@
     const fee    = parseFloat(document.getElementById('addFee').value) || 0;
     const cap    = parseInt(document.getElementById('addCapacity').value) || null;
     const fbPer  = parseFloat(document.getElementById('addFBper').value) || 0;
-    const guests = parseInt(document.getElementById('guestCount').value) || 0;
     const notes  = document.getElementById('addNotes').value.trim();
 
     if (!name) { alert('Please enter a name.'); return; }
 
-    const fbTotal = fbPer && guests ? fbPer * guests : 0;
-    const total   = fee + fbTotal;
+    const total = fee + fbPer;
 
-    entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, fbTotal, total, notes });
+    entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, total, notes });
     renderList();
     clearForm();
   }
@@ -793,13 +779,7 @@
               ${e.fbPer ? `
                 <div class="price-item">
                   <div class="price-val">${fmt(e.fbPer)}</div>
-                  <div class="price-lbl">F&B / Person</div>
-                </div>
-                <div class="price-divider"></div>` : ''}
-              ${e.fbTotal ? `
-                <div class="price-item">
-                  <div class="price-val">${fmt(e.fbTotal)}</div>
-                  <div class="price-lbl">F&B Total</div>
+                  <div class="price-lbl">Food &amp; Beverage</div>
                 </div>
                 <div class="price-divider"></div>` : ''}
               ${e.total ? `
@@ -848,7 +828,7 @@
   }
 
   function clearForm() {
-    ['addName','addWebsite','addMenu','addFee','addCapacity','addFBper','addFBtotal','addNotes'].forEach(id => {
+    ['addName','addWebsite','addMenu','addFee','addCapacity','addFBper','addNotes'].forEach(id => {
       document.getElementById(id).value = '';
     });
     document.getElementById('addType').value = 'venue';
@@ -946,8 +926,7 @@
       // Pricing boxes
       const pricingItems = [];
       if (e.fee)    pricingItems.push({ label: 'Space / Rental Fee', val: fmt(e.fee) });
-      if (e.fbPer)  pricingItems.push({ label: 'F&B per Person',     val: fmt(e.fbPer) });
-      if (e.fbTotal) pricingItems.push({ label: 'F&B Total',         val: fmt(e.fbTotal) });
+      if (e.fbPer)  pricingItems.push({ label: 'Food & Beverage',    val: fmt(e.fbPer) });
       if (e.total)  pricingItems.push({ label: 'Estimated Total',    val: fmt(e.total) });
       if (guests && e.total) pricingItems.push({ label: 'Per Person', val: fmt(e.total / guests) });
 
@@ -1025,7 +1004,7 @@
       { text: 'Name',       options: { ...hdrOpts, align: 'left' } },
       { text: 'Type',       options: hdrOpts },
       { text: 'Space Fee',  options: hdrOpts },
-      { text: 'F&B/Person', options: hdrOpts },
+      { text: 'F&B',        options: hdrOpts },
       { text: 'Total',      options: hdrOpts },
       { text: 'Fit',        options: hdrOpts },
     ]];
