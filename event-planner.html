@@ -439,6 +439,37 @@
       box-shadow: var(--shadow);
     }
     .empty-state .icon { font-size: 44px; opacity: 0.3; display: block; margin-bottom: 12px; }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--green);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 9999;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Edit mode button state */
+    .btn-edit {
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fdba74;
+    }
+    .btn-edit:hover { background: #ea580c; color: var(--white); }
   </style>
 </head>
 <body>
@@ -532,7 +563,7 @@
 
       <div class="row-2">
         <div class="field">
-          <label>Name</label>
+          <label>Name <span style="color:var(--red)">*</span></label>
           <input type="text" id="addName" placeholder="e.g. The Ivy Room" />
         </div>
         <div class="field">
@@ -580,7 +611,7 @@
 
       <div style="display:flex;gap:10px;margin-top:8px">
         <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="clearForm()">Clear</button>
-        <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="addEntry()">+ Add to List</button>
+        <button id="addBtn" class="btn btn-primary" style="flex:2;margin-top:0" onclick="addEntry()">+ Add to List</button>
       </div>
     </div>
   </div>
@@ -606,9 +637,13 @@
 
 </div>
 
+<div id="toast"></div>
+
 <script>
   let entries = [];
   let nextId  = 1;
+  let editingId   = null;
+  let editingRank = null;
   let searchRadius = 5;
 
   function miToKm(mi) { return Math.round(mi * 1.60934); }
@@ -704,6 +739,40 @@
     window.open(`https://www.google.com/maps/search/${fullQuery}`, '_blank');
   }
 
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function editEntry(id) {
+    const e = entries.find(en => en.id === id);
+    if (!e) return;
+
+    document.getElementById('addName').value    = e.name;
+    document.getElementById('addType').value    = e.type;
+    document.getElementById('addWebsite').value = e.web;
+    document.getElementById('addMenu').value    = e.menu;
+    document.getElementById('addFee').value     = e.fee || '';
+    document.getElementById('addCapacity').value = e.cap || '';
+    document.getElementById('addFBper').value   = e.fbPer || '';
+    document.getElementById('addNotes').value   = e.notes;
+
+    editingId   = e.id;
+    editingRank = e.rank;
+
+    entries = entries.filter(en => en.id !== id);
+    renderList();
+
+    const btn = document.getElementById('addBtn');
+    btn.textContent = '✓ Update Venue';
+    btn.style.background = 'var(--green)';
+
+    document.querySelector('.card-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('addName').focus();
+  }
+
   function addEntry() {
     const name   = document.getElementById('addName').value.trim();
     const type   = document.getElementById('addType').value;
@@ -718,7 +787,15 @@
 
     const total = fee + fbPer;
 
-    entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, total, notes });
+    if (editingId !== null) {
+      entries.push({ id: editingId, rank: editingRank, name, type, web, menu, fee, cap, fbPer, total, notes });
+      entries.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+      showToast(`✓ ${name} updated`);
+    } else {
+      entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, total, notes });
+      showToast(`✓ ${name} added to list`);
+    }
+
     renderList();
     clearForm();
   }
@@ -793,6 +870,7 @@
               <div class="venue-actions">
                 ${websiteBtn}
                 ${menuBtn}
+                <button class="action-btn btn-edit" onclick="editEntry(${e.id})">✏️ Edit</button>
                 <button class="action-btn action-remove" onclick="removeEntry(${e.id})">✕ Remove</button>
               </div>
             </div>
@@ -860,6 +938,11 @@
       document.getElementById(id).value = '';
     });
     document.getElementById('addType').value = 'venue';
+    editingId   = null;
+    editingRank = null;
+    const btn = document.getElementById('addBtn');
+    btn.textContent = '+ Add to List';
+    btn.style.background = '';
   }
 
   function clearAll() {
