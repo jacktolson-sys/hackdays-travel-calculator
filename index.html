@@ -372,6 +372,7 @@
           <option value="custom">Custom...</option>
         </select>
         <input type="number" id="swagCustom" placeholder="Enter amount per person" min="0" step="0.01" style="display:none;margin-top:6px;width:100%;padding:10px 12px;border:1.5px solid var(--teal);border-radius:7px;font-size:14px;color:var(--slate)" />
+        <input type="number" id="swagRecipients" placeholder="Swag recipients (# of people)" min="0" step="1" style="margin-top:6px;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--slate);background:var(--white);box-sizing:border-box" />
       </div>
     </div>
 
@@ -929,6 +930,7 @@ function resetAll() {
   document.getElementById('swag').value = '0';
   document.getElementById('swagCustom').style.display = 'none';
   document.getElementById('swagCustom').value = '';
+  document.getElementById('swagRecipients').value = '';
 
   // Miscellaneous
   document.getElementById('miscList').innerHTML = '';
@@ -980,7 +982,8 @@ function calculate() {
   const uberTotal = city.uber * uberRides * numPeople;
   const flightMult = isRoundTrip ? 2 : 1;
   const flightTotal = attendees.reduce((sum, a) => sum + a.flight * flightMult, 0);
-  const swagTotal = swagPer * numPeople;
+  const swagRecipients = parseInt(document.getElementById('swagRecipients').value) || numPeople;
+  const swagTotal = swagPer * swagRecipients;
   const miscTotal = getMiscTotal();
   const miscLines = getMiscLines();
   const grandTotal = hotelTotal + foodTotal + uberTotal + flightTotal + swagTotal + signage + miscTotal;
@@ -993,7 +996,7 @@ function calculate() {
     { label: 'Food',    amount: foodTotal,  detail: `${fmt(city.food)}/meal × ${mealsPerDay} meals × ${nights} days × ${numPeople} people` },
     { label: 'Uber',    amount: uberTotal,  detail: `${fmt(city.uber)}/ride × ${uberRides} rides × ${numPeople} people` },
     { label: 'Flights', amount: flightTotal, detail: hasFlights ? `${isRoundTrip ? 'Round-trip' : 'One-way'} — sum of individual costs` : 'No flights entered' },
-    { label: 'SWAG',    amount: swagTotal,  detail: swagPer > 0 ? `${fmt(swagPer)}/person × ${numPeople} people` : 'Not included' },
+    { label: 'SWAG',    amount: swagTotal,  detail: swagPer > 0 ? `${fmt(swagPer)}/person × ${swagRecipients} recipients` : 'Not included' },
     { label: 'Signage', amount: signage,    detail: signage > 0 ? 'Fixed one-time cost' : 'Not included' },
     ...miscLines.map(l => ({ label: l.label, amount: l.amount, detail: 'Miscellaneous' })),
   ];
