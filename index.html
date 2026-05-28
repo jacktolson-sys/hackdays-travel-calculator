@@ -319,6 +319,42 @@
 
     <button class="btn btn-secondary" onclick="addAttendee()">+ Add Attendee</button>
 
+    <div class="section-label">✈️ Live Flight Search</div>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:12px">Select cities and dates to search real-time prices on Google Flights.</p>
+    <div class="row-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Flying From</label>
+        <select id="flightOrigin">
+          <option value="">Select origin city...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Flying To</label>
+        <select id="flightDest">
+          <option value="">Select destination city...</option>
+        </select>
+      </div>
+    </div>
+    <div class="row-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Departure Date</label>
+        <input type="date" id="flightDepart" />
+      </div>
+      <div class="field">
+        <label>Return Date</label>
+        <input type="date" id="flightReturn" />
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer">
+        <input type="checkbox" id="flightRoundTrip" checked style="width:16px;height:16px;accent-color:var(--teal)" />
+        Round Trip
+      </label>
+      <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
+        Get Live Prices →
+      </button>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;align-items:start">
       <div>
         <div class="section-label">Trip Details</div>
@@ -400,45 +436,6 @@
     <div style="display:flex;gap:10px;margin-top:20px">
       <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:12px;font-size:15px" onclick="if(confirm('Reset all fields? This cannot be undone.')) resetAll()">↺ Reset</button>
       <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="calculate()">Calculate Trip Cost</button>
-    </div>
-  </div>
-
-  <!-- RIGHT: Live Flight Search -->
-  <div class="card" style="margin-top:0">
-    <div class="card-title"><span class="icon">✈️</span> Live Flight Search</div>
-    <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Select cities and dates to search real-time prices on Google Flights.</p>
-    <div class="row-2" style="margin-bottom:12px">
-      <div class="field">
-        <label>Flying From</label>
-        <select id="flightOrigin">
-          <option value="">Select origin city...</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Flying To</label>
-        <select id="flightDest">
-          <option value="">Select destination city...</option>
-        </select>
-      </div>
-    </div>
-    <div class="row-2" style="margin-bottom:16px">
-      <div class="field">
-        <label>Departure Date</label>
-        <input type="date" id="flightDepart" />
-      </div>
-      <div class="field">
-        <label>Return Date</label>
-        <input type="date" id="flightReturn" />
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer">
-        <input type="checkbox" id="flightRoundTrip" checked style="width:16px;height:16px;accent-color:var(--teal)" />
-        Round Trip
-      </label>
-      <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
-        Get Live Prices →
-      </button>
     </div>
   </div>
 
