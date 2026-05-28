@@ -592,6 +592,7 @@
           <option value="conference">Conference / Summit</option>
           <option value="sponsorship">Sponsorship</option>
           <option value="hosted">Geotab Hosted Event</option>
+          <option value="partner-event">Partner Event</option>
         </select>
       </div>
       <div class="field" style="margin-bottom:0">
@@ -1239,6 +1240,18 @@ const TC_BENCHMARKS = {
     goMsg:      'Strong ROI for a hosted event — highly efficient format',
     cautionMsg: 'Above typical intimate hosted event CPL — scale of event is driving costs up',
     pauseMsg:   'Significantly above hosted benchmarks — consider scaling down or a tighter audience',
+  },
+  'partner-event': {
+    label: 'Partner Event',
+    rows: [
+      { name: 'Co-hosted / joint events',  low: 50,  high: 250,  cls: 'brow-good', eg: 'Events co-hosted with a partner where cost and leads are shared — highly efficient when well-targeted' },
+      { name: 'Partner-sponsored events',   low: 250, high: 600,  cls: 'brow-ok',   eg: 'Events organized by a partner where Geotab sponsors or participates — moderate CPL, strong relationship value' },
+      { name: 'Large partner summits',      low: 600, high: 1200, cls: 'brow-high',  eg: 'Large-scale partner summits or roadshows with broad audiences — higher CPL but strategic brand exposure' },
+    ],
+    go: 300, caution: 600,
+    goMsg:      'Strong CPL for a partner event — cost-sharing and targeted audiences make these highly efficient',
+    cautionMsg: 'Above the efficient partner event range — ensure lead capture plan is in place with the partner',
+    pauseMsg:   'High CPL for a partner event — evaluate whether joint lead capture is structured and agreed upon',
   },
 };
 
