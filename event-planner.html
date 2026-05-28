@@ -202,6 +202,30 @@
     .radius-btn:hover { border-color: var(--teal); color: var(--teal-dark); background: var(--teal-light); }
     .radius-btn.active { border-color: var(--teal); background: var(--teal); color: var(--white); }
     .radius-btn.active .km { opacity: 0.85; }
+    .custom-radius-wrap {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .custom-radius-wrap.visible { display: flex; }
+    .custom-radius-wrap input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1.5px solid var(--teal);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--slate);
+      width: 100%;
+    }
+    .custom-radius-wrap input:focus { outline: none; }
+    .custom-radius-km {
+      font-size: 12px;
+      color: var(--gray);
+      white-space: nowrap;
+      min-width: 54px;
+    }
 
     /* Budget pills */
     .budget-pills {
@@ -486,11 +510,15 @@
         </div>
       </div>
 
-      <div class="section-label">Search within <span id="radiusLabel">10 mi / 16 km</span> of <span id="cityLabel">your hotel or city</span></div>
+      <div class="section-label">Search within <span id="radiusLabel">5 mi / 8 km</span> of <span id="cityLabel">your hotel or city</span></div>
       <div class="radius-group">
-        <button class="radius-btn" onclick="setRadius(5)"  id="r5">5 mi<span class="km">8 km</span></button>
-        <button class="radius-btn active" onclick="setRadius(10)" id="r10">10 mi<span class="km">16 km</span></button>
-        <button class="radius-btn" onclick="setRadius(15)" id="r15">15 mi<span class="km">24 km</span></button>
+        <button class="radius-btn" onclick="setRadius(2)"      id="r2">2 mi<span class="km">3 km</span></button>
+        <button class="radius-btn active" onclick="setRadius(5)" id="r5">5 mi<span class="km">8 km</span></button>
+        <button class="radius-btn" onclick="setRadiusCustom()" id="rCustom">Custom<span class="km">mi / km</span></button>
+      </div>
+      <div class="custom-radius-wrap" id="customRadiusWrap">
+        <input type="number" id="customMiles" min="1" max="100" placeholder="Miles" oninput="onCustomMilesChange()" />
+        <span class="custom-radius-km" id="customKmLabel">— km</span>
       </div>
       <button class="btn btn-search" onclick="openSearch('event venue space private hire')">🏛️ Event Venues</button>
       <button class="btn btn-search" onclick="openSearch('restaurant private dining event')">🍽️ Restaurants</button>
@@ -587,14 +615,38 @@
 <script>
   let entries = [];
   let nextId  = 1;
-  let searchRadius = 10;
+  let searchRadius = 5;
 
-  const KM = { 5: 8, 10: 16, 15: 24 };
+  function miToKm(mi) { return Math.round(mi * 1.60934); }
 
   function setRadius(mi) {
     searchRadius = mi;
-    [5, 10, 15].forEach(r => document.getElementById('r' + r).classList.toggle('active', r === mi));
-    document.getElementById('radiusLabel').textContent = mi + ' mi / ' + KM[mi] + ' km';
+    ['r2','r5','rCustom'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('r' + mi).classList.add('active');
+    document.getElementById('customRadiusWrap').classList.remove('visible');
+    document.getElementById('radiusLabel').textContent = mi + ' mi / ' + miToKm(mi) + ' km';
+  }
+
+  function setRadiusCustom() {
+    ['r2','r5','rCustom'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('rCustom').classList.add('active');
+    document.getElementById('customRadiusWrap').classList.add('visible');
+    document.getElementById('customMiles').focus();
+    onCustomMilesChange();
+  }
+
+  function onCustomMilesChange() {
+    const mi = parseFloat(document.getElementById('customMiles').value);
+    if (!mi || mi <= 0) {
+      document.getElementById('customKmLabel').textContent = '— km';
+      searchRadius = null;
+      document.getElementById('radiusLabel').textContent = 'custom radius';
+      return;
+    }
+    const km = miToKm(mi);
+    searchRadius = mi;
+    document.getElementById('customKmLabel').textContent = km + ' km';
+    document.getElementById('radiusLabel').textContent = mi + ' mi / ' + km + ' km';
   }
 
   const fmt = n => '$' + Math.round(n).toLocaleString();
