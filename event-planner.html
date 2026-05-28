@@ -591,6 +591,59 @@
       margin-top: 12px;
       font-style: italic;
     }
+    .cpl-info {
+      display: inline-block;
+      position: relative;
+      width: 15px;
+      height: 15px;
+      background: var(--teal);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 800;
+      font-style: normal;
+      line-height: 15px;
+      text-align: center;
+      cursor: pointer;
+      vertical-align: middle;
+      margin-left: 4px;
+      user-select: none;
+    }
+    .cpl-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      background: var(--slate);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 400;
+      font-style: normal;
+      line-height: 1.6;
+      padding: 12px 14px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      text-align: left;
+      text-transform: none;
+      letter-spacing: 0;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .cpl-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--slate);
+    }
+    .cpl-info:hover .cpl-tooltip,
+    .cpl-info:focus .cpl-tooltip {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -774,7 +827,16 @@
       <div class="roi-grid">
         <div class="cpl-hero">
           <div class="cpl-val" id="roiCPLVal">—</div>
-          <div class="cpl-lbl">Cost Per Lead</div>
+          <div class="cpl-lbl">Cost Per Lead
+            <span class="cpl-info" tabindex="0">ℹ
+              <span class="cpl-tooltip">
+                <strong>Cost Per Lead (CPL)</strong> = Total Event Budget ÷ Expected Leads Captured.<br><br>
+                It measures how much Geotab spends to acquire one qualified contact at an event.
+                Lower is better — a $200 CPL means every new lead cost the company $200 in event spend.
+                Geotab uses CPL to compare event efficiency across trade shows, conferences, and hosted events.
+              </span>
+            </span>
+          </div>
           <div id="roiVerdict"></div>
           <div class="verdict-msg" id="roiMsg"></div>
         </div>
