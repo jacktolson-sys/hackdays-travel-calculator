@@ -311,7 +311,7 @@
     </div>
     <div style="display:grid;grid-template-columns:2fr 1fr 24px;gap:10px;padding:0 10px;margin-bottom:6px">
       <button class="btn btn-secondary" style="font-size:11px;padding:4px 8px;justify-content:center" onclick="sameFlightAll()" title="Copy the first attendee's flight cost to all attendees">Same Flight ↓</button>
-      <button id="returnFlightBtn" class="btn btn-secondary" style="font-size:11px;padding:4px 8px;justify-content:center" onclick="toggleReturnFlight()">Return Flight</button>
+      <button id="returnFlightBtn" class="btn btn-secondary" style="font-size:11px;padding:4px 8px;justify-content:center;border:1.5px solid var(--border)" onclick="toggleReturnFlight()">↩ Return Flight: Off</button>
       <span></span>
     </div>
 
@@ -937,9 +937,13 @@ function toggleReturnFlight() {
   if (isRoundTrip) {
     btn.style.background = 'var(--teal)';
     btn.style.color = 'var(--white)';
+    btn.style.borderColor = 'var(--teal)';
+    btn.textContent = '↩ Return Flight: On';
   } else {
     btn.style.background = '';
     btn.style.color = '';
+    btn.style.borderColor = 'var(--border)';
+    btn.textContent = '↩ Return Flight: Off';
   }
 }
 
@@ -994,7 +998,12 @@ function resetAll() {
   // Return Flight toggle
   isRoundTrip = false;
   const rBtn = document.getElementById('returnFlightBtn');
-  if (rBtn) { rBtn.style.background = ''; rBtn.style.color = ''; }
+  if (rBtn) {
+    rBtn.style.background = '';
+    rBtn.style.color = '';
+    rBtn.style.borderColor = 'var(--border)';
+    rBtn.textContent = '↩ Return Flight: Off';
+  }
 
   // Results panel
   document.getElementById('results').innerHTML = `
