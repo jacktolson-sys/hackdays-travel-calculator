@@ -842,6 +842,8 @@
 
   function removeEntry(id) {
     entries = entries.filter(e => e.id !== id);
+    entries.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+    entries.forEach((e, i) => e.rank = i + 1);
     renderList();
   }
 
