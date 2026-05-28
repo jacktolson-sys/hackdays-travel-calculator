@@ -645,6 +645,8 @@
   let editingId   = null;
   let editingRank = null;
   let searchRadius = 5;
+  let hotelCoords  = null;
+  let geocodeTimer = null;
 
   function miToKm(mi) { return Math.round(mi * 1.60934); }
 
@@ -686,6 +688,27 @@
     const hotel = document.getElementById('hotelName').value.trim();
     const city  = document.getElementById('eventCity').value.trim();
     document.getElementById('cityLabel').textContent = hotel || city || 'your hotel or city';
+    scheduleGeocode();
+  }
+
+  function scheduleGeocode() {
+    clearTimeout(geocodeTimer);
+    geocodeTimer = setTimeout(geocodeHotel, 600);
+  }
+
+  async function geocodeHotel() {
+    const hotel = document.getElementById('hotelName').value.trim();
+    const city  = document.getElementById('eventCity').value.trim();
+    hotelCoords = null;
+    if (!hotel) return;
+    try {
+      const q      = encodeURIComponent(hotel + (city ? ', ' + city : ''));
+      const res    = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+        headers: { 'Accept-Language': 'en' }
+      });
+      const [place] = await res.json();
+      if (place) hotelCoords = { lat: parseFloat(place.lat), lng: parseFloat(place.lon) };
+    } catch (e) {}
   }
 
   function onBudgetChange() {
@@ -708,35 +731,25 @@
 
   const RADIUS_ZOOM = { 2: 15, 5: 14, 10: 13, 15: 12 };
 
-  async function openSearch(query) {
+  function openSearch(query) {
     const hotel = document.getElementById('hotelName').value.trim();
     const city  = document.getElementById('eventCity').value.trim();
     if (!hotel && !city) { alert('Please enter a hotel or city first.'); return; }
 
-    const location = hotel
-      ? `near ${hotel}${city ? ', ' + city : ''}`
-      : `in ${city}`;
-    const radiusText = searchRadius ? `within ${searchRadius} miles` : '';
-    const fullQuery  = encodeURIComponent([query, location, radiusText].filter(Boolean).join(' '));
+    const location  = hotel ? `near ${hotel}${city ? ', ' + city : ''}` : `in ${city}`;
+    const radiusTxt = searchRadius ? `within ${searchRadius} miles` : '';
+    const fullQuery = encodeURIComponent([query, location, radiusTxt].filter(Boolean).join(' '));
 
-    if (hotel) {
-      try {
-        const geoQ = encodeURIComponent(hotel + (city ? ', ' + city : ''));
-        const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${geoQ}&format=json&limit=1`, {
-          headers: { 'Accept-Language': 'en' }
-        });
-        const data = await res.json();
-        if (data && data[0]) {
-          const lat  = parseFloat(data[0].lat);
-          const lng  = parseFloat(data[0].lon);
-          const zoom = RADIUS_ZOOM[searchRadius] || 13;
-          window.open(`https://www.google.com/maps/search/${fullQuery}/@${lat},${lng},${zoom}z`, '_blank');
-          return;
-        }
-      } catch (e) { /* fall through */ }
+    if (hotelCoords) {
+      const { lat, lng } = hotelCoords;
+      const zoom = RADIUS_ZOOM[searchRadius] || 13;
+      // Open hotel pin tab first (goes to background), then venue search (comes to front)
+      // Both calls are synchronous so popup blocker allows them
+      window.open(`https://www.google.com/maps?q=${lat},${lng}&z=17`, 'hotelPin');
+      window.open(`https://www.google.com/maps/search/${fullQuery}/@${lat},${lng},${zoom}z`, '_blank');
+    } else {
+      window.open(`https://www.google.com/maps/search/${fullQuery}`, '_blank');
     }
-
-    window.open(`https://www.google.com/maps/search/${fullQuery}`, '_blank');
   }
 
   function showToast(message) {
