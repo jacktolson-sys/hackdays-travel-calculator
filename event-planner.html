@@ -731,6 +731,15 @@
         <input type="text" id="addNotes" placeholder="e.g. Includes AV, outdoor patio, on-site catering" />
       </div>
 
+      <div class="field">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <label style="margin-bottom:0">Atmosphere / Description</label>
+          <button type="button" onclick="autoFillDescription()" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--teal);background:var(--teal-light);color:var(--teal-dark);border-radius:6px;cursor:pointer;font-weight:600">Auto-fill</button>
+        </div>
+        <textarea id="addDescription" rows="3" placeholder="Describe the venue atmosphere, style, and setting..." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;color:var(--slate);font-family:inherit;resize:vertical"></textarea>
+        <div class="field-hint">Used in the proposal. Click Auto-fill to generate from venue details.</div>
+      </div>
+
       <div style="display:flex;gap:10px;margin-top:8px">
         <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="clearForm()">Clear</button>
         <button id="addBtn" class="btn btn-primary" style="flex:2;margin-top:0" onclick="addEntry()">+ Add to List</button>
@@ -880,6 +889,29 @@
     document.getElementById('addFBtotal').value = per && guests ? Math.round(per * guests) : '';
   }
 
+  function autoFillDescription() {
+    const name  = document.getElementById('addName').value.trim();
+    const type  = document.getElementById('addType').value;
+    const cap   = document.getElementById('addCapacity').value;
+    const notes = document.getElementById('addNotes').value.trim();
+    const city  = document.getElementById('eventCity').value.trim();
+
+    if (!name) { alert('Enter a venue name first.'); return; }
+
+    const typeDesc = { venue: 'event venue', restaurant: 'restaurant', bar: 'bar and social space' }[type] || type;
+    const capText  = cap ? ` accommodating up to ${cap} guests` : '';
+    const cityText = city ? ` located in ${city}` : '';
+    const notesText = notes ? ` ${notes}.` : '';
+
+    const templates = {
+      venue:      `${name} is a dedicated ${typeDesc}${cityText}${capText}. The space offers a versatile setting ideal for corporate events and private gatherings.${notesText}`,
+      restaurant: `${name} is a ${typeDesc}${cityText}${capText}, offering a refined dining experience with private event capabilities.${notesText}`,
+      bar:        `${name} is a vibrant ${typeDesc}${cityText}${capText}, creating an energetic social atmosphere perfect for team events.${notesText}`,
+    };
+
+    document.getElementById('addDescription').value = templates[type] || templates.venue;
+  }
+
   const RADIUS_ZOOM = { 2: 15, 5: 14, 10: 13, 15: 12 };
 
   function openSearch(query) {
@@ -921,7 +953,8 @@
     document.getElementById('addFee').value     = e.fee || '';
     document.getElementById('addCapacity').value = e.cap || '';
     document.getElementById('addFBper').value   = e.fbPer || '';
-    document.getElementById('addNotes').value   = e.notes;
+    document.getElementById('addNotes').value       = e.notes;
+    document.getElementById('addDescription').value = e.desc || '';
 
     editingId   = e.id;
     editingRank = e.rank;
@@ -946,17 +979,18 @@
     const cap    = parseInt(document.getElementById('addCapacity').value) || null;
     const fbPer  = parseFloat(document.getElementById('addFBper').value) || 0;
     const notes  = document.getElementById('addNotes').value.trim();
+    const desc   = document.getElementById('addDescription').value.trim();
 
     if (!name) { alert('Please enter a name.'); return; }
 
     const total = fee + fbPer;
 
     if (editingId !== null) {
-      entries.push({ id: editingId, rank: editingRank, name, type, web, menu, fee, cap, fbPer, total, notes });
+      entries.push({ id: editingId, rank: editingRank, name, type, web, menu, fee, cap, fbPer, total, notes, desc });
       entries.sort((a, b) => (a.rank || 999) - (b.rank || 999));
       showToast(`✓ ${name} updated`);
     } else {
-      entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, total, notes });
+      entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, total, notes, desc });
       showToast(`✓ ${name} added to list`);
     }
 
@@ -1098,7 +1132,7 @@
   }
 
   function clearForm() {
-    ['addName','addWebsite','addMenu','addFee','addCapacity','addFBper','addNotes'].forEach(id => {
+    ['addName','addWebsite','addMenu','addFee','addCapacity','addFBper','addNotes','addDescription'].forEach(id => {
       document.getElementById(id).value = '';
     });
     document.getElementById('addType').value = 'venue';
@@ -1216,8 +1250,10 @@
   function generateProposal() {
     if (!entries.length) { alert('No venues added yet. Add some venues first.'); return; }
 
-    const city    = document.getElementById('eventCity').value.trim() || 'TBD';
-    const budget  = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const city      = document.getElementById('eventCity').value.trim() || 'TBD';
+    const budget    = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const eventDate = document.getElementById('eventDate').value || '';
+    const eventTime = document.getElementById('eventTime').value || '';
     const guests  = parseInt(document.getElementById('guestCount').value) || 0;
     const today   = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     const sorted  = [...entries].sort((a, b) => (a.rank || 999) - (b.rank || 999));
@@ -1253,9 +1289,9 @@
     });
 
     const details = [];
+    if (eventDate) details.push(new Date(eventDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }));
+    if (eventTime) details.push(eventTime);
     if (guests) details.push(`${guests} Guests`);
-    if (budget) details.push(`Budget: ${fmt(budget)}`);
-    details.push(today);
     ts.addText(details.join('   ·   '), {
       x: 0.6, y: 3.6, w: 12.13, h: 0.4,
       fontSize: 14, color: 'a8bcd4', align: 'center', fontFace: 'Segoe UI'
@@ -1295,53 +1331,71 @@
         fontSize: 11, bold: true, color: WHITE, align: 'center', valign: 'middle', fontFace: 'Segoe UI'
       });
 
-      // Pricing boxes
+      // ── Event detail strip ─────────────────────────────────
+      const eventChips = [];
+      if (eventDate) eventChips.push(`📅 ${new Date(eventDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}`);
+      if (eventTime) eventChips.push(`🕐 ${eventTime}`);
+      if (guests)    eventChips.push(`👥 ${guests} Guests`);
+      if (e.cap)     eventChips.push(`🏛️ Capacity: ${e.cap}`);
+      if (eventChips.length) {
+        slide.addText(eventChips.join('    '), {
+          x: 0.5, y: 1.45, w: 12.33, h: 0.35,
+          fontSize: 11, color: GRAY, fontFace: 'Segoe UI', bold: false
+        });
+      }
+
+      // ── Pricing boxes ──────────────────────────────────────
       const pricingItems = [];
-      if (e.fee)    pricingItems.push({ label: 'Space / Rental Fee', val: fmt(e.fee) });
-      if (e.fbPer)  pricingItems.push({ label: 'Food & Beverage',    val: fmt(e.fbPer) });
-      if (e.total)  pricingItems.push({ label: 'Estimated Total',    val: fmt(e.total) });
+      if (e.fee)   pricingItems.push({ label: 'Space / Rental Fee', val: fmt(e.fee) });
+      if (e.fbPer) pricingItems.push({ label: 'Food & Beverage',    val: fmt(e.fbPer) });
+      if (e.total) pricingItems.push({ label: 'Estimated Total',    val: fmt(e.total) });
       if (guests && e.total) pricingItems.push({ label: 'Per Person', val: fmt(e.total / guests) });
 
       const colW = 12.33 / Math.max(pricingItems.length, 1);
       pricingItems.forEach((p, i) => {
         const px = 0.5 + i * colW;
-        slide.addShape('rect', { x: px, y: 1.55, w: colW - 0.2, h: 1.3, fill: { color: LIGHT }, rectRadius: 0.08 });
+        slide.addShape('rect', { x: px, y: 1.95, w: colW - 0.2, h: 1.2, fill: { color: LIGHT }, rectRadius: 0.08 });
         slide.addText(p.val, {
-          x: px, y: 1.65, w: colW - 0.2, h: 0.7,
-          fontSize: 22, bold: true, color: NAVY, align: 'center', fontFace: 'Segoe UI'
+          x: px, y: 2.0, w: colW - 0.2, h: 0.7,
+          fontSize: 20, bold: true, color: NAVY, align: 'center', fontFace: 'Segoe UI'
         });
         slide.addText(p.label, {
-          x: px, y: 2.35, w: colW - 0.2, h: 0.35,
-          fontSize: 10, color: GRAY, align: 'center', fontFace: 'Segoe UI'
+          x: px, y: 2.7, w: colW - 0.2, h: 0.3,
+          fontSize: 9, color: GRAY, align: 'center', fontFace: 'Segoe UI'
         });
       });
 
-      // Divider
-      slide.addShape('rect', { x: 0.5, y: 3.05, w: 12.33, h: 0.02, fill: { color: 'dde3ea' } });
-
-      // Meta info
-      let metaY = 3.2;
-      const metaParts = [];
-      if (e.cap)  metaParts.push(`👥 Capacity: ${e.cap}`);
-      if (e.web)  metaParts.push(`🔗 ${e.web}`);
-      if (e.menu) metaParts.push(`📋 Menu available`);
-      if (metaParts.length) {
-        slide.addText(metaParts.join('    '), {
-          x: 0.5, y: metaY, w: 12.33, h: 0.4,
-          fontSize: 12, color: GRAY, fontFace: 'Segoe UI'
+      // ── Atmosphere description ─────────────────────────────
+      if (e.desc) {
+        slide.addText(e.desc, {
+          x: 0.5, y: 3.3, w: 12.33, h: 0.9,
+          fontSize: 12, color: '444444', italic: true, wrap: true, fontFace: 'Segoe UI', valign: 'top'
         });
-        metaY += 0.5;
       }
 
+      // ── Divider ────────────────────────────────────────────
+      slide.addShape('rect', { x: 0.5, y: 4.3, w: 12.33, h: 0.02, fill: { color: 'dde3ea' } });
+
+      // ── Website & Menu links ───────────────────────────────
+      const linkParts = [];
+      if (e.web)  linkParts.push({ text: '🔗 Website', options: { color: BLUE, hyperlink: { url: e.web } } });
+      if (e.menu) linkParts.push({ text: '    📋 Food Menu', options: { color: BLUE, hyperlink: { url: e.menu } } });
+      if (linkParts.length) {
+        slide.addText(linkParts, {
+          x: 0.5, y: 4.4, w: 12.33, h: 0.35,
+          fontSize: 12, fontFace: 'Segoe UI'
+        });
+      }
+
+      // ── Notes ──────────────────────────────────────────────
       if (e.notes) {
         slide.addText(`Notes: ${e.notes}`, {
-          x: 0.5, y: metaY, w: 12.33, h: 0.6,
-          fontSize: 13, color: NAVY, italic: true, wrap: true, fontFace: 'Segoe UI'
+          x: 0.5, y: 4.85, w: 12.33, h: 0.45,
+          fontSize: 11, color: GRAY, italic: true, wrap: true, fontFace: 'Segoe UI'
         });
-        metaY += 0.7;
       }
 
-      // Budget fit banner
+      // ── Budget fit banner ──────────────────────────────────
       if (budget && e.total) {
         let fitColor = GREEN, fitText = '✓ Within Budget';
         if (e.total > budget)            { fitColor = RED;   fitText = '✗ Over Budget'; }
