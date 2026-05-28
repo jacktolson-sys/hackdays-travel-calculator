@@ -687,31 +687,31 @@ function searchGoogleFlights() {
   window.open(url, '_blank');
 }
 
-// ── Live hotel rates from Google Sheets ─────────────────────
-// Replace HOTEL_WEB_APP_URL with your deployed Apps Script URL after deployment.
-const HOTEL_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzpHsbEElPChJuuZtF_nHeb7_ls1cgz_dEOI53GTcOFGOg3JwJ1KhrC5LARWKUmAOFx/exec';
+// ── Live hotel rates from Google Sheets (public sheet, GViz CSV) ─
+const GVIZ_URL = 'https://docs.google.com/spreadsheets/d/1eX2xQ89R8IHTgJmdW7oukOK1aPgVMfYLHdox2hJ7wro/gviz/tq?tqx=out:csv&sheet=Source%20Data&range=A:B';
 
 function loadLiveHotelRates() {
   const statusEl = document.getElementById('hotelRateStatus');
-  if (!HOTEL_WEB_APP_URL) {
-    statusEl.textContent = 'Estimated (web app not configured)';
-    statusEl.style.color = 'var(--gray)';
-    return;
-  }
-  fetch(HOTEL_WEB_APP_URL)
-    .then(r => r.json())
-    .then(data => {
-      if (data.error) throw new Error(data.error);
+  fetch(GVIZ_URL)
+    .then(r => r.text())
+    .then(csv => {
+      const lines = csv.trim().split('\n').slice(1); // skip header row
       let updated = 0;
-      CITY_DATA.forEach(c => {
-        if (data.rates[c.name] !== undefined) {
-          c.hotel = data.rates[c.name];
+      lines.forEach(line => {
+        // GViz CSV wraps values in quotes: "City, ST","123"
+        const match = line.match(/^"([^"]+)","?([0-9.]+)"?/);
+        if (!match) return;
+        const city = match[1].trim();
+        const rate = parseFloat(match[2]);
+        const entry = CITY_DATA.find(c => c.name === city);
+        if (entry && !isNaN(rate) && rate > 0) {
+          entry.hotel = rate;
           updated++;
         }
       });
+      if (updated === 0) throw new Error('No matching cities found');
       statusEl.textContent = `Live from spreadsheet (${updated} cities)`;
       statusEl.style.color = 'var(--teal-dark)';
-      // Re-fill hotel field if a city is already selected
       const cityName = document.getElementById('city').value;
       if (cityName) {
         const cityData = CITY_DATA.find(c => c.name === cityName);
