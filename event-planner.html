@@ -706,7 +706,7 @@
       <div class="row-2">
         <div class="field">
           <label>Event Category</label>
-          <select id="eventCategory" onchange="updateROI()">
+          <select id="eventCategory" onchange="onCategoryChange()">
             <option value="">— select type —</option>
             <option value="trade-show">Trade Show (Exhibiting)</option>
             <option value="conference">Conference / Summit</option>
@@ -715,11 +715,34 @@
             <option value="partner-event">Partner Event</option>
           </select>
         </div>
-        <div class="field">
-          <label>Expected Leads</label>
-          <input type="number" id="expectedLeads" placeholder="e.g. 80" min="1" oninput="updateROI()" />
-          <div class="field-hint">Contacts you plan to capture</div>
+        <div class="field" id="sponsorshipFormatField" style="display:none">
+          <label>Sponsorship Format</label>
+          <select id="sponsorshipFormat" onchange="onCategoryChange()">
+            <option value="">— select format —</option>
+            <option value="dinner">Dinner / Networking Event</option>
+            <option value="speaking">Speaking Slot</option>
+            <option value="floor">Conference Floor Presence</option>
+            <option value="logo">Logo / Brand Placement Only</option>
+            <option value="award">Award / Recognition</option>
+          </select>
         </div>
+      </div>
+      <div class="field" id="expectedLeadsField" style="display:none">
+        <label>Expected Leads
+          <span class="cpl-info" tabindex="0" style="margin-left:6px">ℹ
+            <span class="cpl-tooltip">
+              <strong>What counts as a lead?</strong><br><br>
+              A lead is a contact who expressed genuine interest in Geotab — captured via badge scan, form submission, or business card. Only count people you plan to follow up with, not general attendees.
+            </span>
+          </span>
+        </label>
+        <input type="number" id="expectedLeads" placeholder="e.g. 80" min="1" oninput="updateROI()" />
+        <div class="field-hint">Contacts you plan to capture at this event</div>
+      </div>
+      <div class="field" id="noLeadsField" style="display:none">
+        <label>Why no leads expected?</label>
+        <textarea id="noLeadsReason" rows="2" placeholder="e.g. Logo placement only — no audience interaction or contact capture planned." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;color:var(--slate);font-family:inherit;resize:vertical" oninput="updateROI()"></textarea>
+        <div class="field-hint">Required — explain why lead capture doesn't apply to this event type</div>
       </div>
 
       <div class="field">
@@ -1298,6 +1321,33 @@
       pauseMsg:   'High CPL for a partner event — evaluate whether joint lead capture is structured and agreed upon',
     },
   };
+
+  function onCategoryChange() {
+    const category = document.getElementById('eventCategory').value;
+    const sponsorshipFormatField = document.getElementById('sponsorshipFormatField');
+    const expectedLeadsField     = document.getElementById('expectedLeadsField');
+    const noLeadsField           = document.getElementById('noLeadsField');
+    const sponsorshipFormat      = document.getElementById('sponsorshipFormat').value;
+
+    sponsorshipFormatField.style.display = 'none';
+    expectedLeadsField.style.display     = 'none';
+    noLeadsField.style.display           = 'none';
+
+    if (!category) {
+      // nothing selected — keep everything hidden
+    } else if (category === 'sponsorship') {
+      sponsorshipFormatField.style.display = 'block';
+      if (sponsorshipFormat === 'logo' || sponsorshipFormat === 'award') {
+        noLeadsField.style.display = 'block';
+      } else if (sponsorshipFormat) {
+        expectedLeadsField.style.display = 'block';
+      }
+    } else {
+      expectedLeadsField.style.display = 'block';
+    }
+
+    updateROI();
+  }
 
   function updateROI() {
     const budget   = parseFloat(document.getElementById('eventBudget').value) || 0;
