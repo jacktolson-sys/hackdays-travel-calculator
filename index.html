@@ -389,17 +389,8 @@
     </div>
   </div>
 
-  <!-- RIGHT: Results -->
-  <div id="results">
-    <div class="card result-empty">
-      <div class="big-icon">🧮</div>
-      <strong>Fill in trip details to see cost breakdown</strong>
-      <p style="font-size:13px">Select a city, add attendees, and click Calculate.</p>
-    </div>
-  </div>
-
-  <!-- Live Flight Search -->
-  <div class="card" style="grid-column:1/-1;margin-top:0">
+  <!-- RIGHT: Live Flight Search -->
+  <div class="card" style="margin-top:0">
     <div class="card-title"><span class="icon">✈️</span> Live Flight Search</div>
     <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Select cities and dates to search real-time prices on Google Flights.</p>
     <div class="row-2" style="margin-bottom:12px">
@@ -436,6 +427,16 @@
       </button>
     </div>
   </div>
+
+  <!-- BOTTOM: Results -->
+  <div id="results" style="grid-column:1/-1">
+    <div class="card result-empty">
+      <div class="big-icon">🧮</div>
+      <strong>Fill in trip details to see cost breakdown</strong>
+      <p style="font-size:13px">Select a city, add attendees, and click Calculate.</p>
+    </div>
+  </div>
+
 </div>
 <script>
 
@@ -1135,6 +1136,7 @@ function calculate() {
       </button>
     </div>
   `;
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function downloadXLSX() {
