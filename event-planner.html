@@ -960,6 +960,8 @@
     editingRank = e.rank;
 
     entries = entries.filter(en => en.id !== id);
+    entries.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+    entries.forEach((en, i) => en.rank = i + 1);
     renderList();
 
     const btn = document.getElementById('addBtn');
@@ -986,8 +988,10 @@
     const total = fee + fbPer;
 
     if (editingId !== null) {
-      entries.push({ id: editingId, rank: editingRank, name, type, web, menu, fee, cap, fbPer, total, notes, desc });
+      const insertRank = Math.min(editingRank, entries.length + 1) - 0.5;
+      entries.push({ id: editingId, rank: insertRank, name, type, web, menu, fee, cap, fbPer, total, notes, desc });
       entries.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+      entries.forEach((en, i) => en.rank = i + 1);
       showToast(`✓ ${name} updated`);
     } else {
       entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, total, notes, desc });
@@ -1136,6 +1140,7 @@
       document.getElementById(id).value = '';
     });
     document.getElementById('addType').value = 'venue';
+    if (editingId !== null) renderList();
     editingId   = null;
     editingRank = null;
     const btn = document.getElementById('addBtn');
