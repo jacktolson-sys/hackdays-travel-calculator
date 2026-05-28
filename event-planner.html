@@ -470,6 +470,110 @@
       border: 1px solid #fdba74;
     }
     .btn-edit:hover { background: #ea580c; color: var(--white); }
+
+    /* ── ROI Decision Panel ──────────────────────────────────────── */
+    .roi-panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      border-top: 4px solid var(--teal);
+    }
+    .roi-panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .roi-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .cpl-hero { text-align: center; }
+    .cpl-hero .cpl-val {
+      font-size: 52px;
+      font-weight: 900;
+      color: var(--slate);
+      line-height: 1;
+    }
+    .cpl-hero .cpl-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+    .verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 800;
+      margin-top: 14px;
+      width: 100%;
+      justify-content: center;
+    }
+    .verdict-go      { background: var(--green-light); color: var(--green);  border: 2px solid var(--green); }
+    .verdict-caution { background: var(--yellow-light); color: var(--yellow); border: 2px solid var(--yellow); }
+    .verdict-pause   { background: var(--red-light);   color: var(--red);    border: 2px solid var(--red); }
+    .verdict-msg {
+      font-size: 12px;
+      margin-top: 8px;
+      color: var(--gray);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .bench-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .bench-table th {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray);
+      padding: 6px 12px;
+      text-align: left;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .bench-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--slate);
+      vertical-align: middle;
+    }
+    .bench-row-good td { background: var(--green-light); }
+    .bench-row-ok   td { background: var(--yellow-light); }
+    .bench-row-high td { background: var(--red-light); }
+    .active-row td:first-child { border-left: 3px solid var(--teal); font-weight: 700; }
+    .you-here {
+      display: inline-block;
+      background: var(--teal);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .roi-source {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 12px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -526,6 +630,24 @@
           <input type="number" id="guestCount" placeholder="e.g. 50" min="1" oninput="onBudgetChange()" />
         </div>
       </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Event Category</label>
+          <select id="eventCategory" onchange="updateROI()">
+            <option value="">— select type —</option>
+            <option value="trade-show">Trade Show (Exhibiting)</option>
+            <option value="conference">Conference / Summit</option>
+            <option value="sponsorship">Sponsorship</option>
+            <option value="hosted">Geotab Hosted Event</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Expected Leads</label>
+          <input type="number" id="expectedLeads" placeholder="e.g. 80" min="1" oninput="updateROI()" />
+          <div class="field-hint">Contacts you plan to capture</div>
+        </div>
+      </div>
+
       <div class="field">
         <label>Hotel</label>
         <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" oninput="onAnchorChange()" />
@@ -612,6 +734,34 @@
       <div style="display:flex;gap:10px;margin-top:8px">
         <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="clearForm()">Clear</button>
         <button id="addBtn" class="btn btn-primary" style="flex:2;margin-top:0" onclick="addEntry()">+ Add to List</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROI DECISION PANEL -->
+  <div id="roiPanel" style="display:none">
+    <div class="roi-panel">
+      <div class="roi-panel-title">📊 ROI Decision Engine — Cost Per Lead Analysis</div>
+      <div class="roi-grid">
+        <div class="cpl-hero">
+          <div class="cpl-val" id="roiCPLVal">—</div>
+          <div class="cpl-lbl">Cost Per Lead</div>
+          <div id="roiVerdict"></div>
+          <div class="verdict-msg" id="roiMsg"></div>
+        </div>
+        <div>
+          <table class="bench-table">
+            <thead>
+              <tr>
+                <th>Benchmark Tier</th>
+                <th>CPL Range</th>
+                <th>2025 Real Examples (Geotab Actuals)</th>
+              </tr>
+            </thead>
+            <tbody id="benchTbody"></tbody>
+          </table>
+          <div class="roi-source">Source: Geotab 2025 Global Events Tracker · 25 confirmed events with actual spend + leads data</div>
+        </div>
       </div>
     </div>
   </div>
@@ -721,6 +871,7 @@
     document.getElementById('pillPer').textContent   = fmt(budget / guests);
     document.getElementById('pillFB').textContent    = fmt(budget * 0.40);
     renderList();
+    updateROI();
   }
 
   function calcFBTotal() {
@@ -963,6 +1114,103 @@
       entries = [];
       renderList();
     }
+  }
+
+  const BENCHMARKS = {
+    'trade-show': {
+      label: 'Trade Show — Exhibiting',
+      rows: [
+        { name: 'LATAM shows',         low: 5,   high: 77,   cls: 'bench-row-good', eg: 'Simposio Supply Chain ($5 · 596 leads), Frotas Conectadas ($33), Dia da Frota ($54), Pit Stop Supply Chain ($77)' },
+        { name: 'NA efficient shows',  low: 218, high: 400,  cls: 'bench-row-ok',   eg: 'Work Truck Week ($218 · 177 leads), World of Concrete ($246), IRE ($260), Spring iP ($291), TMC ($378)' },
+        { name: 'NA mid-range shows',  low: 400, high: 800,  cls: 'bench-row-ok',   eg: 'STN Expo-East ($429), TCA Truckload ($450 · 130 leads), Distributech ($546), Snow Show ($566), Fed Fleet ($571)' },
+        { name: 'NA expensive shows',  low: 800, high: 1600, cls: 'bench-row-high',  eg: 'World AG ($854 · 20 leads), Beyond Service ($1,077), TRB ($1,135), CES ($1,390 · 135 leads), Disasters Expo ($1,546)' },
+      ],
+      go: 400, caution: 800,
+      goMsg:      'On target — within the NA efficient show range ($218–$400 based on 2025 actuals)',
+      cautionMsg: 'Above the efficient NA show range — approaching mid-range territory. Strong lead capture strategy essential.',
+      pauseMsg:   'Above CES-level CPL — revisit attendance scope, booth size, or lead qualification approach.',
+    },
+    'conference': {
+      label: 'Conference / Summit',
+      rows: [
+        { name: 'Fleet & transport conferences', low: 300, high: 600, cls: 'bench-row-ok', eg: 'Regional fleet summits, ITS events, transport sector conferences (Geotab 2025 actuals)' },
+        { name: 'Walking / attendee only',       low: 378, high: 800, cls: 'bench-row-ok', eg: 'TMC Annual Meeting ($378 · 53 leads) — attending without a booth; proactive lead capture required' },
+      ],
+      go: 400, caution: 700,
+      goMsg:      'Within the conference benchmark range — good ROI for a conference format',
+      cautionMsg: 'Above typical conference CPL — prioritize meeting scheduling and lead capture plan',
+      pauseMsg:   'Well above conference CPL benchmarks — evaluate whether exhibiting vs. attending is the right choice',
+    },
+    'sponsorship': {
+      label: 'Sponsorship',
+      rows: [
+        { name: 'Conference sponsorships', low: 429, high: 700,  cls: 'bench-row-ok',  eg: 'STN Expo-East ($429 · 38 leads), Canada Logistics Summit ($551 · 11 leads), TCA Truckload ($450 · 130 leads)' },
+        { name: 'High-cost sponsorships',  low: 700, high: 1400, cls: 'bench-row-high', eg: 'PMTCC ($1,365 · 6 leads) — small audience events drive CPL up significantly' },
+      ],
+      go: 500, caution: 800,
+      goMsg:      'Within the typical Geotab sponsorship CPL range ($429–$700 from 2025 actuals)',
+      cautionMsg: 'Above typical sponsorship range — ensure audience quality justifies the premium',
+      pauseMsg:   'Well above sponsorship CPL benchmarks — consider renegotiating terms or adding lead capture activities',
+    },
+    'hosted': {
+      label: 'Geotab Hosted Event',
+      rows: [
+        { name: 'Intimate hosted events', low: 50,  high: 300, cls: 'bench-row-good', eg: 'Customer visits, partner days, dealer events, Toyota visits (Geotab 2025 actuals: $50–$200 typical)' },
+        { name: 'Larger hosted events',   low: 300, high: 650, cls: 'bench-row-ok',   eg: 'Geotab Day Italy 2025 ($590 · 59 leads · $34.8K spend)' },
+      ],
+      go: 300, caution: 600,
+      goMsg:      'Strong ROI for a hosted event — highly efficient format that drives quality engagement',
+      cautionMsg: 'Above typical intimate hosted event CPL — scale of event is driving costs up',
+      pauseMsg:   'Significantly above hosted event benchmarks — consider scaling down or targeting a tighter audience',
+    },
+  };
+
+  function updateROI() {
+    const budget   = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const leads    = parseInt(document.getElementById('expectedLeads').value) || 0;
+    const category = document.getElementById('eventCategory').value;
+    const panel    = document.getElementById('roiPanel');
+
+    if (!budget || !leads || !category) { panel.style.display = 'none'; return; }
+
+    panel.style.display = 'block';
+    const cpl = budget / leads;
+    const bm  = BENCHMARKS[category];
+
+    document.getElementById('roiCPLVal').textContent = fmt(cpl);
+
+    let verdict, vcls, msg;
+    if (cpl <= bm.go) {
+      verdict = '✓ GO'; vcls = 'verdict-go'; msg = bm.goMsg;
+    } else if (cpl <= bm.caution) {
+      verdict = '⚠ CAUTION'; vcls = 'verdict-caution'; msg = bm.cautionMsg;
+    } else {
+      verdict = '✗ PAUSE'; vcls = 'verdict-pause'; msg = bm.pauseMsg;
+    }
+    document.getElementById('roiVerdict').innerHTML =
+      `<div class="verdict-badge ${vcls}">${verdict}</div>`;
+    document.getElementById('roiMsg').textContent = msg;
+
+    let activeSet = false;
+    const rows = bm.rows.map(r => {
+      const inRange = cpl >= r.low && cpl <= r.high;
+      if (inRange) activeSet = true;
+      const youHere = inRange ? '<span class="you-here">← you are here</span>' : '';
+      return `<tr class="bench-row ${r.cls}${inRange ? ' active-row' : ''}">
+        <td>${r.name}${youHere}</td>
+        <td style="white-space:nowrap">${fmt(r.low)} – ${fmt(r.high)}</td>
+        <td style="font-size:11px;color:var(--gray)">${r.eg}</td>
+      </tr>`;
+    });
+    if (!activeSet) {
+      const topRow = bm.rows[bm.rows.length - 1];
+      rows.push(`<tr class="bench-row bench-row-high active-row">
+        <td>Above highest benchmark <span class="you-here">← you are here</span></td>
+        <td style="white-space:nowrap">&gt; ${fmt(topRow.high)}</td>
+        <td style="font-size:11px;color:var(--gray)">CPL exceeds all 2025 benchmark tiers for this category</td>
+      </tr>`);
+    }
+    document.getElementById('benchTbody').innerHTML = rows.join('');
   }
 
   function generateProposal() {
