@@ -445,7 +445,8 @@
       </div>
       <div class="field">
         <label>Hotel</label>
-        <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" />
+        <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" oninput="onAnchorChange()" />
+        <div class="field-hint">Searches will be limited to ~10 miles of this hotel</div>
       </div>
 
       <div id="budgetSummary" style="display:none;margin-top:14px">
@@ -457,7 +458,7 @@
         </div>
       </div>
 
-      <div class="section-label">Search for Options in <span id="cityLabel">your city</span></div>
+      <div class="section-label">Search within ~10 miles of <span id="cityLabel">your hotel or city</span></div>
       <button class="btn btn-search" onclick="openSearch('event venue space private hire')">🏛️ Event Venues</button>
       <button class="btn btn-search" onclick="openSearch('restaurant private dining event')">🍽️ Restaurants</button>
       <button class="btn btn-search" onclick="openSearch('bar social space event hire')">🍺 Bars &amp; Social Spaces</button>
@@ -553,9 +554,12 @@
 
   const fmt = n => '$' + Math.round(n).toLocaleString();
 
-  function onCityChange() {
-    const city = document.getElementById('eventCity').value.trim();
-    document.getElementById('cityLabel').textContent = city || 'your city';
+  function onCityChange() { onAnchorChange(); }
+
+  function onAnchorChange() {
+    const hotel = document.getElementById('hotelName').value.trim();
+    const city  = document.getElementById('eventCity').value.trim();
+    document.getElementById('cityLabel').textContent = hotel || city || 'your hotel or city';
   }
 
   function onBudgetChange() {
@@ -577,9 +581,13 @@
   }
 
   function openSearch(query) {
-    const city = document.getElementById('eventCity').value.trim();
-    if (!city) { alert('Please enter a city first.'); return; }
-    window.open(`https://www.google.com/maps/search/${encodeURIComponent(query + ' in ' + city)}`, '_blank');
+    const hotel = document.getElementById('hotelName').value.trim();
+    const city  = document.getElementById('eventCity').value.trim();
+    if (!hotel && !city) { alert('Please enter a hotel or city first.'); return; }
+    const location = hotel
+      ? `near ${hotel}${city ? ', ' + city : ''}`
+      : `in ${city}`;
+    window.open(`https://www.google.com/maps/search/${encodeURIComponent(query + ' ' + location)}`, '_blank');
   }
 
   function addEntry() {
