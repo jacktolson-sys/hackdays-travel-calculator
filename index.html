@@ -318,6 +318,7 @@
       <label>Hotel Rate per Night (USD)</label>
       <input type="number" id="hotelRate" min="0" placeholder="Auto-filled from city" style="border-color:var(--border)" />
       <div class="field-hint" id="hotelRateHint">Auto-filled when you select a city — edit to override</div>
+      <div id="hotelRateSource" style="font-size:11px;margin-top:4px;color:var(--gray)">Hotel rates: <span id="hotelRateStatus" style="font-weight:600">Loading…</span></div>
     </div>
 
     <div class="row-2">
@@ -690,6 +691,46 @@ function searchGoogleFlights() {
   window.open(url, '_blank');
 }
 
+// ── Live hotel rates from Google Sheets ─────────────────────
+// Replace HOTEL_WEB_APP_URL with your deployed Apps Script URL after deployment.
+const HOTEL_WEB_APP_URL = '';
+
+function loadLiveHotelRates() {
+  const statusEl = document.getElementById('hotelRateStatus');
+  if (!HOTEL_WEB_APP_URL) {
+    statusEl.textContent = 'Estimated (web app not configured)';
+    statusEl.style.color = 'var(--gray)';
+    return;
+  }
+  fetch(HOTEL_WEB_APP_URL)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) throw new Error(data.error);
+      let updated = 0;
+      CITY_DATA.forEach(c => {
+        if (data.rates[c.name] !== undefined) {
+          c.hotel = data.rates[c.name];
+          updated++;
+        }
+      });
+      statusEl.textContent = `Live from spreadsheet (${updated} cities)`;
+      statusEl.style.color = 'var(--teal-dark)';
+      // Re-fill hotel field if a city is already selected
+      const cityName = document.getElementById('city').value;
+      if (cityName) {
+        const cityData = CITY_DATA.find(c => c.name === cityName);
+        if (cityData) document.getElementById('hotelRate').value = cityData.hotel;
+      }
+    })
+    .catch(err => {
+      console.warn('Hotel rate fetch failed:', err);
+      statusEl.textContent = 'Estimated (could not reach spreadsheet)';
+      statusEl.style.color = '#c0392b';
+    });
+}
+
+loadLiveHotelRates();
+
 // Populate destination dropdown
 const citySelect = document.getElementById('city');
 CITY_DATA.forEach(c => {
@@ -719,7 +760,9 @@ citySelect.addEventListener('change', () => {
   if (cityData) {
     hotelRateEl.value = cityData.hotel;
     hotelRateEl.style.borderColor = 'var(--teal)';
-    hotelRateHint.textContent = 'Rate from city data — edit to override';
+    const src = document.getElementById('hotelRateStatus');
+    const isLive = src && src.style.color === 'var(--teal-dark)';
+    hotelRateHint.textContent = isLive ? 'Live rate from spreadsheet — edit to override' : 'Estimated rate — edit to override';
   } else {
     hotelRateEl.value = '';
     hotelRateEl.style.borderColor = 'var(--border)';
