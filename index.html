@@ -137,21 +137,38 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: var(--teal-dark);
       margin: 22px 0 0;
-      padding-top: 16px;
-      border-top: 1px dashed var(--border);
+      padding: 10px 14px;
+      background: var(--gray-light);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
       cursor: pointer;
       user-select: none;
+      transition: background 0.15s, border-color 0.15s;
     }
-    .section-toggle:hover { color: var(--teal); }
+    .section-toggle:hover { background: var(--teal-light); border-color: var(--teal); }
+    .section-toggle.open { background: var(--teal-light); border-color: var(--teal); }
+    .section-toggle .toggle-left { display: flex; align-items: center; gap: 10px; }
+    .optional-badge {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      background: var(--white);
+      color: var(--gray);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
     .section-toggle .chevron {
       font-style: normal;
-      font-size: 10px;
+      font-size: 13px;
+      font-weight: 700;
       transition: transform 0.2s;
     }
     .section-toggle.open .chevron { transform: rotate(90deg); }
@@ -358,7 +375,10 @@
     </div>
 
     <div class="section-toggle" id="flightToggle" onclick="toggleFlightSearch()">
-      ✈️ Live Flight Search
+      <span class="toggle-left">
+        ✈️ Live Flight Search
+        <span class="optional-badge">Optional</span>
+      </span>
       <span class="chevron">▶</span>
     </div>
     <div class="collapsible" id="flightPanel">
