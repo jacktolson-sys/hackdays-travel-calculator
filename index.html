@@ -281,7 +281,7 @@
     <div class="card-title"><span class="icon">👥</span> Attendees & Flights</div>
 
     <div class="field" style="margin-bottom:12px">
-      <label>Number of People</label>
+      <label>Number of People <span style="color:var(--red)">*</span></label>
       <input type="number" id="numAttendees" value="3" min="1" max="50" oninput="setAttendeeCount(this.value)" />
     </div>
 
@@ -291,7 +291,7 @@
       <span></span>
     </div>
     <div style="display:grid;grid-template-columns:2fr 1fr 24px;gap:10px;padding:0 10px;margin-bottom:6px">
-      <button class="btn btn-secondary" style="font-size:11px;padding:4px 8px;justify-content:center" onclick="sameFlightAll()">Same Flight ↓</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:4px 8px;justify-content:center" onclick="sameFlightAll()" title="Copy the first attendee's flight cost to all attendees">Same Flight ↓</button>
       <button id="returnFlightBtn" class="btn btn-secondary" style="font-size:11px;padding:4px 8px;justify-content:center" onclick="toggleReturnFlight()">Return Flight</button>
       <span></span>
     </div>
@@ -305,7 +305,7 @@
         <div class="section-label">Trip Details</div>
 
         <div class="field">
-          <label>Destination City</label>
+          <label>Destination City <span style="color:var(--red)">*</span></label>
           <select id="city">
             <option value="">— Select a city —</option>
           </select>
@@ -320,7 +320,7 @@
 
         <div class="row-2">
           <div class="field">
-            <label>Number of Nights</label>
+            <label>Number of Nights <span style="color:var(--red)">*</span></label>
             <input type="number" id="nights" value="2" min="1" max="30" />
           </div>
           <div class="field">
@@ -379,7 +379,7 @@
     </div>
 
     <div style="display:flex;gap:10px;margin-top:20px">
-      <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:12px;font-size:15px" onclick="resetAll()">↺ Reset</button>
+      <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:12px;font-size:15px" onclick="if(confirm('Reset all fields? This cannot be undone.')) resetAll()">↺ Reset</button>
       <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="calculate()">Calculate Trip Cost</button>
     </div>
   </div>
