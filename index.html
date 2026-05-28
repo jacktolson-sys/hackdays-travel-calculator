@@ -583,10 +583,10 @@
     </div>
 
     <div class="section-label" style="margin-top:20px">ROI Planning</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
       <div class="field" style="margin-bottom:0">
         <label>Event Category</label>
-        <select id="tcEventCategory">
+        <select id="tcEventCategory" onchange="onTcCategoryChange()">
           <option value="">— select type —</option>
           <option value="trade-show">Trade Show (Exhibiting)</option>
           <option value="conference">Conference / Summit</option>
@@ -595,11 +595,39 @@
           <option value="partner-event">Partner Event</option>
         </select>
       </div>
-      <div class="field" style="margin-bottom:0">
-        <label>Expected Leads</label>
-        <input type="number" id="tcExpectedLeads" placeholder="e.g. 80" min="1" />
-        <div class="field-hint">Contacts you plan to capture at this event</div>
+      <div class="field" id="tcSponsorshipFormatField" style="display:none;margin-bottom:0">
+        <label>Sponsorship Format</label>
+        <select id="tcSponsorshipFormat" onchange="onTcSponsorshipFormatChange()">
+          <option value="">— select format —</option>
+          <option value="dinner">Dinner / Networking Event</option>
+          <option value="speaking">Speaking Slot</option>
+          <option value="floor">Conference Floor Presence</option>
+          <option value="logo">Logo / Brand Placement Only</option>
+          <option value="award">Award / Recognition</option>
+        </select>
       </div>
+    </div>
+    <div class="field" id="tcLeadCaptureField" style="display:none">
+      <label>Lead Capture</label>
+      <div style="display:flex;gap:20px;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--slate);cursor:pointer">
+          <input type="radio" name="tcLeadCapture" value="yes" onchange="onTcLeadCaptureChange()" style="width:auto" /> Yes
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--slate);cursor:pointer">
+          <input type="radio" name="tcLeadCapture" value="no" onchange="onTcLeadCaptureChange()" style="width:auto" /> No
+        </label>
+      </div>
+      <div class="field-hint">Will this event capture leads?</div>
+    </div>
+    <div class="field" id="tcEventInfoField" style="display:none">
+      <label>Event Information</label>
+      <textarea id="tcEventInfoText" rows="2" placeholder="e.g. Dinner sponsorship at TCA Truckload — 130 attendees, lead capture via badge scan." style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;color:var(--slate);font-family:inherit;resize:vertical"></textarea>
+      <div class="field-hint">Add any notes about this sponsorship format</div>
+    </div>
+    <div class="field" id="tcExpectedLeadsField" style="display:none;margin-bottom:16px">
+      <label>Expected Leads</label>
+      <input type="number" id="tcExpectedLeads" placeholder="e.g. 80" min="1" />
+      <div class="field-hint">Contacts you plan to capture at this event</div>
     </div>
 
     <div style="display:flex;gap:10px;margin-top:4px">
@@ -1308,7 +1336,34 @@ function buildROIPanel(cpl, category) {
   </div>`;
 }
 
-function calculate() {
+function onTcCategoryChange() {
+    const category = document.getElementById('tcEventCategory').value;
+    document.getElementById('tcSponsorshipFormatField').style.display = 'none';
+    document.getElementById('tcLeadCaptureField').style.display       = 'none';
+    document.getElementById('tcEventInfoField').style.display         = 'none';
+    document.getElementById('tcExpectedLeadsField').style.display     = 'none';
+    document.querySelectorAll('input[name="tcLeadCapture"]').forEach(r => r.checked = false);
+    document.getElementById('tcSponsorshipFormat').value = '';
+    document.getElementById('tcExpectedLeads').value = '';
+    if (!category) return;
+    document.getElementById('tcLeadCaptureField').style.display = 'block';
+    if (category === 'sponsorship') {
+      document.getElementById('tcSponsorshipFormatField').style.display = 'block';
+    }
+  }
+
+  function onTcSponsorshipFormatChange() {
+    const format = document.getElementById('tcSponsorshipFormat').value;
+    document.getElementById('tcEventInfoField').style.display = format ? 'block' : 'none';
+  }
+
+  function onTcLeadCaptureChange() {
+    const val = document.querySelector('input[name="tcLeadCapture"]:checked')?.value;
+    document.getElementById('tcExpectedLeadsField').style.display = val === 'yes' ? 'block' : 'none';
+    if (val !== 'yes') document.getElementById('tcExpectedLeads').value = '';
+  }
+
+  function calculate() {
   const cityName = citySelect.value;
   if (!cityName) { alert('Please select a destination city.'); return; }
 
