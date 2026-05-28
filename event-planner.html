@@ -119,7 +119,7 @@
       text-transform: uppercase;
       letter-spacing: 0.4px;
     }
-    .field input, .field select, .field textarea {
+    .field input, .field select {
       width: 100%;
       padding: 9px 11px;
       border: 1.5px solid var(--border);
@@ -128,14 +128,13 @@
       color: var(--slate);
       background: var(--white);
     }
-    .field input:focus, .field select:focus, .field textarea:focus {
+    .field input:focus, .field select:focus {
       outline: none;
       border-color: var(--teal);
     }
     .field-hint { font-size: 11px; color: var(--gray); margin-top: 3px; }
 
     .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
     .btn {
       display: inline-flex;
@@ -174,23 +173,13 @@
       margin-bottom: 8px;
     }
     .btn-search:hover { background: var(--teal); color: var(--white); }
-    .btn-add {
-      background: var(--teal);
-      color: var(--white);
-      width: 100%;
-      justify-content: center;
-      padding: 12px;
-      font-size: 14px;
-      margin-top: 4px;
-    }
-    .btn-add:hover { background: var(--teal-dark); }
 
-    /* Budget summary */
+    /* Budget pills */
     .budget-pills {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 4px;
     }
     .pill {
       background: var(--gray-light);
@@ -198,119 +187,205 @@
       padding: 12px;
       text-align: center;
     }
-    .pill .val { font-size: 20px; font-weight: 800; color: var(--teal-dark); }
+    .pill .val { font-size: 18px; font-weight: 800; color: var(--teal-dark); }
     .pill .lbl { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
 
-    /* Comparison table */
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    /* ── Venue cards ─────────────────────────────────────────── */
+    .venue-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .venue-card {
       background: var(--white);
-      font-size: 13px;
-    }
-    th {
-      background: var(--slate);
-      color: var(--white);
-      padding: 12px 14px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-    td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--gray-light); }
-
-    .rank-input {
-      width: 48px;
-      padding: 5px 8px;
       border: 1.5px solid var(--border);
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 700;
-      text-align: center;
-      color: var(--slate);
+      border-radius: var(--radius);
+      padding: 20px 20px 20px 0;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 0;
+      box-shadow: var(--shadow);
+      transition: border-color 0.15s;
     }
-    .rank-input:focus { outline: none; border-color: var(--teal); }
+    .venue-card:hover { border-color: var(--teal); }
 
-    .venue-name { font-weight: 700; color: var(--slate); }
-    .venue-name a { color: var(--teal-dark); text-decoration: none; }
-    .venue-name a:hover { text-decoration: underline; }
+    .rank-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 4px;
+      gap: 8px;
+    }
+    .rank-badge {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rank-badge.unranked {
+      background: var(--gray-light);
+      color: var(--gray);
+      font-size: 12px;
+    }
+    .rank-arrows { display: flex; flex-direction: column; gap: 2px; }
+    .rank-arrows button {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      width: 24px; height: 20px;
+      cursor: pointer;
+      font-size: 10px;
+      color: var(--gray);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
+    }
+    .rank-arrows button:hover { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal); }
+
+    .venue-body { display: flex; flex-direction: column; gap: 10px; }
+
+    .venue-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .venue-name-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .venue-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--slate);
+      text-decoration: none;
+    }
+    .venue-name:hover { color: var(--teal-dark); text-decoration: underline; }
 
     .badge {
       display: inline-block;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 12px;
       font-size: 11px;
       font-weight: 700;
     }
-    .badge-venue  { background: #eef2ff; color: #4338ca; }
+    .badge-venue      { background: #eef2ff; color: #4338ca; }
     .badge-restaurant { background: #fef3c7; color: #92400e; }
-    .badge-bar    { background: #fce7f3; color: #9d174d; }
+    .badge-bar        { background: #fce7f3; color: #9d174d; }
 
-    .fit-good { background: var(--green-light); color: var(--green); font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 12px; }
-    .fit-warn { background: var(--yellow-light); color: var(--yellow); font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 12px; }
-    .fit-over { background: var(--red-light); color: var(--red); font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 12px; }
+    .venue-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .btn-menu {
+    .action-btn {
+      padding: 6px 14px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .action-website {
       background: var(--teal-light);
       color: var(--teal-dark);
       border: 1px solid var(--teal);
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
     }
-    .btn-menu:hover { background: var(--teal); color: var(--white); }
-    .btn-menu.disabled { background: var(--gray-light); color: var(--gray); border-color: var(--border); cursor: default; pointer-events: none; }
-
-    .btn-remove {
+    .action-website:hover { background: var(--teal); color: var(--white); }
+    .action-menu {
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fdba74;
+    }
+    .action-menu:hover { background: #ea580c; color: var(--white); }
+    .action-menu.no-menu {
+      background: var(--gray-light);
+      color: var(--gray);
+      border-color: var(--border);
+      cursor: default;
+      pointer-events: none;
+    }
+    .action-remove {
       background: var(--red-light);
       color: var(--red);
       border: 1px solid #f5c6c6;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
+      margin-left: auto;
     }
-    .btn-remove:hover { background: var(--red); color: var(--white); }
+    .action-remove:hover { background: var(--red); color: var(--white); }
 
-    .empty-table {
-      text-align: center;
-      padding: 40px;
+    .venue-pricing {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--gray-light);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+    .price-item { display: flex; flex-direction: column; }
+    .price-item .price-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--slate);
+    }
+    .price-item .price-lbl {
+      font-size: 10px;
       color: var(--gray);
-      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 1px;
     }
-    .empty-table .icon { font-size: 36px; opacity: 0.3; display: block; margin-bottom: 8px; }
+    .price-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+    }
 
-    .notes-cell {
-      max-width: 160px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--gray);
+    .fit-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
       font-size: 12px;
-    }
-
-    .price-highlight {
       font-weight: 700;
-      font-size: 14px;
+      margin-left: auto;
     }
+    .fit-good { background: var(--green-light); color: var(--green); }
+    .fit-warn { background: var(--yellow-light); color: var(--yellow); }
+    .fit-over { background: var(--red-light); color: var(--red); }
+
+    .venue-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--gray);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .venue-meta span { display: flex; align-items: center; gap: 4px; }
+    .cap-warn { color: var(--red); font-weight: 700; }
+
+    .venue-notes {
+      font-size: 12px;
+      color: var(--gray);
+      font-style: italic;
+      padding: 8px 12px;
+      background: var(--gray-light);
+      border-radius: 6px;
+      border-left: 3px solid var(--border);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--gray);
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .empty-state .icon { font-size: 44px; opacity: 0.3; display: block; margin-bottom: 12px; }
   </style>
 </head>
 <body>
@@ -330,24 +405,22 @@
 
 <div class="page-wrap">
 
-  <!-- TOP GRID: Event Details + Add Venue -->
+  <!-- TOP GRID -->
   <div class="top-grid">
 
     <!-- Event Details -->
     <div class="card">
-      <div class="card-title"><span>📋</span> Event Details</div>
+      <div class="card-title">📋 Event Details</div>
 
       <div class="field">
         <label>Event Name</label>
         <input type="text" id="eventName" placeholder="e.g. Hackdays Chicago 2026" />
       </div>
-
       <div class="field">
         <label>City</label>
-        <input type="text" id="eventCity" placeholder="e.g. Chicago, IL" oninput="updateSearchButtons()" />
+        <input type="text" id="eventCity" placeholder="e.g. Chicago, IL" oninput="onCityChange()" />
         <div class="field-hint">Used to search for nearby venues and restaurants</div>
       </div>
-
       <div class="row-2">
         <div class="field">
           <label>Event Date</label>
@@ -358,44 +431,40 @@
           <input type="time" id="eventTime" value="18:00" />
         </div>
       </div>
-
       <div class="row-2">
         <div class="field">
           <label>Total Budget (USD)</label>
-          <input type="number" id="eventBudget" placeholder="e.g. 15000" min="0" step="100" oninput="updateBudgetSummary()" />
+          <input type="number" id="eventBudget" placeholder="e.g. 15000" min="0" oninput="onBudgetChange()" />
         </div>
         <div class="field">
           <label>Guest Count</label>
-          <input type="number" id="guestCount" placeholder="e.g. 50" min="1" oninput="updateBudgetSummary()" />
+          <input type="number" id="guestCount" placeholder="e.g. 50" min="1" oninput="onBudgetChange()" />
         </div>
       </div>
-
       <div class="field">
-        <label>Hotel Name</label>
+        <label>Hotel</label>
         <input type="text" id="hotelName" placeholder="e.g. Marriott Chicago Downtown" />
       </div>
 
-      <!-- Live budget summary -->
-      <div id="budgetSummary" style="display:none;margin-top:16px">
+      <div id="budgetSummary" style="display:none;margin-top:14px">
         <div class="section-label" style="margin-top:0">Budget at a Glance</div>
         <div class="budget-pills">
-          <div class="pill"><div class="val" id="pillTotal">—</div><div class="lbl">Total Budget</div></div>
+          <div class="pill"><div class="val" id="pillTotal">—</div><div class="lbl">Total</div></div>
           <div class="pill"><div class="val" id="pillPer">—</div><div class="lbl">Per Person</div></div>
           <div class="pill"><div class="val" id="pillFB">—</div><div class="lbl">F&B Budget</div></div>
         </div>
       </div>
 
-      <!-- Search buttons -->
-      <div class="section-label">Find Options in <span id="cityLabel">your city</span></div>
-      <button class="btn btn-search" onclick="openSearch('event venue space')">🏛️ Search Event Venues</button>
-      <button class="btn btn-search" onclick="openSearch('private dining restaurant')">🍽️ Search Restaurants</button>
-      <button class="btn btn-search" onclick="openSearch('bar happy hour event space')">🍺 Search Bars & Social Spaces</button>
+      <div class="section-label">Search for Options in <span id="cityLabel">your city</span></div>
+      <button class="btn btn-search" onclick="openSearch('event venue space private hire')">🏛️ Event Venues</button>
+      <button class="btn btn-search" onclick="openSearch('restaurant private dining event')">🍽️ Restaurants</button>
+      <button class="btn btn-search" onclick="openSearch('bar social space event hire')">🍺 Bars &amp; Social Spaces</button>
     </div>
 
-    <!-- Add Venue / Restaurant -->
+    <!-- Add Venue -->
     <div class="card">
-      <div class="card-title"><span>➕</span> Add Venue or Restaurant</div>
-      <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Find an option you like and enter the details here to add it to your comparison list.</p>
+      <div class="card-title">➕ Add Venue or Restaurant</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Search Google for venues in your city, then fill in the details here to add them to your list.</p>
 
       <div class="row-2">
         <div class="field">
@@ -419,81 +488,58 @@
 
       <div class="field">
         <label>Menu URL</label>
-        <input type="url" id="addMenu" placeholder="https://... (link to menu page)" />
-        <div class="field-hint">Direct link to their menu — shown as a button in the comparison table</div>
+        <input type="url" id="addMenu" placeholder="https://... (direct link to their menu)" />
+        <div class="field-hint">Paste the direct link to their menu or food & beverage page</div>
       </div>
 
       <div class="row-2">
+        <div class="field">
+          <label>Space / Rental Fee ($)</label>
+          <input type="number" id="addFee" placeholder="e.g. 2500" min="0" />
+          <div class="field-hint">Room hire or buyout fee</div>
+        </div>
         <div class="field">
           <label>Max Capacity</label>
           <input type="number" id="addCapacity" placeholder="e.g. 80" min="1" />
         </div>
-        <div class="field">
-          <label>Venue / Space Fee ($)</label>
-          <input type="number" id="addFee" placeholder="e.g. 2500" min="0" />
-          <div class="field-hint">Room rental or buyout fee</div>
-        </div>
       </div>
 
       <div class="row-2">
         <div class="field">
-          <label>F&B Minimum / Person ($)</label>
-          <input type="number" id="addFBper" placeholder="e.g. 65" min="0" />
+          <label>F&amp;B Minimum / Person ($)</label>
+          <input type="number" id="addFBper" placeholder="e.g. 65" min="0" oninput="calcFBTotal()" />
         </div>
         <div class="field">
-          <label>F&B Minimum Total ($)</label>
-          <input type="number" id="addFBtotal" placeholder="auto-calculated" min="0" readonly style="background:var(--gray-light);color:var(--gray)" />
-          <div class="field-hint">Per person × guest count</div>
+          <label>F&amp;B Total ($)</label>
+          <input type="number" id="addFBtotal" placeholder="auto" readonly style="background:var(--gray-light);color:var(--gray)" />
         </div>
       </div>
 
       <div class="field">
         <label>Notes</label>
-        <input type="text" id="addNotes" placeholder="e.g. Includes AV, outdoor patio available" />
+        <input type="text" id="addNotes" placeholder="e.g. Includes AV, outdoor patio, on-site catering" />
       </div>
 
       <div style="display:flex;gap:10px;margin-top:8px">
-        <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="clearAddForm()">Clear</button>
-        <button class="btn btn-add" style="flex:2" onclick="addEntry()">+ Add to Comparison</button>
+        <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="clearForm()">Clear</button>
+        <button class="btn btn-primary" style="flex:2;margin-top:0" onclick="addEntry()">+ Add to List</button>
       </div>
     </div>
   </div>
 
-  <!-- COMPARISON TABLE -->
-  <div class="card" style="margin-bottom:32px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <div class="card-title" style="margin-bottom:0"><span>📊</span> Venue & Restaurant Comparison</div>
-      <button class="btn btn-secondary" onclick="clearAll()" style="font-size:12px">Clear All</button>
+  <!-- VENUE LIST -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div style="font-size:18px;font-weight:800;color:var(--slate)">
+      Venue &amp; Restaurant List <span id="entryCount" style="font-size:13px;color:var(--gray);font-weight:500"></span>
     </div>
+    <button class="btn btn-secondary" onclick="clearAll()" style="font-size:12px">Clear All</button>
+  </div>
 
-    <div class="table-wrap">
-      <table id="compTable">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Capacity</th>
-            <th>Venue Fee</th>
-            <th>F&B / Person</th>
-            <th>F&B Total</th>
-            <th>Est. Total Cost</th>
-            <th>Cost / Person</th>
-            <th>Budget Fit</th>
-            <th>Menu</th>
-            <th>Notes</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="compBody">
-          <tr>
-            <td colspan="13" class="empty-table">
-              <span class="icon">🏛️</span>
-              No venues added yet — search for options on the left and add them above
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div id="venueList">
+    <div class="empty-state">
+      <span class="icon">🏛️</span>
+      <strong>No venues added yet</strong>
+      <p style="font-size:13px;margin-top:6px">Search for venues on the left, then add them using the form above.</p>
     </div>
   </div>
 
@@ -503,38 +549,29 @@
   let entries = [];
   let nextId  = 1;
 
-  const fmt  = n  => '$' + Math.round(n).toLocaleString();
-  const fmtD = n  => n != null && n !== '' ? fmt(n) : '—';
+  const fmt = n => '$' + Math.round(n).toLocaleString();
 
-  // ── Live F&B total calc ──────────────────────────────────────
-  document.getElementById('addFBper').addEventListener('input', calcFBTotal);
-  document.getElementById('guestCount').addEventListener('input', calcFBTotal);
-
-  function calcFBTotal() {
-    const per    = parseFloat(document.getElementById('addFBper').value) || 0;
-    const guests = parseInt(document.getElementById('guestCount').value) || 0;
-    const total  = per && guests ? per * guests : '';
-    document.getElementById('addFBtotal').value = total ? Math.round(total) : '';
+  function onCityChange() {
+    const city = document.getElementById('eventCity').value.trim();
+    document.getElementById('cityLabel').textContent = city || 'your city';
   }
 
-  // ── Budget summary pills ─────────────────────────────────────
-  function updateBudgetSummary() {
-    const budget  = parseFloat(document.getElementById('eventBudget').value) || 0;
-    const guests  = parseInt(document.getElementById('guestCount').value) || 0;
-    const wrap    = document.getElementById('budgetSummary');
-
+  function onBudgetChange() {
+    const budget = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const guests = parseInt(document.getElementById('guestCount').value) || 0;
+    const wrap   = document.getElementById('budgetSummary');
     if (!budget || !guests) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
     document.getElementById('pillTotal').textContent = fmt(budget);
     document.getElementById('pillPer').textContent   = fmt(budget / guests);
     document.getElementById('pillFB').textContent    = fmt(budget * 0.40);
-    renderTable();
+    renderList();
   }
 
-  // ── Search buttons ───────────────────────────────────────────
-  function updateSearchButtons() {
-    const city = document.getElementById('eventCity').value.trim();
-    document.getElementById('cityLabel').textContent = city || 'your city';
+  function calcFBTotal() {
+    const per    = parseFloat(document.getElementById('addFBper').value) || 0;
+    const guests = parseInt(document.getElementById('guestCount').value) || 0;
+    document.getElementById('addFBtotal').value = per && guests ? Math.round(per * guests) : '';
   }
 
   function openSearch(query) {
@@ -543,117 +580,175 @@
     window.open(`https://www.google.com/maps/search/${encodeURIComponent(query + ' in ' + city)}`, '_blank');
   }
 
-  // ── Add entry ────────────────────────────────────────────────
   function addEntry() {
-    const name    = document.getElementById('addName').value.trim();
-    const type    = document.getElementById('addType').value;
-    const website = document.getElementById('addWebsite').value.trim();
-    const menu    = document.getElementById('addMenu').value.trim();
-    const cap     = parseInt(document.getElementById('addCapacity').value) || null;
-    const fee     = parseFloat(document.getElementById('addFee').value) || 0;
-    const fbPer   = parseFloat(document.getElementById('addFBper').value) || 0;
-    const notes   = document.getElementById('addNotes').value.trim();
-    const guests  = parseInt(document.getElementById('guestCount').value) || 0;
+    const name   = document.getElementById('addName').value.trim();
+    const type   = document.getElementById('addType').value;
+    const web    = document.getElementById('addWebsite').value.trim();
+    const menu   = document.getElementById('addMenu').value.trim();
+    const fee    = parseFloat(document.getElementById('addFee').value) || 0;
+    const cap    = parseInt(document.getElementById('addCapacity').value) || null;
+    const fbPer  = parseFloat(document.getElementById('addFBper').value) || 0;
+    const guests = parseInt(document.getElementById('guestCount').value) || 0;
+    const notes  = document.getElementById('addNotes').value.trim();
 
-    if (!name) { alert('Please enter a venue or restaurant name.'); return; }
+    if (!name) { alert('Please enter a name.'); return; }
 
-    const fbTotal = fbPer && guests ? fbPer * guests : (fbPer || 0);
+    const fbTotal = fbPer && guests ? fbPer * guests : 0;
     const total   = fee + fbTotal;
 
-    entries.push({ id: nextId++, rank: entries.length + 1, name, type, website, menu, cap, fee, fbPer, fbTotal, total, notes });
-    renderTable();
-    clearAddForm();
+    entries.push({ id: nextId++, rank: entries.length + 1, name, type, web, menu, fee, cap, fbPer, fbTotal, total, notes });
+    renderList();
+    clearForm();
   }
 
-  // ── Render table ─────────────────────────────────────────────
-  function renderTable() {
-    const budget = parseFloat(document.getElementById('eventBudget').value) || 0;
-    const guests = parseInt(document.getElementById('guestCount').value) || 0;
-    const tbody  = document.getElementById('compBody');
+  function renderList() {
+    const budget  = parseFloat(document.getElementById('eventBudget').value) || 0;
+    const guests  = parseInt(document.getElementById('guestCount').value) || 0;
+    const wrap    = document.getElementById('venueList');
+    const counter = document.getElementById('entryCount');
 
-    if (entries.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="13" class="empty-table"><span class="icon">🏛️</span>No venues added yet — search for options on the left and add them above</td></tr>`;
+    counter.textContent = entries.length ? `(${entries.length})` : '';
+
+    if (!entries.length) {
+      wrap.innerHTML = `
+        <div class="empty-state">
+          <span class="icon">🏛️</span>
+          <strong>No venues added yet</strong>
+          <p style="font-size:13px;margin-top:6px">Search for venues on the left, then add them using the form above.</p>
+        </div>`;
       return;
     }
 
-    // Sort by rank
-    const sorted = [...entries].sort((a, b) => (a.rank || 99) - (b.rank || 99));
+    const sorted = [...entries].sort((a, b) => (a.rank || 999) - (b.rank || 999));
 
-    tbody.innerHTML = sorted.map(e => {
+    wrap.innerHTML = `<div class="venue-list">${sorted.map((e, idx) => {
       const perPerson = guests && e.total ? e.total / guests : null;
-      const pct       = budget ? e.total / budget : null;
 
-      let fitClass = '', fitLabel = '—';
+      let fitClass = '', fitLabel = '';
       if (budget && e.total) {
-        if (e.total <= budget * 0.85)       { fitClass = 'fit-good'; fitLabel = '✓ Within Budget'; }
-        else if (e.total <= budget)          { fitClass = 'fit-warn'; fitLabel = '⚠ Close to Budget'; }
-        else                                 { fitClass = 'fit-over'; fitLabel = '✗ Over Budget'; }
+        if (e.total <= budget * 0.85)  { fitClass = 'fit-good'; fitLabel = '✓ Within Budget'; }
+        else if (e.total <= budget)    { fitClass = 'fit-warn'; fitLabel = '⚠ Close to Budget'; }
+        else                           { fitClass = 'fit-over'; fitLabel = '✗ Over Budget'; }
       }
 
       const typeBadge = {
         venue:      '<span class="badge badge-venue">Venue</span>',
         restaurant: '<span class="badge badge-restaurant">Restaurant</span>',
         bar:        '<span class="badge badge-bar">Bar</span>',
-      }[e.type] || '';
+      }[e.type];
+
+      const capWarn = e.cap && guests && e.cap < guests
+        ? `<span class="cap-warn">⚠ Capacity: ${e.cap} (below guest count)</span>`
+        : (e.cap ? `<span>👥 Capacity: ${e.cap}</span>` : '');
 
       const menuBtn = e.menu
-        ? `<a class="btn-menu" href="${e.menu}" target="_blank">Menu →</a>`
-        : `<span class="btn-menu disabled">No Menu</span>`;
+        ? `<a class="action-btn action-menu" href="${e.menu}" target="_blank">📋 Menu</a>`
+        : `<span class="action-btn action-menu no-menu">📋 No Menu Added</span>`;
 
-      const nameDisplay = e.website
-        ? `<a href="${e.website}" target="_blank">${e.name}</a>`
-        : e.name;
+      const websiteBtn = e.web
+        ? `<a class="action-btn action-website" href="${e.web}" target="_blank">🔗 Website</a>`
+        : '';
 
-      const capDisplay = e.cap
-        ? (guests && e.cap < guests ? `<span style="color:var(--red);font-weight:700">${e.cap} ⚠</span>` : e.cap)
-        : '—';
-
-      const pctDisplay = pct ? ` <span style="color:var(--gray);font-size:11px">(${Math.round(pct*100)}%)</span>` : '';
+      const rankNum = e.rank || (idx + 1);
 
       return `
-        <tr>
-          <td><input class="rank-input" type="number" min="1" value="${e.rank || ''}" placeholder="#" onchange="setRank(${e.id}, this.value)" /></td>
-          <td class="venue-name">${nameDisplay}</td>
-          <td>${typeBadge}</td>
-          <td>${capDisplay}</td>
-          <td class="price-highlight">${fmtD(e.fee || null)}</td>
-          <td class="price-highlight">${e.fbPer ? fmt(e.fbPer) : '—'}</td>
-          <td class="price-highlight">${e.fbTotal ? fmt(e.fbTotal) : '—'}</td>
-          <td class="price-highlight">${e.total ? fmt(e.total) : '—'}${pctDisplay}</td>
-          <td class="price-highlight">${perPerson ? fmt(perPerson) : '—'}</td>
-          <td><span class="${fitClass}">${fitLabel}</span></td>
-          <td>${menuBtn}</td>
-          <td class="notes-cell" title="${e.notes}">${e.notes || '—'}</td>
-          <td><button class="btn-remove" onclick="removeEntry(${e.id})">✕</button></td>
-        </tr>`;
-    }).join('');
+        <div class="venue-card">
+          <div class="rank-col">
+            <div class="rank-badge ${e.rank ? '' : 'unranked'}">${rankNum}</div>
+            <div class="rank-arrows">
+              <button onclick="moveUp(${e.id})" title="Move up">▲</button>
+              <button onclick="moveDown(${e.id})" title="Move down">▼</button>
+            </div>
+          </div>
+          <div class="venue-body">
+            <div class="venue-header">
+              <div class="venue-name-wrap">
+                ${e.web
+                  ? `<a class="venue-name" href="${e.web}" target="_blank">${e.name}</a>`
+                  : `<span class="venue-name">${e.name}</span>`}
+                ${typeBadge}
+              </div>
+              <div class="venue-actions">
+                ${websiteBtn}
+                ${menuBtn}
+                <button class="action-btn action-remove" onclick="removeEntry(${e.id})">✕ Remove</button>
+              </div>
+            </div>
+
+            <div class="venue-pricing">
+              ${e.fee ? `
+                <div class="price-item">
+                  <div class="price-val">${fmt(e.fee)}</div>
+                  <div class="price-lbl">Space / Rental Fee</div>
+                </div>
+                <div class="price-divider"></div>` : ''}
+              ${e.fbPer ? `
+                <div class="price-item">
+                  <div class="price-val">${fmt(e.fbPer)}</div>
+                  <div class="price-lbl">F&B / Person</div>
+                </div>
+                <div class="price-divider"></div>` : ''}
+              ${e.fbTotal ? `
+                <div class="price-item">
+                  <div class="price-val">${fmt(e.fbTotal)}</div>
+                  <div class="price-lbl">F&B Total</div>
+                </div>
+                <div class="price-divider"></div>` : ''}
+              ${e.total ? `
+                <div class="price-item">
+                  <div class="price-val">${fmt(e.total)}</div>
+                  <div class="price-lbl">Est. Total Cost</div>
+                </div>` : ''}
+              ${perPerson ? `
+                <div class="price-divider"></div>
+                <div class="price-item">
+                  <div class="price-val">${fmt(perPerson)}</div>
+                  <div class="price-lbl">Per Person</div>
+                </div>` : ''}
+              ${fitLabel ? `<span class="fit-pill ${fitClass}">${fitLabel}</span>` : ''}
+            </div>
+
+            ${capWarn || e.notes ? `
+            <div class="venue-meta">
+              ${capWarn}
+              ${e.notes ? `<span>📝 ${e.notes}</span>` : ''}
+            </div>` : ''}
+          </div>
+        </div>`;
+    }).join('')}</div>`;
   }
 
-  // ── Ranking ──────────────────────────────────────────────────
-  function setRank(id, val) {
-    const entry = entries.find(e => e.id === id);
-    if (entry) entry.rank = parseInt(val) || 99;
-    renderTable();
+  function moveUp(id) {
+    const idx = entries.findIndex(e => e.id === id);
+    if (idx <= 0) return;
+    [entries[idx].rank, entries[idx - 1].rank] = [entries[idx - 1].rank, entries[idx].rank];
+    renderList();
   }
 
-  // ── Remove ───────────────────────────────────────────────────
+  function moveDown(id) {
+    const idx = entries.findIndex(e => e.id === id);
+    if (idx >= entries.length - 1) return;
+    [entries[idx].rank, entries[idx + 1].rank] = [entries[idx + 1].rank, entries[idx].rank];
+    renderList();
+  }
+
   function removeEntry(id) {
     entries = entries.filter(e => e.id !== id);
-    renderTable();
+    renderList();
   }
 
-  // ── Clear ────────────────────────────────────────────────────
-  function clearAddForm() {
-    ['addName','addWebsite','addMenu','addCapacity','addFee','addFBper','addFBtotal','addNotes'].forEach(id => {
+  function clearForm() {
+    ['addName','addWebsite','addMenu','addFee','addCapacity','addFBper','addFBtotal','addNotes'].forEach(id => {
       document.getElementById(id).value = '';
     });
     document.getElementById('addType').value = 'venue';
   }
 
   function clearAll() {
-    if (entries.length && !confirm('Clear all venues from the comparison list?')) return;
-    entries = [];
-    renderTable();
+    if (!entries.length || confirm('Clear all venues from the list?')) {
+      entries = [];
+      renderList();
+    }
   }
 </script>
 </body>
