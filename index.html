@@ -133,6 +133,35 @@
       border-top: 1px dashed var(--border);
     }
 
+    .section-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--teal-dark);
+      margin: 22px 0 0;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-toggle:hover { color: var(--teal); }
+    .section-toggle .chevron {
+      font-style: normal;
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+    .section-toggle.open .chevron { transform: rotate(90deg); }
+
+    .collapsible {
+      display: none;
+      margin-top: 14px;
+    }
+    .collapsible.open { display: block; }
+
     .attendee-list { margin-top: 12px; }
     .attendee-row {
       display: flex;
@@ -326,40 +355,45 @@
       </select>
     </div>
 
-    <div class="section-label">✈️ Live Flight Search</div>
-    <p style="font-size:13px;color:var(--gray);margin-bottom:12px">Select cities and dates to search real-time prices on Google Flights.</p>
-    <div class="row-2" style="margin-bottom:12px">
-      <div class="field">
-        <label>Flying From</label>
-        <select id="flightOrigin">
-          <option value="">Select origin city...</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Flying To</label>
-        <select id="flightDest">
-          <option value="">Select destination city...</option>
-        </select>
-      </div>
+    <div class="section-toggle" id="flightToggle" onclick="toggleFlightSearch()">
+      ✈️ Live Flight Search
+      <span class="chevron">▶</span>
     </div>
-    <div class="row-2" style="margin-bottom:12px">
-      <div class="field">
-        <label>Departure Date</label>
-        <input type="date" id="flightDepart" />
+    <div class="collapsible" id="flightPanel">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:12px">Select cities and dates to search real-time prices on Google Flights.</p>
+      <div class="row-2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Flying From</label>
+          <select id="flightOrigin">
+            <option value="">Select origin city...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Flying To</label>
+          <select id="flightDest">
+            <option value="">Select destination city...</option>
+          </select>
+        </div>
       </div>
-      <div class="field">
-        <label>Return Date</label>
-        <input type="date" id="flightReturn" />
+      <div class="row-2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Departure Date</label>
+          <input type="date" id="flightDepart" />
+        </div>
+        <div class="field">
+          <label>Return Date</label>
+          <input type="date" id="flightReturn" />
+        </div>
       </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px">
-      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer">
-        <input type="checkbox" id="flightRoundTrip" checked style="width:16px;height:16px;accent-color:var(--teal)" />
-        Round Trip
-      </label>
-      <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
-        Get Live Prices →
-      </button>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;cursor:pointer">
+          <input type="checkbox" id="flightRoundTrip" checked style="width:16px;height:16px;accent-color:var(--teal)" />
+          Round Trip
+        </label>
+        <button class="btn btn-primary" style="flex:1;min-width:200px;justify-content:center" onclick="searchGoogleFlights()">
+          Get Live Prices →
+        </button>
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;align-items:start">
@@ -930,6 +964,13 @@ function getMiscLines() {
       };
     })
     .filter(l => l.amount > 0);
+}
+
+function toggleFlightSearch() {
+  const toggle = document.getElementById('flightToggle');
+  const panel  = document.getElementById('flightPanel');
+  toggle.classList.toggle('open');
+  panel.classList.toggle('open');
 }
 
 function toggleReturnFlight() {
